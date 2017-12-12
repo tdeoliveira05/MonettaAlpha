@@ -1,0 +1,103 @@
+<mjml>
+  <mj-body>
+    <mj-container background-color="#ffffff">
+
+      <mj-section background-color="#ffffff" full-width="full-width" padding-bottom="0" padding-top="0" >
+        <mj-column vertical-align="top" width="100%">
+          <mj-image src="https://monettatech.com/dist/assets/images/nameLogo.png" alt="" padding-bottom="30" padding-top="10" align="center" border="none" width="400" vertical-align="top" padding-left="0" padding-right="0">
+          </mj-image>
+        </mj-column>
+      </mj-section>
+
+
+      <mj-section background-color="#5CA7FF" border-radius="50px" padding="10px" vertical-align="top" full-width="80%" padding-bottom="20px" padding-top="0">
+        <mj-column vertical-align="top" width="100%">
+          <mj-text align="middle" color="#000000" font-size="13px"  font-family="Ubuntu, Helvetica, Arial, sans-serif" vertical-align="top" padding-left="25" padding-right="25" padding-bottom="20" padding-top="20">
+            <p><span style="color: white;"><span style="font-size: 20px"><strong>
+              Here are your Monetta Minutes:
+            </strong></span></span></p>
+          </mj-text>
+          <mj-text align="left" color="#000000" font-size="13px"  font-family="Ubuntu, Helvetica, Arial, sans-serif" vertical-align="top" padding-left="25" padding-right="25" padding-bottom="0" padding-top="0">
+            <p><span style="color: white;"><span style="font-size: 18px">
+              {{title}} - ({{type}})
+            </span></span></p>
+
+            <p><span style="color: white;"><span style="font-size: 18px">
+              {{location}} on {{date}}
+            </span></span></p>
+            <br/>
+            <p><span style="color: white;"><span style="font-size: 18px">
+              Participants Present:
+            </span></span></p>
+
+            <p><span style="color: white;"><span style="font-size: 18px">
+              {{listParticipants}}
+            </span></span></p>
+
+            <br>
+
+            <p><span style="color: white;"><span style="font-size: 16px"><strong>
+              Team Decisions
+            </strong></span></span></p>
+            <p><span style="color: white;"><span style="font-size: 16px">
+              {{listDecisions}}
+            </span></span></p>
+
+            <br>
+
+            <p><span style="color: white;"><span style="font-size: 16px"><strong>
+              Action Items
+            </strong></span></span></p>
+            <p><span style="color: white;"><span style="font-size: 16px">
+              {{listActions}}
+            </span></span></p>
+
+            <br>
+
+            <p><span style="color: white;"><span style="font-size: 16px"><strong>
+              General Notes
+            </strong></span></span></p>
+            <p><span style="color: white;"><span style="font-size: 16px">
+              {{listNotes}}
+            </span></span></p>
+
+          </mj-text>
+
+        </mj-column>
+      </mj-section>
+
+
+      <mj-section background-color="#ffffff" vertical-align="middle" full-width="full-width" padding-bottom="20" padding-top="20">
+        <mj-column vertical-align="middle" width="100%">
+          <mj-text align="middle" color="#009FE3" font-size="13px"  font-family="Ubuntu, Helvetica, Arial, sans-serif" container-background-color="transparent" vertical-align="middle" padding-left="25" padding-right="25" padding-bottom="0" padding-top="0">
+            <p style="font-weight: 400; line-height: 30px; margin: 13px 0px;"><span style="color: rgb(255, 177, 72);"><span style="font-size: 25px;">Don&apos;t have a Monetta account? Try it for free</span></span>
+            </p>
+          </mj-text>
+
+          <mj-button background-color="#FFB148" font-size="13px" align="center" vertical-align="middle" border="none" padding="15px 30px" border-radius="8px" href="https://monettatech.com" font-family="Ubuntu, Helvetica, Arial, sans-serif" container-background-color="transparent">
+            <span style="font-family: &apos;Open Sans&apos;, Helvetica, Arial, sans-serif;"><strong><span style="color: white;"><span style="font-size: 21px;">Create a free Monetta account</span></span>
+            </strong>
+            </span>
+          </mj-button>
+
+          <mj-text align="middle" color="#FFB148" font-size="13"  font-family="Ubuntu, Helvetica, Arial, sans-serif" vertical-align="middle" padding-left="25" padding-right="25" padding-bottom="0" padding-top="0">
+            <br>
+            <p></p>
+            <p style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;"><span style="font-family: Arial; font-size: 14.666666666666666px; white-space: pre-wrap; background-color: transparent;"><strong>We&apos;re really excited you&apos;ve decided to give us a try. In case you have any questions, feel free to reach out to us at team@monettatech.com</strong></span>
+            </p><br>
+            <p></p>
+          </mj-text>
+
+          <mj-text align="left" color="#FFB148" font-size="13px" font-family="Ubuntu, Helvetica, Arial, sans-serif" vertical-align="middle" padding-left="25" padding-right="25" padding-bottom="0" padding-top="0">
+            <p></p>
+            <p style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;"><span style=" font-family: Arial; font-size: 14.666666666666666px; white-space: pre-wrap; background-color: transparent;"><strong>Thanks,</strong></span></p>
+            <p style="line-height:1.38;margin-top:0pt;margin-bottom:0pt;"><span style="font-size:14.666666666666666px;font-family:Arial;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap;"><strong>The Monetta Team</strong></span>
+            </p>
+            <p></p>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+    </mj-container>
+  </mj-body>
+</mjml>

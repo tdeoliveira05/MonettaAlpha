@@ -1,0 +1,17 @@
+{
+  "Customer":{
+    "dbConfig":{
+      "uri":"mongodb://localhost/testDB"
+    }
+  },
+  "Presets":{
+    "users":{
+      "teamuser":"colin",
+      "teampassword":"macleod",
+      "testuser":"andrew",
+      "testpassword":"litt"
+    },
+    "codes":["1234","5678"],
+    "port": 3000
+  }
+}

@@ -1,2 +1,17 @@
-# MonettaAlpha
-Monetta's first prototype of the virtual assistant for limited testing during Alpha phase.
+# MonetaMVP
+CHECK BELOW
+
+Pre-Deployment Checklist :
+
+App.js - this.state({
+  page: 'Home', 
+  tabValue: 'a'
+})
+
+Meeting.js - this.state({
+  pane: 'Info'
+})
+
+Heading.js - this.state({
+  logoClick: 'Notif'
+})

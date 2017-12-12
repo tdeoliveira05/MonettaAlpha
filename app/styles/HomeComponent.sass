@@ -1,0 +1,241 @@
+// Optimal for 1366x768
+// media query mixins added for responsive design
+
+.LandingPage
+  .block1wrapper
+    overflow: hidden
+    display: flex
+    justify-content: center
+    background-color: $grayTop
+    .block1
+      display: flex
+      width: $headerBlockWidth
+      .block1content
+        display: flex
+        flex-direction: column
+        justify-content: center
+        @include desktopLarge {justify-content: flex-start}
+        align-items: center
+        width: 100%
+        margin-top: 100px
+        @include mobileMedia {margin-top: 70px}
+        @include mobileMedia {text-align: center}
+        @include mobileMedia {flex-direction: column}
+        h1
+          color: $gold
+          font-size: 2em
+        p
+          color: $blueMid1
+          margin-top: 40px
+          @include mobileMedia {margin-top: 20px}
+          width: 80%
+          @include mobileMedia {width: 100%}
+          font-size: 1em
+          font-weight: bold
+        .block1top
+          @include mobileMedia {display: flex}
+          @include mobileMedia {flex-direction: column}
+          @include mobileMedia {justify-content: center}
+          @include mobileMedia {align-content: center}
+          @include mobileMedia {width: 100%}
+          @include desktopLarge {padding-right: 20%}
+          @include desktopLarge {justify-content: flex-start}
+          .block1input
+            display: flex
+            align-items: center
+            margin-top: 50px
+            @include mobileMedia {margin-top: 10px}
+            @include mobileMedia {display: flex}
+            @include mobileMedia {flex-direction: column}
+            @include mobileMedia {justify-content: center}
+            @include mobileMedia {align-content: center}
+            @include mobileMedia {width: 100%}
+            .block1inputtxt
+              border-radius: 15px
+              padding: 5px 20px
+              box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.3)
+              text-shadow: 1px 1px 0 rgba(255,255,255,0.66)
+              border: none
+              height: 30px
+              @include mobileMedia {height: 20px}
+              @include mobileMedia {margin: 10px }
+              width: 30%
+              @include mobileMedia {width: 100px}
+              min-width: 200px
+              @include mobileMedia {min-width: 100px}
+              font-size: 1em
+            .block1inputsubmit
+              border-radius: 10px
+              margin: 0 15px
+              padding: 5px 15px
+              height: 40px
+              @include mobileMedia {height: 20px}
+              font-size: 1em
+              font-weight: bold
+              background-color: white
+              border: none
+              color: $gold
+              box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.3)
+        .block1microphone
+          display: flex
+          height: 200px
+          width: 100px
+          overflow: visible
+          position: relative
+          left: 200px
+          bottom: 60px
+          @include mobileMedia {margin-top: 40px}
+          @include mobileMedia {left: 0px}
+          @include mobileMedia {bottom: 0px}
+          @include mobileMedia {width: 50px}
+          @include mobileMedia {height: 125px}
+          @include mobileMedia {display: flex}
+          @include mobileMedia {justify-content: center}
+  .block2wrapper
+    display: flex
+    justify-content: center
+    text-align: center
+    .block2
+      display: flex
+      justify-content: center
+      width: 100%
+      .block2content
+        display: flex
+        flex-direction: column
+        justify-content: center
+        align-items: center
+        text-align: center
+        .block2contentimage1
+          width: 100%
+          display: flex
+          flex-direction: row
+          justify-content: center
+          align-items: center
+          margin-top: 30px
+          img
+            @include mobileMedia {width: 80%}
+            @include mobileMedia {height: 80%}
+        .block2contentimage2
+          display: flex
+          flex-direction: row
+          @include mobileMedia {flex-direction: column}
+          justify-content: center
+          @include mobileMedia {align-items: center}
+          width: 80%
+          text-align: left
+          @include mobileMedia {text-align: center}
+          margin-top: 50px
+          @include mobileMedia {margin-top: 0}
+          .block2contentimage2txt
+            padding-top: 50px
+            padding-left: 30px
+            @include mobileMedia {padding-top: 0}
+            @include mobileMedia {padding-left: 0}
+            @include mobileMedia {margin: 25px}
+            h1, p
+              @include mobileMedia {order: 1}
+              width: 450px
+          img
+            width: 50%
+            height: 50%
+            @include mobileMedia {order: 2}
+        h1
+          margin-top: 30px
+          color: $gold
+          font-size: 1.8em
+          width: 65vw
+          min-width: 250px
+          @include mobileMedia {width: 250px}
+        p
+          color: $blueMid1
+          width: 50vw
+          @include mobileMedia {width: 250px}
+  .block3wrapper
+    display: flex
+    justify-content: center
+    background-color: $grayTop
+    padding-bottom: 50px
+    @include mobileMedia {padding: 0 0}
+    .block3
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      width: 90%
+      text-align: center
+      h1
+        color: $gold
+        width: 600px
+        @include mobileMedia {width: 250px}
+        margin-bottom: 20px
+      .block3content
+        display: flex
+        flex-direction: row
+        @include mobileMedia {flex-direction: column}
+        justify-content: space-between
+        align-items: stretch
+        @include mobileMedia {align-items: center}
+        margin: 40px 0
+        .block3paper
+          width: 30%
+          @include mobileMedia {width: 80%}
+          padding: 10px
+          text-align: center
+          @include mobileMedia {margin: 10px}
+          @include mobileMedia {max-width: 265px}
+          .block3paperdiv
+            height: 160px
+            @include mobileMedia {height: 125px}
+            @include desktopLarge {height: 200px }
+          h2
+            color: $blueMid1
+          p
+            color: $blueDark
+            font-size: 1em
+          img
+            width: 30%
+            margin: 10px
+            margin-bottom: 30px
+            max-width: 100px
+            min-width: 75px
+            @include mobileMedia {margin: 5px 5px}
+            @include mobileMedia {width: 75px}
+  .block4wrapper
+    .block4
+      .block4content
+        display: flex
+        flex-direction: column
+        align-items: center
+        text-align: center
+        justify-content: center
+        h1
+          color: $grayLetters
+        h2
+          color: $gold
+        .block4images
+          display: flex
+          width: 75%
+          flex-direction: row
+          @include mobileMedia {flex-direction: column}
+          align-items: center
+          justify-content: space-around
+          @include mobileMedia {justify-content: center}
+          margin: 80px 40px
+          @include mobileMedia {margin: 20px 0}
+          img
+            width: 200px
+            @include mobileMedia {margin: 20px 0}
+  .block5wrapper
+    background-color: $grayTop
+    display: flex
+    justify-content: center
+    padding: 100px 0
+    padding-bottom: 150px
+    .block5
+      .block5content
+        display: flex
+        flex-direction: column
+        text-align: center
+        justify-content: center
+        align-items: center
+        color: $blueMid1
