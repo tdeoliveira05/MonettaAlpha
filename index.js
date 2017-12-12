@@ -36,7 +36,7 @@ const publicPath = express.static(path.join(__dirname, './dist'));
 const sslPath = path.join(__dirname, './dist/well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8');
 const sslPath1 = path.join(__dirname, './dist/well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E');
 
-app.use('/dist', publicPath);
+app.use('/', publicPath);
 
 app.get('/', function(_,res){ res.sendFile(indexPath) });
 
@@ -74,7 +74,7 @@ mongoose.connect(dbConfig.uri,{
 */
 //Thiago testing
 
-mongoose.connect('mongodb://localhost/mercurysquare', {
+mongoose.connect(dbConfig.uri, {
   UseMongoClient: true
 }).catch(function(err){
   console.log(err)

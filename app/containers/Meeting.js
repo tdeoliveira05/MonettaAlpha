@@ -73,7 +73,7 @@ export default class Meeting extends React.Component {
     	window.addEventListener("keydown", this.handleKeyDown);
     	window.addEventListener("keyup", this.handleKeyUp);
       const self = this;
-      axios.get('http://localhost:3000/token')
+      axios.get('https://monettatech.com/token')
   		.then(function (token) {
         self.setState({
           token:token.data
@@ -126,7 +126,7 @@ export default class Meeting extends React.Component {
 
   save(){
     const self = this;
-		axios.post('http://localhost:3000/save',
+		axios.post('https://monettatech.com/save',
 			{
 				title: self.state.title,
 				type: self.state.type,
@@ -281,7 +281,7 @@ export default class Meeting extends React.Component {
     window.addEventListener("keyup", function dictationTiming(){
       console.log(startTime)
       console.log((new Date()).getTime() - startTime)
-      axios.post('http://localhost:3000/timesave',{username:self.state.username, time:(new Date()).getTime() - startTime}).then(function(res){
+      axios.post('https://monettatech.com/timesave',{username:self.state.username, time:(new Date()).getTime() - startTime}).then(function(res){
         console.log('res')
       }).catch(function(err){
         console.log(err)

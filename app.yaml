@@ -3,3 +3,6 @@ env: flex
 env_variables:
   NODE_ENV: production
   MONGODB_URI: mongodb://root:Rzp6SjPE@104.154.137.20
+handlers:
+- url: /.well-known
+  static_dir: well-known

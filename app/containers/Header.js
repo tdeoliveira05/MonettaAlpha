@@ -63,7 +63,7 @@ export default class Header extends React.Component {
   loadQs (loggedUser) {
     // this function updates the question string in the state depending on the state of the user's schema
     const self = this;
-    axios.post('http://localhost:3000/loadqs',{
+    axios.post('https://monettatech.com/loadqs',{
       username: loggedUser
     }).then(function(result){
       if (result.data.promptqs.length >= PromptQuestions.length) {
@@ -84,7 +84,7 @@ export default class Header extends React.Component {
     // this function sends feedback to DB and Slack and activates a snackbar if sucessful
   	const self = this;
     console.log(self.state)
-  	axios.post('http://localhost:3000/feedback', {
+  	axios.post('https://monettatech.com/feedback', {
   			username: self.props.username,
   			date: (new Date()).toString(),
         likes: 'NOTIFICATION PROMPT',

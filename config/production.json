@@ -1,7 +1,7 @@
 {
   "Customer":{
     "dbConfig":{
-      "uri":"mongodb://root:Rzp6SjPE@104.154.137.20"
+      "uri":"mongodb://root:Rzp6SjPE@35.188.15.120"
     }
   },
   "Presets":{

@@ -18,7 +18,7 @@ export default class Feedback extends React.Component {
 	}
 	componentDidMount(){
 		const self = this;
-		axios.get('http://localhost:3000/usercount')
+		axios.get('https://monettatech.com/usercount')
 			.then(function(res) {
 				self.setState({
           userCount:res.data
@@ -31,7 +31,7 @@ export default class Feedback extends React.Component {
 
   getFeedback() {
 		const self = this;
-		axios.get('http://localhost:3000/feedback')
+		axios.get('https://monettatech.com/feedback')
 			.then(function(res) {
 				self.setState({
           feedback:res.data
@@ -45,7 +45,7 @@ export default class Feedback extends React.Component {
 	getUsers() {
 		const self = this;
 		console.log('Get Users')
-		axios.get('http://localhost:3000/users')
+		axios.get('https://monettatech.com/users')
 			.then(function(res) {
 				self.setState({
           users:res.data
