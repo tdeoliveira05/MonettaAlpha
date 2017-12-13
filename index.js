@@ -47,11 +47,6 @@ const slack = SlackOAuthClient.connect(
 	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
 );
 
-
-if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
-
-
-
 //Constants
 const dbConfig = config.get('Customer.dbConfig');
 const saltRounds = 10;
