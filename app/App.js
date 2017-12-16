@@ -42,7 +42,6 @@ export default class App extends React.Component {
       sent: false,
       loggedin: false,
       alphaActivation: false,
-
       tempEmail: '',
       tempEmailVal: '',
       logSig: '',
@@ -96,7 +95,7 @@ export default class App extends React.Component {
   handleLoginSubmit () {
     // this function submits the login request and proceeds if sucessful by updating App.js and receiving new props as a result
     const self = this;
-		axios.post('https://monettatech.com/login',
+		axios.post('http://localhost:3000/login',
         {
 				username: self.state.formUsername,
 				password: self.state.formPassword
@@ -139,7 +138,7 @@ export default class App extends React.Component {
   handleSignupSubmit() {
     // this function handles sign up which updates App.js and receives new props as a result
     const self = this;
-		axios.post('https://monettatech.com/signup',
+		axios.post('http://localhost:3000/signup',
 			{
 				username: self.state.formUsername,
 				password: self.state.formPassword,
@@ -200,7 +199,7 @@ export default class App extends React.Component {
 
   sendAlphaEmail () {
     const self = this
-    axios.post('https://monettatech.com/emailNewAlphaUser', {
+    axios.post('http://localhost:3000/emailNewAlphaUser', {
       firstName: self.state.alphaFirstName,
       lastName: self.state.alphaLastName,
       email: self.state.alphaEmail,
@@ -216,7 +215,7 @@ export default class App extends React.Component {
 
   toEmail(data) {
     const self = this
-    axios.post('https://monettatech.com/emailMonettaMinutes',{
+    axios.post('http://localhost:3000/emailMonettaMinutes',{
       title: self.state.data.title,
       type: self.state.data.type,
       location: self.state.data.location,
@@ -339,7 +338,7 @@ export default class App extends React.Component {
 
   sendFeedback () {
     const self = this;
-    axios.post('https://monettatech.com/feedback', {
+    axios.post('http://localhost:3000/feedback', {
         username: self.state.username,
         date: (new Date()).toString(),
         issue: self.state.issues,

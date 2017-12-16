@@ -26,7 +26,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 //Redirecting to https
-if(process.env.NODE_ENV=='production') app.use(yes());;
+//if(process.env.NODE_ENV=='production') app.use(yes());;
 
 
 //Serving files
@@ -48,7 +48,7 @@ const slack = SlackOAuthClient.connect(
 );
 
 
-if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
+//if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
 
 
 
