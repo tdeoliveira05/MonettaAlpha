@@ -133,7 +133,8 @@ bcrypt.hash('1234', saltRounds).then(function(hash){
 		};
 	});
 })
-
+*/
+/*
 bcrypt.hash(initalUsers.testpassword, saltRounds).then(function(hash){
 	var user2 = new User({
 			username: initalUsers.testuser,
@@ -147,6 +148,7 @@ bcrypt.hash(initalUsers.testpassword, saltRounds).then(function(hash){
 	});
 })
 */
+
 
 //Save meeting
 app.post('/save', function(req,res) {
