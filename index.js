@@ -1,3 +1,5 @@
+// THIS IS THE SERVER [ROUTER] //
+
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
@@ -16,6 +18,10 @@ const config = require('config')
 const yes = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
 const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
+
+const requireDir = require('require-dir')
+const serverLogic = requireDir('./ServerLogic', {recurse: true}) // special node module to import entire directory and their sub directories
+// console.log(serverLogic)
 
 // Setting up snedgrid connection to send out email
 const sgMail = require('@sendgrid/mail')
@@ -65,15 +71,6 @@ console.log('Config:'+dbConfig.uri)
 
 // MongoDB Connection
 mongoose.Promise = global.Promise;
-/*
-mongoose.connect(dbConfig.uri,{
-	useMongoClient: true
-}).catch(function(err){
-	console.log(err)
-});
-*/
-//Thiago testing
-
 mongoose.connect(dbConfig.uri, {
   UseMongoClient: true
 }).catch(function(err){
@@ -103,9 +100,7 @@ mongoose.connection.collections.feedbacks.drop(function(){
   console.log('feedbacks droppped');
 });
 */
-
 //Adding Sign Up Codes
-/*
 codes.map((code) => {
 	var newCode = new Code({
 		code: code,
@@ -118,8 +113,7 @@ codes.map((code) => {
 		};
 	});
 });
-*/
-/*
+
 // Adding test users
 bcrypt.hash('1234', saltRounds).then(function(hash){
 	var user1 = new User({
@@ -133,7 +127,6 @@ bcrypt.hash('1234', saltRounds).then(function(hash){
 		};
 	});
 })
-*/
 /*
 bcrypt.hash(initalUsers.testpassword, saltRounds).then(function(hash){
 	var user2 = new User({
@@ -150,50 +143,59 @@ bcrypt.hash(initalUsers.testpassword, saltRounds).then(function(hash){
 */
 
 
-//Save meeting
+/*
+Enters a new meeting into the database
+Process =>
+1. Creates a new meeting document using the meeting schema
+2. Saves the resultant meeting document to database
+
+----------------------------------------------------------------
+
+inputObject = req.body = {
+title: STRING,
+type: STRING,
+date: DATE_CONSTRUCTOR,
+location: STRING,
+groups: ARRAY_STRINGS, //outdated
+chair: ARRAY_STRINGS, //outdated
+members: ARRAY_STRINGS,
+minutes: ARRAY_STRINGS,
+actions: ARRAY_STRINGS,
+decisions: ARRAY_STRINGS,
+username: STRING
+
+NO OUTPUT OBJECT
+
+}*/
 app.post('/save', function(req,res) {
-	var meeting = new Meeting({
-		title: req.body.title,
-		type: req.body.type,
-		date: req.body.date,
-		location:req.body.location,
-		groups: req.body.groups,
-		chair: req.body.chair,
-		members: req.body.members,
-		minutes: req.body.minutes,
-		actions: req.body.actions,
-		decisions: req.body.decisions,
-		username: req.body.username
-	});
-	meeting.save().then(function(){
-		if(meeting.isNew === false){
-			console.log('Saved');
-		};
-	}).catch(function(err){
-		console.log(err)
-	});
-	res.send(JSON.stringify(meeting));
+	serverLogic.enterNewMeeting(req, res)
 })
 
-// User Login
-app.post('/login',function(req,response){
-	User.findOne({username:req.body.username}).then(function(result){
-		if(result){
-			bcrypt.compare(req.body.password, result.password).then(function(res){
-				if(res) {
-					console.log(req.body.username, 'is now Logged In')
-					response.send(req.body.username)
-				} else {
-					response.send(JSON.stringify('User Exists'));
-				}
-			})
-		} else {
-			response.send('User not found');
-		}
-	}).catch(function(error){
-		console.log('Error', error);
-	});
+/*
+Processes a login request
+Process =>
+1. Checks the database for a username matching the one typed by the username
+2. Compares the attempted password to the password in the retrieved user document
+3. Allows login if sucessful
+
+SECURITY RISK - server only needs to send a username to front-end to force a login
+
+----------------------------------------------------------------
+
+inputObject = req.body = {
+username: STRING,
+password: STRING
+}
+
+outputObject = res = {
+data: STRING // the username of the login request
+}
+*/
+
+app.post('/login',function(req, res){
+	serverLogic.requestLogin(req, res)
 })
+
 
 //User Sign Up
 app.post('/signup',function(req,res){
@@ -433,13 +435,20 @@ app.get('/users', function(req,res){
 	})
 })
 
-//Count users
+
+/*
+Counts the number of User documents in the database
+Process =>
+1. Defines Schema type to be a User schema
+2. Counts how many documents in the database were made with the User Schema
+
+----------------------------------------------------------------
+
+NO INPUT OBJECT
+
+}*/
 app.get('/usercount', function(req,res){
-	User.find({}).then(function(result){
-		res.send(JSON.stringify(result.length))
-	}).catch(function(err){
-		console.log(err)
-	});
+	serverLogic.countUsers(req, res);
 })
 
 //Get Speech to text token

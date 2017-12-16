@@ -102,6 +102,7 @@ export default class App extends React.Component {
         }
 			)
 			.then (function(res) {
+        console.log(res)
         if(res.data != 'User not found'){
           var errors = self.state.errors;
           errors.username = "";
