@@ -11,7 +11,7 @@ module.exports = function (userDoc, possiblePassword) {
       console.log('Sucessful password match')
     })
     .catch(() => {
-      reject("Password does not match")
+      reject("ERROR(checkThisPassword.js): Password does not match")
     })
   })
 };

@@ -1,5 +1,4 @@
 // THIS IS THE SERVER [ROUTER] //
-
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
@@ -19,21 +18,18 @@ const yes = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
 const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
 
+// Import entire directory of server logic and tools
 const requireDir = require('require-dir')
 const serverLogic = requireDir('./ServerLogic', {recurse: true}) // special node module to import entire directory and their sub directories
-// console.log(serverLogic)
+//console.log(serverLogic)
 
-// Setting up snedgrid connection to send out email
+// Setting up sendgrid connection for use in any email functions
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey('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')
 
-//Middleware
+//Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
-
-//Redirecting to https
-//if(process.env.NODE_ENV=='production') app.use(yes());;
-
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -48,26 +44,14 @@ app.get('/', function(_,res){ res.sendFile(indexPath) });
 
 app.get('/.well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8', function(_,res){ res.sendFile(sslPath) });
 app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E', function(_,res){ res.sendFile(sslPath1) });
-//OAuth
-const slack = SlackOAuthClient.connect(
-	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
-);
 
-
-//if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
-
-
-
-//Constants
+//Constants from config
 const dbConfig = config.get('Customer.dbConfig');
 const saltRounds = 10;
 const codes = config.get('Presets.codes');
 const initalUsers = config.get('Presets.users');
 const port = config.get('Presets.port')
 console.log('Config:'+dbConfig.uri)
-//console.log(codes)
-//console.log(initalUsers)
-
 
 // MongoDB Connection
 mongoose.Promise = global.Promise;
@@ -76,80 +60,41 @@ mongoose.connect(dbConfig.uri, {
 }).catch(function(err){
   console.log(err)
 });
-
-
 mongoose.connection.once('open',function(){
 	console.log('Connection made');
 }).on('error',function(error){
 	console.log('Connection error',error);
 });
 
+//----------------------------------------------------------------------------//
+//-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
+//----------------------------------------------------------------------------//
 
-//Clearing DB on start up
+//Redirecting to https----------------------------------------------------------
 /*
-mongoose.connection.collections.users.drop(function(){
-  console.log('users droppped');
-});
-mongoose.connection.collections.meetings.drop(function(){
-  console.log('meetings droppped');
-});
-mongoose.connection.collections.codes.drop(function(){
-  console.log('codes droppped');
-});
-mongoose.connection.collections.feedbacks.drop(function(){
-  console.log('feedbacks droppped');
-});
-*/
-//Adding Sign Up Codes
-codes.map((code) => {
-	var newCode = new Code({
-		code: code,
-		used: false
-	});
-	console.log(newCode)
-	newCode.save().then(function(){
-		if(newCode.isNew === false){
-			console.log('Code Added');
-		};
-	});
-});
-
-// Adding test users
-bcrypt.hash('1234', saltRounds).then(function(hash){
-	var user1 = new User({
-		username: 'colin',
-		password: hash
-	});
-	console.log(user1)
-	user1.save().then(function(){
-		if(user1.isNew === false){
-			console.log('Sign Up Successful');
-		};
-	});
-})
-/*
-bcrypt.hash(initalUsers.testpassword, saltRounds).then(function(hash){
-	var user2 = new User({
-			username: initalUsers.testuser,
-			password: hash
-		});
-	console.log(user2)
-	user2.save().then(function(){
-		if(user2.isNew === false){
-			console.log('Sign Up Successful');
-		};
-	});
-})
+if(process.env.NODE_ENV=='production') app.use(yes());;
 */
 
-
+//Slack OAuth-------------------------------------------------------------------
 /*
+const slack = SlackOAuthClient.connect(
+	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
+);
+if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
+*/
+
+//----------------------------------------------------------------------------//
+//--------------------------------SERVER ROUTES-------------------------------//
+//----------------------------------------------------------------------------//
+
+
+/* -----------------------------------------------------------------------------
 Enters a new meeting into the database
 Process =>
 1. Creates a new meeting document using the meeting schema
 2. Saves the resultant meeting document to database
 
-----------------------------------------------------------------
+-------------------
 
 inputObject = req.body = {
 title: STRING,
@@ -167,11 +112,12 @@ username: STRING
 NO OUTPUT OBJECT
 
 }*/
+
 app.post('/save', function(req,res) {
 	serverLogic.enterNewMeeting(req, res)
 })
 
-/*
+/* -----------------------------------------------------------------------------
 Processes a login request
 Process =>
 1. Checks the database for a username matching the one typed by the username
@@ -180,7 +126,7 @@ Process =>
 
 SECURITY RISK - server only needs to send a username to front-end to force a login
 
-----------------------------------------------------------------
+-------------------
 
 inputObject = req.body = {
 username: STRING,
@@ -196,198 +142,195 @@ app.post('/login',function(req, res){
 	serverLogic.requestLogin(req, res)
 })
 
+/* -----------------------------------------------------------------------------
+Processes a signup request
+Process =>
+1. Check if username is taken up
+2. Validate the attempted signup code
+3. Create a new user document with the input data
+4. Save the user document to the database
+5. Update the code document correspondent to the new user document
 
-//User Sign Up
-app.post('/signup',function(req,res){
-	console.log('Sign Up Attempt')
-	Code.findOne({code:req.body.code}).then(function(codeResult){
-		if(codeResult){
-			if(!codeResult.used){
-				User.findOne({username:req.body.username}).then(function(result){
-					if(!result) {
-						bcrypt.hash(req.body.password, saltRounds).then(function(hash){
-							const hashPass = hash;
-							var user = new User({
-								username: req.body.username,
-								password: hash,
-								time:0
-							});
-							user.save().then(function(){
-								if(user.isNew === false){
-									console.log('Sign Up Successful');
-									//Update the Code to be used
-									Code.update({ _id:codeResult._id }, { used: true }, function (err, raw) {
-									  if (err) return handleError(err);
-									  console.log('The raw response from Mongo was ', raw);
-									});
-									res.send(JSON.stringify(user.username))
-								} else {
-									res.send('Sign Up Unsuccessful')
-								}
-							}).catch(function(err){
-									console.log(err);
-									res.send('Sign Up Unsuccessful')
-							})
-						})
-					} else {
-						console.log('User Exists')
-						res.send('User Exists')
-					}
-				})
-			} else{
-				console.log("Code Already Used")
-				res.send("Code Already Used")
-			}
-		} else{
-			console.log("Code Doesn't Exist")
-			res.send("Code Doesn't Exist")
-		}
-	}).catch(function(err){
-		console.log(err)
-	})
+-------------------
+
+inputObject = req.body = {
+username: STRING,
+password: STRING,
+code: STRING
+}
+
+outputObject = res = {
+data: {
+	username: STRING,
+	error: BOOLEAN,
+	errorText: STRING
+}
+}
+*/
+
+app.post('/signup', function(req, res) {
+	serverLogic.enterNewUser(req, res)
 })
 
-// Repo Search
+
+/* -----------------------------------------------------------------------------
+Finds a meeting document from DB base on certain parameters
+Process =>
+1. Define search parameters requested by user
+2. Search DB for meeting document matching parameters
+
+-------------------
+
+inputObject = req.body = {
+	username: STRING,
+	search: STRING,
+	searchType: STRING,
+	minDate: NUMBER,
+	maxDate: NUMBER
+}
+
+outputObject = res = {
+data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
+}
+*/
 app.post('/search',function(req,res){
-	if(req.body.searchType === 'title'){
-		Meeting.find({title: {$regex:req.body.search, $options: "i"},
-									username:req.body.username,
-									date: { $gt: req.body.minDate, $lt: req.body.maxDate }
-								}).then(function(result){
-			res.send(JSON.stringify(result))
-		})
-	} else if(req.body.searchType === 'member') {
-		Meeting.find({members: {$in:[req.body.search]}, username:req.body.username}).then(function(result){
-			res.send(JSON.stringify(result))
-		})
-	}	else {
-		res.send("Search didn't work");
-	}
+	serverLogic.searchForMeetingDoc(req, res)
 })
 
-//Delete Meeting
-app.post('/delete',function(req,res){
-	Meeting.remove({_id:req.body.id}).then(function(){
-		Meeting.findOne({_id:req.body.id}).then(function(result){
-			if(!result){
-				res.send('Deleted')
-			} else {
-				res.send('Delete Unsuccessful')
-			}
-		})
-	});
+/* -----------------------------------------------------------------------------
+Finds and permanently deletes a meeting document from DB
+Process =>
+1. Finds the document in the database using the received _id
+2. Deletes the found document from the database
+
+SECURITY RISK - the user is requesting PERMANENT deletion of the chosen document
+
+-------------------
+
+inputObject = req.body = {
+	_id: UNKNOWN // meeting document ID
+}
+
+NO OUTPUT OBJECT
+*/
+app.post('/deleteMeeting',function(req,res){
+	serverLogic.deleteMeeting(req, res)
 })
 
-//Save Feedback
+/* -----------------------------------------------------------------------------
+Enters a new feedback document into the Database
+Process =>
+1. Creates a new feedback document using the Feedback Schema
+2. Saves the resultant feedback document to the DB
+
+-------------------
+
+inputObject = req.body = {
+username: STRING,
+date: DATE_CONSTRUCTOR,
+issue: STRING,
+suggestion: STRING,
+likes: STRING
+}
+
+outputObject = res = {
+data: STRING // 'Feedback saved'
+}
+*/
+
 app.post('/feedback',function(req,res){
-	var feedback = new Feedback({
-		username: req.body.username,
-		date: req.body.date,
-		issue: req.body.issue,
-		suggestion: req.body.suggestion,
-		likes: req.body.likes
-	});
-	feedback.save().then(function(){
-		if(feedback.isNew === false){
-		};
-	});
-	slack.postMessage('Feedback',
-		'Username: ' + req.body.username + '\n' +
-		'Date: ' + req.body.date + '\n' +
-		'Likes: ' + req.body.likes + '\n' +
-		'Suggestion: ' + req.body.suggestion + '\n' +
-		'Issue: ' + req.body.issue
-	).catch((err)=>{
-		console.log(err)
-	});
-	res.send(JSON.stringify('Feedback Saved'));
+	serverLogic.enterNewFeedback(req, res)
 })
 
-//Getting user answered promp questions Array to ensure user does not answer same prompt question twice
-app.post('/loadqs', function(req, response) {
-	User.findOne({username: req.body.username}).then(function(result){
-		if (result === null || result === undefined) {
-			response.send('no user found')
-		} else {
-		response.send(result)
-		}
-  }).catch(function(err){
-    console.log(err)
-  })
+/* -----------------------------------------------------------------------------
+Emails users with their meeting minutes
+Process =>
+NOT OPTIMIZED
+
+-------------------
+
+inputObject = req.body = {
+title: STRING,
+type: STRING,
+location: STRING,
+date: DATE_CONSTRUCTOR,
+members: ARRAY_STRINGS,
+decisions: ARRAY_STRINGS,
+actions: ARRAY_STRINGS,
+minutes: ARRAY_STRINGS,
+recipients: ARRAY_STRINGS
+}
+
+NO OUTPUT OBJECT
+*/
+app.post('/emailMonettaMinutes', function(req,res){
+	serverLogic.emailMonettaMinutes(req, res)
 })
 
-//Updating the user's prompt question list since they just answered a new question on the client side
-app.post('/updateqs', function(req, response) {
-	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
-		if (err) return handleError(err);
-		console.log('The raw response from Mongo was ', raw);
-	})
+/* -----------------------------------------------------------------------------
+Emails team@monettatech.com with new alpha user information
+Process =>
+NOT OPTIMIZED
+
+-------------------
+
+inputObject = req.body = {
+firstName: STRING,
+lastName: STRING,
+email: STRING,
+position: STRING,
+company: STRING,
+reference: STRING
+}
+
+NO OUTPUT OBJECT
+*/
+
+app.post('/emailNewAlphaUser', function(req, res) {
+	serverLogic.emailNewAlphaUser(req, res)
 })
 
-// Creates and sends a templated email
-// This is hack af we need a better way
-app.post('/emailMonettaMinutes', function(req,response){
-	var data = {
-		title: req.body.title,
-		type: req.body.type,
-		location: req.body.location,
-		date: new Date(req.body.date).toDateString(),
-		members: req.body.members,
-		decisions: req.body.decisions,
-		actions: req.body.actions,
-		minutes: req.body.minutes,
-		recipients: req.body.recipients
-	}
+/* -----------------------------------------------------------------------------
+Counts the number of User documents in the database
+Process =>
+1. Defines Schema type to be a User schema
+2. Counts how many documents in the database were made with the User Schema
 
-	var readyEmail = createMinutesEmail(data)
+-------------------
 
-	const msg = {
-	  to: data.recipients,
-	  from: 'minutes@monettatech.com',
-	  subject: 'Moneta Minutes from ' + data.date,
-	  html: readyEmail
-	};
+NO INPUT OBJECT
 
-	sgMail.send(msg)
+outputObject = res = {
+data: NUMBER
+}
 
-	response.send(JSON.stringify(readyEmail))
+}*/
+
+app.get('/usercount', function(req,res){
+	serverLogic.countUsers(req, res);
 })
 
-app.post('/emailNewAlphaUser', function(req, response) {
-	console.log(req.body)
+/* -----------------------------------------------------------------------------
+Retrieve the IBM Watson Speech-to-text (STT) token for use
+Process =>
+1. Creates a watson constructor using 'new watson.AuthorizationV1({})'
+2. Acesses the watson constructor's token value and returns it to client-side
 
-	var data = {
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email,
-		position: req.body.position,
-		company: req.body.company,
-		reference: req.body.reference
-	}
+-------------------
 
-	console.log(data)
+NO INPUT OBJECT
 
-	var name= 'NAME: ' + data.firstName + ' ' + data.lastName
- 	var email = 'EMAIL: ' + data.email
-	var job = 'JOB POSITION: ' + data.position
-	var company = 'COMPANY: ' + data.company
-	var reference = 'REFERENCE: ' + data.reference
+outputObject = res = {
+data: UNKNOWN // Token identifier
+}
 
-	var readyMail =  '</p>' + name + ' ' + email + ' ' + job + ' ' + company + ' ' + reference + ' ' +'</p>'
-
-	const msg = {
-		to: 'team@monettatech.com',
-		from: 'newalphatesters@monettatech.com',
-		subject: 'NEW ALPHA TESTER REQUEST: ' + data.firstName + data.lastName,
-		html: readyMail
-	}
-
-	sgMail.send(msg)
-
-	response.send(JSON.stringify(readyMail))
+}*/
+app.get('/token', function(req,res){
+	serverLogic.getWatsonToken(req, res)
 })
 
-
+//------------------------------------------------------------------------------
+//------------------- GARBAGE START---------------------------------------------
 
 //Get Feedback
 app.get('/feedback',function(req,res){
@@ -435,49 +378,97 @@ app.get('/users', function(req,res){
 	})
 })
 
-
-/*
-Counts the number of User documents in the database
-Process =>
-1. Defines Schema type to be a User schema
-2. Counts how many documents in the database were made with the User Schema
-
-----------------------------------------------------------------
-
-NO INPUT OBJECT
-
-}*/
-app.get('/usercount', function(req,res){
-	serverLogic.countUsers(req, res);
-})
-
-//Get Speech to text token
-app.get('/token', function(req,res){
-	var auth = new watson.AuthorizationV1({
-  	"url": "https://stream.watsonplatform.net/speech-to-text/api",
-  	"username": "fbc390cc-ae44-4968-b839-4cd9c34bc201",
-  	"password": "dZAVMXe7gWKn"
-	});
-	auth.getToken(function(err,token){
-		if(!token){
-			console.log('error:', err);
+//Getting user answered promp questions Array to ensure user does not answer same prompt question twice
+app.post('/loadqs', function(req, response) {
+	User.findOne({username: req.body.username}).then(function(result){
+		if (result === null || result === undefined) {
+			response.send('no user found')
 		} else {
-			res.send(token);
+		response.send(result)
 		}
-	});
+  }).catch(function(err){
+    console.log(err)
+  })
 })
 
+//Updating the user's prompt question list since they just answered a new question on the client side
+app.post('/updateqs', function(req, response) {
+	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
+		if (err) return handleError(err);
+		console.log('The raw response from Mongo was ', raw);
+	})
+})
 
-// Server Port
+//------------------- GARBAGE END-----------------------------------------------
+//------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------//
+//---------------------------UTILITY FUNCTIONS--------------------------------//
+//--------------------------proceed with caution------------------------------//
+//----------------------------------------------------------------------------//
+
+// Drop database function
+var dropDatabaseCollections = function() {
+
+	mongoose.connection.collections.users.drop(function(){
+	  console.log('users droppped');
+	});
+	mongoose.connection.collections.meetings.drop(function(){
+	  console.log('meetings droppped');
+	});
+	mongoose.connection.collections.codes.drop(function(){
+	  console.log('codes droppped');
+	});
+	mongoose.connection.collections.feedbacks.drop(function(){
+	  console.log('feedbacks droppped');
+	});
+
+}
+
+//Function to add sign up codes
+
+var enterDatabaseCodes = function () {
+	codes.map((code) => {
+		var newCode = new Code({
+			code: code,
+			used: false
+		})
+		console.log(newCode)
+		newCode.save().then(function(){
+			if(newCode.isNew === false){
+				console.log('Code Added')
+			}
+		})
+	})
+}
+
+// Function to Add a test user to a DB
+
+var enterDatabaseTestUser = function(testUser, testPass) {
+	bcrypt.hash(testPass, 10)
+	.then((hash) => {
+		var testUserDoc = new User ({
+			username: testUser,
+			password: hash
+		})
+		return testUserDoc.save()
+	})
+	.then(() => {
+		console.log('Test user created: ' + testUser + '//' + testPass)
+	})
+	.catch((error) => {
+		console.log('ERROR(server utility functions): ' + error)
+	})
+}
+
+
+//dropDatabaseCollections()
+//enterDatabaseCodes()
+//enterDatabaseTestUser('thiago', '1234')
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//------------------------------SERVER PORT-----------------------------------//
 app.listen(process.env.PORT || port,function() {
 	console.log('App listening on port', port)
 })
-
-/*
-//Thiago test
-const PORT = '8080';
-app.listen(PORT, () => {
-  console.log('Server started on localhost port: ' + PORT);
-})
- module.exports = app;
- */

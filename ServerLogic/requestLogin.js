@@ -5,15 +5,14 @@ const Users = require('../models/users')
 
 module.exports = function (req, res) {
 
-  serverTools.findThis(Users, {username: req.body.username})
+  serverTools.findSingleDoc(Users, {username: req.body.username})
   .then((userDoc) => {
     return serverTools.checkThisPassword(userDoc, req.body.password)
   })
   .then((userDoc) => {
     res.send(userDoc.username) // allow login by sending back validated username
-    console.log( 'result: ' + userDoc.username)
   })
   .catch((error) => {
-    console.log(error)
+    console.log('[requestLogin.js]' + error)
   })
 }

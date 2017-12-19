@@ -10,6 +10,6 @@ module.exports = function (req, res) {
     res.send(countResult)
   })
   .catch((error) => {
-    console.log(error)
+    console.log('[countUsers.js]' + error)
   })
 }

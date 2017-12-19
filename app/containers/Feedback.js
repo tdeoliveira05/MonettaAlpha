@@ -50,7 +50,7 @@ export default class Feedback extends React.Component {
 				self.setState({
           users:res.data
         })
-				console.log('Got Users')
+				console.log(res)
 			})
 			.catch(function(error) {
 				console.log(error)

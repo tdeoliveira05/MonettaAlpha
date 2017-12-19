@@ -7,7 +7,8 @@ const UserSchema = new Schema({
   password: String,
   groups: Array,
   promptqs: Array,
-  time: Number
+  time: Number,
+  codeUsed: String
 });
 
 const User = mongoose.model('user', UserSchema);

@@ -7,7 +7,7 @@ module.exports =  function (Schema) {
     if (docs) {
       resolve(JSON.stringify(docs.length))
     } else {
-      reject("No documents of this Schema " + JSON.stringify(Schema) + " were found in the database")
+      reject("ERROR(countThis.js): No documents of this Schema [" + JSON.stringify(Schema) + "] were found in the database")
     }
 
   })

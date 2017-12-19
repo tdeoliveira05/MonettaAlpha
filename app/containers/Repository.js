@@ -100,9 +100,9 @@ export default class Repository extends React.Component {
       });
   		axios.post('http://localhost:3000/search',
   			{
+          username:this.state.username,
   				search:'',
           searchType:'title',
-          username:this.state.username,
           minDate:0,
           maxDate:2147483647000
   			}
@@ -159,9 +159,9 @@ export default class Repository extends React.Component {
   }
   deleteMeeting() {
     const self = this;
-    axios.post('http://localhost:3000/delete',
+    axios.post('http://localhost:3000/deleteMeeting',
       {
-        id:self.state.meetingRes._id
+        _id:self.state.meetingRes._id
       }).then(function(res){
         self.setState({
           meetingRes: null
@@ -182,9 +182,9 @@ export default class Repository extends React.Component {
     var maxDate = this.state.maxDate ? new Date(this.state.maxDate).getTime() : 2147483647000;
   		axios.post('http://localhost:3000/search',
   			{
+          username:self.state.username,
   				search:self.state.search,
           searchType:this.state.searchType,
-          username:self.state.username,
           minDate:minDate,
           maxDate:maxDate
   			}

@@ -21,7 +21,7 @@ module.exports = function (meetingData) {
     if (newMeetingDoc) {
       resolve(newMeetingDoc)
     } else {
-      reject('Meeting content is empty and not created')
+      reject('ERROR(createThisMeeting.js): Meeting content is empty and not created')
     }
   })
 };
