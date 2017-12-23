@@ -4,7 +4,7 @@
 // NOT OPTIMIZED
 
 const requireDir = require('require-dir')
-const serverTools = requireDir('./ServerTools', {recurse: true}) // special node module to import entire directory and their sub directories
+const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
 
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey('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')

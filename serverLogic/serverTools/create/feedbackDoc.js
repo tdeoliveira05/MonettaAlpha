@@ -1,5 +1,5 @@
 // This function will create a new feedback document
-const Feedback = require('../../models/feedback')
+const Feedback = require('../../../models/feedbackModel')
 
 module.exports = function (feedbackData) {
   return new Promise (function(resolve, reject) {

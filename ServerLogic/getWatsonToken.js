@@ -1,7 +1,6 @@
 // This function will authenticate Watson account and retrieve the STT token
 const requireDir = require('require-dir')
-const serverTools = requireDir('./ServerTools', {recurse: true}) // special node module to import entire directory and their sub directories
-
+const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
 const watson = require('watson-developer-cloud')
 
 module.exports = function (feedbackData, res) {

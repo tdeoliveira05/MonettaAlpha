@@ -5,15 +5,13 @@ module.exports =  function (newDoc) {
   return new Promise (function(resolve, reject) {
     newDoc.save()
     .then(() => {
-      if (newDoc.isNew === false) {
-        console.log('Document was saved to database: ' + newDoc)
-        resolve(newDoc)
-      } else {
-        reject ('ERROR(saveThis.js): Document property .isNew was true')
-      }
+      if (!newDoc.isNew) resolve (newDoc)
+    })
+    .then(() => {
+      reject('ERROR(save.thisDoc.js): Document property .isNew was true')
     })
     .catch((error) => {
-      reject('ERROR(saveThis.js): ' + error)
+      reject('ERROR(save.thisDoc.js): ' + error)
 
     })
   })

@@ -2,26 +2,31 @@
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
-const app = express()
 const path = require('path')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const assert = require('assert')
-const User = require('./models/users')
-const Meeting = require('./models/meetings')
-const Feedback = require('./models/feedback')
-const Code = require('./models/codes')
 const bcrypt = require('bcrypt')
 const watson = require('watson-developer-cloud')
 const config = require('config')
 const yes = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
+const User = require('./models/userModel.js')
+const Meeting = require('./models/meetingModel.js')
+const Feedback = require('./models/feedbackModel.js')
+const Code = require('./models/codeModel.js')
 const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
+
+//initialize general app & protected routes
+const app = express();
+const protectedRoute = express.Router();
 
 // Import entire directory of server logic and tools
 const requireDir = require('require-dir')
-const serverLogic = requireDir('./ServerLogic', {recurse: true}) // special node module to import entire directory and their sub directories
+const serverLogic = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
 //console.log(serverLogic)
+const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
+
 
 // Setting up sendgrid connection for use in any email functions
 const sgMail = require('@sendgrid/mail')
@@ -30,6 +35,7 @@ sgMail.setApiKey('SG.PRoR2Z0rQZmC4n_xp8WSjw.WIJzhAJtJkGpOqws_yxs9pO6MLcQBRkfFH7l
 //Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
+app.use('/protected-api', protectedRoute)
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -49,8 +55,8 @@ app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E
 const dbConfig = config.get('Customer.dbConfig');
 const saltRounds = 10;
 const codes = config.get('Presets.codes');
-const initalUsers = config.get('Presets.users');
 const port = config.get('Presets.port')
+const secret = config.get('Presets.secret')
 console.log('Config:'+dbConfig.uri)
 
 // MongoDB Connection
@@ -85,38 +91,7 @@ if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed')
 
 //----------------------------------------------------------------------------//
 //--------------------------------SERVER ROUTES-------------------------------//
-//----------------------------------------------------------------------------//
-
-
-/* -----------------------------------------------------------------------------
-Enters a new meeting into the database
-Process =>
-1. Creates a new meeting document using the meeting schema
-2. Saves the resultant meeting document to database
-
--------------------
-
-inputObject = req.body = {
-title: STRING,
-type: STRING,
-date: DATE_CONSTRUCTOR,
-location: STRING,
-groups: ARRAY_STRINGS, //outdated
-chair: ARRAY_STRINGS, //outdated
-members: ARRAY_STRINGS,
-minutes: ARRAY_STRINGS,
-actions: ARRAY_STRINGS,
-decisions: ARRAY_STRINGS,
-username: STRING
-
-NO OUTPUT OBJECT
-
-}*/
-
-app.post('/save', function(req,res) {
-	serverLogic.enterNewMeeting(req, res)
-})
-
+//--------------------------------LOGIN/SIGNUP--------------------------------//
 /* -----------------------------------------------------------------------------
 Processes a login request
 Process =>
@@ -134,7 +109,7 @@ password: STRING
 }
 
 outputObject = res = {
-data: STRING // the username of the login request
+data: STRING // JSON WEB TOKEN for local storage
 }
 */
 
@@ -160,16 +135,59 @@ code: STRING
 }
 
 outputObject = res = {
-data: {
-	username: STRING,
-	error: BOOLEAN,
-	errorText: STRING
-}
+data: STRING // JSON WEB TOKEN for local storage
 }
 */
 
 app.post('/signup', function(req, res) {
-	serverLogic.enterNewUser(req, res)
+	serverLogic.requestSignup(req, res)
+})
+
+
+
+//--------------------------AUTHENTICATION MIDDLEWARE-------------------------//
+
+// This function will authenticate every user looking to use any post/get route
+// that follows underneath using the protectRoute router
+protectedRoute.use(function(req, res, next) {
+  var token = req.body.token || req.headers['token'];
+  if (token) {
+    jwt.verify(token, config.get('Presets.secret'), function(error, decode) {
+      error ? res.status(500).send("Invalid token") : next();
+    })
+  } else {
+    res.send('no token received')
+  }
+})
+
+//-----------------------------ROUTES CONTINUED-------------------------------//
+/* -----------------------------------------------------------------------------
+Enters a new meeting into the database
+Process =>
+1. Creates a new meeting document using the meeting schema
+2. Saves the resultant meeting document to database
+
+-------------------
+
+inputObject = req.body = {
+title: STRING,
+type: STRING,
+date: DATE_CONSTRUCTOR,
+location: STRING,
+groups: ARRAY_STRINGS, //outdated
+chair: ARRAY_STRINGS, //outdated
+members: ARRAY_STRINGS,
+minutes: ARRAY_STRINGS,
+actions: ARRAY_STRINGS,
+decisions: ARRAY_STRINGS,
+username: STRING
+
+NO OUTPUT OBJECT
+
+}*/
+
+protectedRoute.post('/save', function(req,res) {
+	serverLogic.enterNewMeeting(req, res)
 })
 
 
@@ -193,7 +211,7 @@ outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
 }
 */
-app.post('/search',function(req,res){
+protectedRoute.post('/search',function(req,res){
 	serverLogic.searchForMeetingDoc(req, res)
 })
 
@@ -213,8 +231,8 @@ inputObject = req.body = {
 
 NO OUTPUT OBJECT
 */
-app.post('/deleteMeeting',function(req,res){
-	serverLogic.deleteMeeting(req, res)
+protectedRoute.post('/deleteMeeting',function(req,res){
+	serverLogic.deleteMeetingDoc(req, res)
 })
 
 /* -----------------------------------------------------------------------------
@@ -238,7 +256,7 @@ data: STRING // 'Feedback saved'
 }
 */
 
-app.post('/feedback',function(req,res){
+protectedRoute.post('/feedback',function(req,res){
 	serverLogic.enterNewFeedback(req, res)
 })
 
@@ -263,7 +281,7 @@ recipients: ARRAY_STRINGS
 
 NO OUTPUT OBJECT
 */
-app.post('/emailMonettaMinutes', function(req,res){
+protectedRoute.post('/emailMonettaMinutes', function(req,res){
 	serverLogic.emailMonettaMinutes(req, res)
 })
 
@@ -286,7 +304,7 @@ reference: STRING
 NO OUTPUT OBJECT
 */
 
-app.post('/emailNewAlphaUser', function(req, res) {
+protectedRoute.post('/emailNewAlphaUser', function(req, res) {
 	serverLogic.emailNewAlphaUser(req, res)
 })
 
@@ -306,7 +324,7 @@ data: NUMBER
 
 }*/
 
-app.get('/usercount', function(req,res){
+protectedRoute.get('/usercount', function(req,res){
 	serverLogic.countUsers(req, res);
 })
 
@@ -325,7 +343,7 @@ data: UNKNOWN // Token identifier
 }
 
 }*/
-app.get('/token', function(req,res){
+protectedRoute.get('/token', function(req,res){
 	serverLogic.getWatsonToken(req, res)
 })
 
@@ -333,7 +351,7 @@ app.get('/token', function(req,res){
 //------------------- GARBAGE START---------------------------------------------
 
 //Get Feedback
-app.get('/feedback',function(req,res){
+protectedRoute.get('/feedback',function(req,res){
 	Feedback.find({}).then(function(result){
 		res.send(JSON.stringify(result))
 	}).catch(function(err){
@@ -342,7 +360,7 @@ app.get('/feedback',function(req,res){
 })
 
 //Dictation Time Save
-app.post('/timesave', function(req,res){
+protectedRoute.post('/timesave', function(req,res){
 	console.log('Called')
 	User.findOne({username: req.body.username}).then(function(user){
 		let newTime = 0;
@@ -355,7 +373,7 @@ app.post('/timesave', function(req,res){
 })
 
 //Get users
-app.get('/users', function(req,res){
+protectedRoute.get('/users', function(req,res){
 	let users = []
 	User.find({}).then(function(userResults){
 		Meeting.find({}).then(function(meetingResults){
@@ -379,7 +397,7 @@ app.get('/users', function(req,res){
 })
 
 //Getting user answered promp questions Array to ensure user does not answer same prompt question twice
-app.post('/loadqs', function(req, response) {
+protectedRoute.post('/loadqs', function(req, response) {
 	User.findOne({username: req.body.username}).then(function(result){
 		if (result === null || result === undefined) {
 			response.send('no user found')
@@ -392,7 +410,7 @@ app.post('/loadqs', function(req, response) {
 })
 
 //Updating the user's prompt question list since they just answered a new question on the client side
-app.post('/updateqs', function(req, response) {
+protectedRoute.post('/updateqs', function(req, response) {
 	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
 		if (err) return handleError(err);
 		console.log('The raw response from Mongo was ', raw);
@@ -407,64 +425,12 @@ app.post('/updateqs', function(req, response) {
 //--------------------------proceed with caution------------------------------//
 //----------------------------------------------------------------------------//
 
-// Drop database function
-var dropDatabaseCollections = function() {
-
-	mongoose.connection.collections.users.drop(function(){
-	  console.log('users droppped');
-	});
-	mongoose.connection.collections.meetings.drop(function(){
-	  console.log('meetings droppped');
-	});
-	mongoose.connection.collections.codes.drop(function(){
-	  console.log('codes droppped');
-	});
-	mongoose.connection.collections.feedbacks.drop(function(){
-	  console.log('feedbacks droppped');
-	});
-
-}
-
-//Function to add sign up codes
-
-var enterDatabaseCodes = function () {
-	codes.map((code) => {
-		var newCode = new Code({
-			code: code,
-			used: false
-		})
-		console.log(newCode)
-		newCode.save().then(function(){
-			if(newCode.isNew === false){
-				console.log('Code Added')
-			}
-		})
-	})
-}
-
-// Function to Add a test user to a DB
-
-var enterDatabaseTestUser = function(testUser, testPass) {
-	bcrypt.hash(testPass, 10)
-	.then((hash) => {
-		var testUserDoc = new User ({
-			username: testUser,
-			password: hash
-		})
-		return testUserDoc.save()
-	})
-	.then(() => {
-		console.log('Test user created: ' + testUser + '//' + testPass)
-	})
-	.catch((error) => {
-		console.log('ERROR(server utility functions): ' + error)
-	})
-}
 
 
-//dropDatabaseCollections()
-//enterDatabaseCodes()
-//enterDatabaseTestUser('thiago', '1234')
+//serverUtility.utilityFunction.dropDatabaseCollections()
+//serverUtility.utilityFunction.enterDatabaseCodes(codes)
+//serverLogic.utilityFunction.enterDatabaseTestUser('thiago', '1234')
+
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//

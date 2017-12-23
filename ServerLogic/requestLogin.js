@@ -1,16 +1,19 @@
 // This function will process a login request by a user
 const requireDir = require('require-dir')
-const serverTools = requireDir('./ServerTools', {recurse: true}) // special node module to import entire directory and their sub directories
-const Users = require('../models/users')
+const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
+const Users = require('../models/userModel')
 
 module.exports = function (req, res) {
 
-  serverTools.findSingleDoc(Users, {username: req.body.username})
+  serverTools.find.singleDoc(Users, {username: req.body.username})
   .then((userDoc) => {
-    return serverTools.checkThisPassword(userDoc, req.body.password)
+    return serverTools.check.thisPassword(userDoc, req.body.password)
   })
   .then((userDoc) => {
-    res.send(userDoc.username) // allow login by sending back validated username
+    return serverTools.authenticate.generateJWT(userDoc)
+  })
+  .then((token) => {
+    res.send(token)
   })
   .catch((error) => {
     console.log('[requestLogin.js]' + error)

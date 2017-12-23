@@ -1,18 +1,17 @@
 // This function will delete a saved meeting from the DB
 const requireDir = require('require-dir')
 const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
-
 const Meeting = require('../models/meetingModel')
 
-module.exports = function (searchParam, res) {
+module.exports = function (req, res) {
 
-  serverTools.build.searchParamObjs(searchParam)
-  .then((paramObjs) => {
-    return serverTools.find.multipleDocs(Meeting, paramObjs)
-  }).then((docArray) => {
-    res.send(JSON.stringify(docArray))
+  serverTools.delete.singleDoc(Meeting, req.body)
+  .then(() => {
+    console.log('success deleting meeting doc matching:' + req.body)
+    resolve()
   })
   .catch((error) => {
-    console.log(error)
+    reject('[deleteMeetingDoc.js] - ' + error)
   })
+
 }

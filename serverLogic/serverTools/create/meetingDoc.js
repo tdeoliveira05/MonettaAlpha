@@ -1,5 +1,5 @@
 // This function will create a new meeting document
-const Meeting = require('../../models/meetings')
+const Meeting = require('../../../models/meetingModel')
 
 module.exports = function (meetingData) {
   return new Promise (function(resolve, reject) {
