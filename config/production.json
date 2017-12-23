@@ -12,6 +12,7 @@
       "testpassword":"test"
     },
     "codes":["1234","5678"],
-    "port":8080
+    "port":8080,
+    "secret": "GordonPatrick"
   }
 }

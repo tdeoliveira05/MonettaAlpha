@@ -98,11 +98,11 @@ export default class Repository extends React.Component {
       self.setState({
         progress: 'loading'
       });
-  		axios.post('https://monettatech.com/search',
+  		axios.post('http://localhost:3000/search',
   			{
+          username:this.state.username,
   				search:'',
           searchType:'title',
-          username:this.state.username,
           minDate:0,
           maxDate:2147483647000
   			}
@@ -159,9 +159,9 @@ export default class Repository extends React.Component {
   }
   deleteMeeting() {
     const self = this;
-    axios.post('https://monettatech.com/delete',
+    axios.post('http://localhost:3000/deleteMeeting',
       {
-        id:self.state.meetingRes._id
+        _id:self.state.meetingRes._id
       }).then(function(res){
         self.setState({
           meetingRes: null
@@ -180,11 +180,11 @@ export default class Repository extends React.Component {
     });
     var minDate = this.state.minDate ? new Date(this.state.minDate).getTime() : 0;
     var maxDate = this.state.maxDate ? new Date(this.state.maxDate).getTime() : 2147483647000;
-  		axios.post('https://monettatech.com/search',
+  		axios.post('http://localhost:3000/search',
   			{
+          username:self.state.username,
   				search:self.state.search,
           searchType:this.state.searchType,
-          username:self.state.username,
           minDate:minDate,
           maxDate:maxDate
   			}

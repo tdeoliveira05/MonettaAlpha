@@ -1,33 +1,41 @@
+// THIS IS THE SERVER [ROUTER] //
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
-const app = express()
 const path = require('path')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const assert = require('assert')
-const User = require('./models/users')
-const Meeting = require('./models/meetings')
-const Feedback = require('./models/feedback')
-const Code = require('./models/codes')
 const bcrypt = require('bcrypt')
 const watson = require('watson-developer-cloud')
 const config = require('config')
 const yes = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
+const User = require('./models/userModel.js')
+const Meeting = require('./models/meetingModel.js')
+const Feedback = require('./models/feedbackModel.js')
+const Code = require('./models/codeModel.js')
 const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
 
-// Setting up snedgrid connection to send out email
+//initialize general app & protected routes
+const app = express();
+const protectedRoute = express.Router();
+
+// Import entire directory of server logic and tools
+const requireDir = require('require-dir')
+const serverLogic = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
+//console.log(serverLogic)
+const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
+
+
+// Setting up sendgrid connection for use in any email functions
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey('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')
 
-//Middleware
+//Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
-
-//Redirecting to https
-if(process.env.NODE_ENV=='production') app.use(yes());;
-
+app.use('/protected-api', protectedRoute)
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -42,348 +50,325 @@ app.get('/', function(_,res){ res.sendFile(indexPath) });
 
 app.get('/.well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8', function(_,res){ res.sendFile(sslPath) });
 app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E', function(_,res){ res.sendFile(sslPath1) });
-//OAuth
-const slack = SlackOAuthClient.connect(
-	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
-);
 
-
-if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
-
-
-
-//Constants
+//Constants from config
 const dbConfig = config.get('Customer.dbConfig');
 const saltRounds = 10;
 const codes = config.get('Presets.codes');
-const initalUsers = config.get('Presets.users');
 const port = config.get('Presets.port')
+const secret = config.get('Presets.secret')
 console.log('Config:'+dbConfig.uri)
-//console.log(codes)
-//console.log(initalUsers)
-
 
 // MongoDB Connection
 mongoose.Promise = global.Promise;
-/*
-mongoose.connect(dbConfig.uri,{
-	useMongoClient: true
-}).catch(function(err){
-	console.log(err)
-});
-*/
-//Thiago testing
-
 mongoose.connect(dbConfig.uri, {
   UseMongoClient: true
 }).catch(function(err){
   console.log(err)
 });
-
-
 mongoose.connection.once('open',function(){
 	console.log('Connection made');
 }).on('error',function(error){
 	console.log('Connection error',error);
 });
 
+//----------------------------------------------------------------------------//
+//-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
+//----------------------------------------------------------------------------//
 
-//Clearing DB on start up
+//Redirecting to https----------------------------------------------------------
 /*
-mongoose.connection.collections.users.drop(function(){
-  console.log('users droppped');
-});
-mongoose.connection.collections.meetings.drop(function(){
-  console.log('meetings droppped');
-});
-mongoose.connection.collections.codes.drop(function(){
-  console.log('codes droppped');
-});
-mongoose.connection.collections.feedbacks.drop(function(){
-  console.log('feedbacks droppped');
-});
+if(process.env.NODE_ENV=='production') app.use(yes());;
 */
 
-//Adding Sign Up Codes
+//Slack OAuth-------------------------------------------------------------------
 /*
-codes.map((code) => {
-	var newCode = new Code({
-		code: code,
-		used: false
-	});
-	console.log(newCode)
-	newCode.save().then(function(){
-		if(newCode.isNew === false){
-			console.log('Code Added');
-		};
-	});
-});
+const slack = SlackOAuthClient.connect(
+	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
+);
+if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
 */
-/*
-// Adding test users
-bcrypt.hash('1234', saltRounds).then(function(hash){
-	var user1 = new User({
-		username: 'colin',
-		password: hash
-	});
-	console.log(user1)
-	user1.save().then(function(){
-		if(user1.isNew === false){
-			console.log('Sign Up Successful');
-		};
-	});
+
+//----------------------------------------------------------------------------//
+//--------------------------------SERVER ROUTES-------------------------------//
+//--------------------------------LOGIN/SIGNUP--------------------------------//
+/* -----------------------------------------------------------------------------
+Processes a login request
+Process =>
+1. Checks the database for a username matching the one typed by the username
+2. Compares the attempted password to the password in the retrieved user document
+3. Allows login if sucessful
+
+SECURITY RISK - server only needs to send a username to front-end to force a login
+
+-------------------
+
+inputObject = req.body = {
+username: STRING,
+password: STRING
+}
+
+outputObject = res = {
+data: TOKEN_OBJ // JSON WEB TOKEN (JWT) for local storage
+}
+
+TOKEN_OBJ = {
+  id: STRING,
+  username: STRING,
+  token: UNKNOWN // this is the JWT
+}
+*/
+
+app.post('/login',function(req, res){
+  console.log('reached')
+	serverLogic.requestLogin(req, res)
 })
 
-bcrypt.hash(initalUsers.testpassword, saltRounds).then(function(hash){
-	var user2 = new User({
-			username: initalUsers.testuser,
-			password: hash
-		});
-	console.log(user2)
-	user2.save().then(function(){
-		if(user2.isNew === false){
-			console.log('Sign Up Successful');
-		};
-	});
-})
+/* -----------------------------------------------------------------------------
+Processes a signup request
+Process =>
+1. Check if username is taken up
+2. Validate the attempted signup code
+3. Create a new user document with the input data
+4. Save the user document to the database
+5. Update the code document correspondent to the new user document
+
+-------------------
+
+inputObject = req.body = {
+username: STRING,
+password: STRING,
+code: STRING
+}
+
+outputObject = res = {
+data: TOKEN_OBJ // JSON WEB TOKEN (JWT) for local storage
+}
+
+TOKEN_OBJ = {
+  id: STRING,
+  username: STRING,
+  token: UNKNOWN // this is the JWT
+}
 */
 
-//Save meeting
+app.post('/signup', function(req, res) {
+	serverLogic.requestSignup(req, res)
+})
+
+
+
+//--------------------------AUTHENTICATION MIDDLEWARE-------------------------//
+
+// This function will authenticate every user looking to use any post/get route
+// that follows underneath using the protectRoute router
+// token always needs to be sent with the request if the client-side is making
+// a request
+/*
+app.use(function(req, res, next) {
+  console.log('Running authentication middleware.')
+  var token = req.body.token || req.headers['token'];
+  if (token) {
+    jwt.verify(token, config.get('Presets.secret'), function(error, decode) {
+      error ? res.status(500).send("Invalid token") : next();
+    })
+  } else {
+    res.send('no token received')
+  }
+})
+*/
+//-----------------------------ROUTES CONTINUED-------------------------------//
+/* -----------------------------------------------------------------------------
+Enters a new meeting into the database
+Process =>
+1. Creates a new meeting document using the meeting schema
+2. Saves the resultant meeting document to database
+
+-------------------
+
+inputObject = req.body = {
+title: STRING,
+type: STRING,
+date: DATE_CONSTRUCTOR,
+location: STRING,
+groups: ARRAY_STRINGS, //outdated
+chair: ARRAY_STRINGS, //outdated
+members: ARRAY_STRINGS,
+minutes: ARRAY_STRINGS,
+actions: ARRAY_STRINGS,
+decisions: ARRAY_STRINGS,
+username: STRING
+
+NO OUTPUT OBJECT
+
+}*/
+
 app.post('/save', function(req,res) {
-	var meeting = new Meeting({
-		title: req.body.title,
-		type: req.body.type,
-		date: req.body.date,
-		location:req.body.location,
-		groups: req.body.groups,
-		chair: req.body.chair,
-		members: req.body.members,
-		minutes: req.body.minutes,
-		actions: req.body.actions,
-		decisions: req.body.decisions,
-		username: req.body.username
-	});
-	meeting.save().then(function(){
-		if(meeting.isNew === false){
-			console.log('Saved');
-		};
-	}).catch(function(err){
-		console.log(err)
-	});
-	res.send(JSON.stringify(meeting));
+	serverLogic.enterNewMeeting(req, res)
 })
 
-// User Login
-app.post('/login',function(req,response){
-	User.findOne({username:req.body.username}).then(function(result){
-		if(result){
-			bcrypt.compare(req.body.password, result.password).then(function(res){
-				if(res) {
-					console.log(req.body.username, 'is now Logged In')
-					response.send(req.body.username)
-				} else {
-					response.send(JSON.stringify('User Exists'));
-				}
-			})
-		} else {
-			response.send('User not found');
-		}
-	}).catch(function(error){
-		console.log('Error', error);
-	});
-})
 
-//User Sign Up
-app.post('/signup',function(req,res){
-	console.log('Sign Up Attempt')
-	Code.findOne({code:req.body.code}).then(function(codeResult){
-		if(codeResult){
-			if(!codeResult.used){
-				User.findOne({username:req.body.username}).then(function(result){
-					if(!result) {
-						bcrypt.hash(req.body.password, saltRounds).then(function(hash){
-							const hashPass = hash;
-							var user = new User({
-								username: req.body.username,
-								password: hash,
-								time:0
-							});
-							user.save().then(function(){
-								if(user.isNew === false){
-									console.log('Sign Up Successful');
-									//Update the Code to be used
-									Code.update({ _id:codeResult._id }, { used: true }, function (err, raw) {
-									  if (err) return handleError(err);
-									  console.log('The raw response from Mongo was ', raw);
-									});
-									res.send(JSON.stringify(user.username))
-								} else {
-									res.send('Sign Up Unsuccessful')
-								}
-							}).catch(function(err){
-									console.log(err);
-									res.send('Sign Up Unsuccessful')
-							})
-						})
-					} else {
-						console.log('User Exists')
-						res.send('User Exists')
-					}
-				})
-			} else{
-				console.log("Code Already Used")
-				res.send("Code Already Used")
-			}
-		} else{
-			console.log("Code Doesn't Exist")
-			res.send("Code Doesn't Exist")
-		}
-	}).catch(function(err){
-		console.log(err)
-	})
-})
+/* -----------------------------------------------------------------------------
+Finds a meeting document from DB base on certain parameters
+Process =>
+1. Define search parameters requested by user
+2. Search DB for meeting document matching parameters
 
-// Repo Search
+-------------------
+
+inputObject = req.body = {
+	username: STRING,
+	search: STRING,
+	searchType: STRING,
+	minDate: NUMBER,
+	maxDate: NUMBER
+}
+
+outputObject = res = {
+data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
+}*/
+
 app.post('/search',function(req,res){
-	if(req.body.searchType === 'title'){
-		Meeting.find({title: {$regex:req.body.search, $options: "i"},
-									username:req.body.username,
-									date: { $gt: req.body.minDate, $lt: req.body.maxDate }
-								}).then(function(result){
-			res.send(JSON.stringify(result))
-		})
-	} else if(req.body.searchType === 'member') {
-		Meeting.find({members: {$in:[req.body.search]}, username:req.body.username}).then(function(result){
-			res.send(JSON.stringify(result))
-		})
-	}	else {
-		res.send("Search didn't work");
-	}
+	serverLogic.searchForMeetingDoc(req, res)
 })
 
-//Delete Meeting
-app.post('/delete',function(req,res){
-	Meeting.remove({_id:req.body.id}).then(function(){
-		Meeting.findOne({_id:req.body.id}).then(function(result){
-			if(!result){
-				res.send('Deleted')
-			} else {
-				res.send('Delete Unsuccessful')
-			}
-		})
-	});
+/* -----------------------------------------------------------------------------
+Finds and permanently deletes a meeting document from DB
+Process =>
+1. Finds the document in the database using the received _id
+2. Deletes the found document from the database
+
+SECURITY RISK - the user is requesting PERMANENT deletion of the chosen document
+
+-------------------
+
+inputObject = req.body = {
+	_id: UNKNOWN // meeting document ID
+}
+
+NO OUTPUT OBJECT
+*/
+
+app.post('/deleteMeeting',function(req,res){
+	serverLogic.deleteMeetingDoc(req, res)
 })
 
-//Save Feedback
+/* -----------------------------------------------------------------------------
+Enters a new feedback document into the Database
+Process =>
+1. Creates a new feedback document using the Feedback Schema
+2. Saves the resultant feedback document to the DB
+
+-------------------
+
+inputObject = req.body = {
+username: STRING,
+date: DATE_CONSTRUCTOR,
+issue: STRING,
+suggestion: STRING,
+likes: STRING
+}
+
+outputObject = res = {
+data: STRING // 'Feedback saved'
+}
+*/
+
 app.post('/feedback',function(req,res){
-	var feedback = new Feedback({
-		username: req.body.username,
-		date: req.body.date,
-		issue: req.body.issue,
-		suggestion: req.body.suggestion,
-		likes: req.body.likes
-	});
-	feedback.save().then(function(){
-		if(feedback.isNew === false){
-		};
-	});
-	slack.postMessage('Feedback',
-		'Username: ' + req.body.username + '\n' +
-		'Date: ' + req.body.date + '\n' +
-		'Likes: ' + req.body.likes + '\n' +
-		'Suggestion: ' + req.body.suggestion + '\n' +
-		'Issue: ' + req.body.issue
-	).catch((err)=>{
-		console.log(err)
-	});
-	res.send(JSON.stringify('Feedback Saved'));
+	serverLogic.enterNewFeedback(req, res)
 })
 
-//Getting user answered promp questions Array to ensure user does not answer same prompt question twice
-app.post('/loadqs', function(req, response) {
-	User.findOne({username: req.body.username}).then(function(result){
-		if (result === null || result === undefined) {
-			response.send('no user found')
-		} else {
-		response.send(result)
-		}
-  }).catch(function(err){
-    console.log(err)
-  })
+/* -----------------------------------------------------------------------------
+Emails users with their meeting minutes
+Process =>
+NOT OPTIMIZED
+
+-------------------
+
+inputObject = req.body = {
+title: STRING,
+type: STRING,
+location: STRING,
+date: DATE_CONSTRUCTOR,
+members: ARRAY_STRINGS,
+decisions: ARRAY_STRINGS,
+actions: ARRAY_STRINGS,
+minutes: ARRAY_STRINGS,
+recipients: ARRAY_STRINGS
+}
+
+NO OUTPUT OBJECT
+*/
+
+app.post('/emailMonettaMinutes', function(req,res){
+	serverLogic.emailMonettaMinutes(req, res)
 })
 
-//Updating the user's prompt question list since they just answered a new question on the client side
-app.post('/updateqs', function(req, response) {
-	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
-		if (err) return handleError(err);
-		console.log('The raw response from Mongo was ', raw);
-	})
-})
+/* -----------------------------------------------------------------------------
+Emails team@monettatech.com with new alpha user information
+Process =>
+NOT OPTIMIZED
 
-// Creates and sends a templated email
-// This is hack af we need a better way
-app.post('/emailMonettaMinutes', function(req,response){
-	var data = {
-		title: req.body.title,
-		type: req.body.type,
-		location: req.body.location,
-		date: new Date(req.body.date).toDateString(),
-		members: req.body.members,
-		decisions: req.body.decisions,
-		actions: req.body.actions,
-		minutes: req.body.minutes,
-		recipients: req.body.recipients
-	}
+-------------------
 
-	var readyEmail = createMinutesEmail(data)
+inputObject = req.body = {
+firstName: STRING,
+lastName: STRING,
+email: STRING,
+position: STRING,
+company: STRING,
+reference: STRING
+}
 
-	const msg = {
-	  to: data.recipients,
-	  from: 'minutes@monettatech.com',
-	  subject: 'Moneta Minutes from ' + data.date,
-	  html: readyEmail
-	};
+NO OUTPUT OBJECT
+*/
 
-	sgMail.send(msg)
-
-	response.send(JSON.stringify(readyEmail))
-})
-
-app.post('/emailNewAlphaUser', function(req, response) {
-	console.log(req.body)
-
-	var data = {
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email,
-		position: req.body.position,
-		company: req.body.company,
-		reference: req.body.reference
-	}
-
-	console.log(data)
-
-	var name= 'NAME: ' + data.firstName + ' ' + data.lastName
- 	var email = 'EMAIL: ' + data.email
-	var job = 'JOB POSITION: ' + data.position
-	var company = 'COMPANY: ' + data.company
-	var reference = 'REFERENCE: ' + data.reference
-
-	var readyMail =  '</p>' + name + ' ' + email + ' ' + job + ' ' + company + ' ' + reference + ' ' +'</p>'
-
-	const msg = {
-		to: 'team@monettatech.com',
-		from: 'newalphatesters@monettatech.com',
-		subject: 'NEW ALPHA TESTER REQUEST: ' + data.firstName + data.lastName,
-		html: readyMail
-	}
-
-	sgMail.send(msg)
-
-	response.send(JSON.stringify(readyMail))
+app.post('/emailNewAlphaUser', function(req, res) {
+	serverLogic.emailNewAlphaUser(req, res)
 })
 
 
+/* -----------------------------------------------------------------------------
+Counts the number of User documents in the database
+Process =>
+1. Defines Schema type to be a User schema
+2. Counts how many documents in the database were made with the User Schema
+
+-------------------
+
+NO INPUT OBJECT
+
+outputObject = res = {
+  data: NUMBER
+  }
+}
+*/
+
+app.get('/usercount', function(req,res){
+	serverLogic.countUsers(req, res);
+})
+
+/* -----------------------------------------------------------------------------
+Retrieve the IBM Watson Speech-to-text (STT) token for use
+Process =>
+1. Creates a watson constructor using 'new watson.AuthorizationV1({})'
+2. Acesses the watson constructor's token value and returns it to client-side
+
+-------------------
+
+NO INPUT OBJECT
+
+outputObject = res = {
+  data: UNKNOWN // Token identifier
+  }
+}
+*/
+app.get('/token', function(req,res){
+	serverLogic.getWatsonToken(req, res)
+})
+
+//------------------------------------------------------------------------------
+//------------------- GARBAGE START---------------------------------------------
 
 //Get Feedback
 app.get('/feedback',function(req,res){
@@ -431,42 +416,45 @@ app.get('/users', function(req,res){
 	})
 })
 
-//Count users
-app.get('/usercount', function(req,res){
-	User.find({}).then(function(result){
-		res.send(JSON.stringify(result.length))
-	}).catch(function(err){
-		console.log(err)
-	});
-})
-
-//Get Speech to text token
-app.get('/token', function(req,res){
-	var auth = new watson.AuthorizationV1({
-  	"url": "https://stream.watsonplatform.net/speech-to-text/api",
-  	"username": "fbc390cc-ae44-4968-b839-4cd9c34bc201",
-  	"password": "dZAVMXe7gWKn"
-	});
-	auth.getToken(function(err,token){
-		if(!token){
-			console.log('error:', err);
+//Getting user answered promp questions Array to ensure user does not answer same prompt question twice
+app.post('/loadqs', function(req, response) {
+	User.findOne({username: req.body.username}).then(function(result){
+		if (result === null || result === undefined) {
+			response.send('no user found')
 		} else {
-			res.send(token);
+		response.send(result)
 		}
-	});
+  }).catch(function(err){
+    console.log(err)
+  })
 })
 
+//Updating the user's prompt question list since they just answered a new question on the client side
+app.post('/updateqs', function(req, response) {
+	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
+		if (err) return handleError(err);
+		console.log('The raw response from Mongo was ', raw);
+	})
+})
 
-// Server Port
+//------------------- GARBAGE END-----------------------------------------------
+//------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------//
+//---------------------------UTILITY FUNCTIONS--------------------------------//
+//--------------------------proceed with caution------------------------------//
+//----------------------------------------------------------------------------//
+
+
+
+//serverUtility.utilityFunction.dropDatabaseCollections()
+//serverUtility.utilityFunction.enterDatabaseCodes(codes)
+//serverLogic.utilityFunction.enterDatabaseTestUser('thiago', '1234')
+
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//------------------------------SERVER PORT-----------------------------------//
 app.listen(process.env.PORT || port,function() {
 	console.log('App listening on port', port)
 })
-
-/*
-//Thiago test
-const PORT = '8080';
-app.listen(PORT, () => {
-  console.log('Server started on localhost port: ' + PORT);
-})
- module.exports = app;
- */
