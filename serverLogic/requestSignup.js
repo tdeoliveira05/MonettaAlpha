@@ -16,10 +16,13 @@ module.exports = function (signupData, res) {
     return serverTools.validate.codeDoc(newUserDoc)
   })
   .then((newUserDoc) => {
-    console.log('(enterNewUser.js) Sucessful new user doc created and saved: ' + newUserDoc)
+    return serverTools.authenticate.generateJWT(newUserDoc)
+  })
+  .then((token) => {
+    res.status(200).send(token)
+    console.log('current session token: ' + token)
   })
   .catch((error) => {
     console.log(error)
-  })
-
+  });
 }

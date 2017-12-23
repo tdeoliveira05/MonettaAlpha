@@ -62,6 +62,7 @@ export default class Header extends React.Component {
 
   loadQs (loggedUser) {
     // this function updates the question string in the state depending on the state of the user's schema
+    /*
     const self = this;
     axios.post('http://localhost:3000/loadqs',{
       username: loggedUser
@@ -76,6 +77,7 @@ export default class Header extends React.Component {
     }).catch(function(error){
       console.log(error)
     })
+    */
   }
 
 

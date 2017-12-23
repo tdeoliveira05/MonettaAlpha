@@ -109,11 +109,18 @@ password: STRING
 }
 
 outputObject = res = {
-data: STRING // JSON WEB TOKEN for local storage
+data: TOKEN_OBJ // JSON WEB TOKEN (JWT) for local storage
+}
+
+TOKEN_OBJ = {
+  id: STRING,
+  username: STRING,
+  token: UNKNOWN // this is the JWT
 }
 */
 
 app.post('/login',function(req, res){
+  console.log('reached')
 	serverLogic.requestLogin(req, res)
 })
 
@@ -135,7 +142,13 @@ code: STRING
 }
 
 outputObject = res = {
-data: STRING // JSON WEB TOKEN for local storage
+data: TOKEN_OBJ // JSON WEB TOKEN (JWT) for local storage
+}
+
+TOKEN_OBJ = {
+  id: STRING,
+  username: STRING,
+  token: UNKNOWN // this is the JWT
 }
 */
 
@@ -149,7 +162,11 @@ app.post('/signup', function(req, res) {
 
 // This function will authenticate every user looking to use any post/get route
 // that follows underneath using the protectRoute router
-protectedRoute.use(function(req, res, next) {
+// token always needs to be sent with the request if the client-side is making
+// a request
+/*
+app.use(function(req, res, next) {
+  console.log('Running authentication middleware.')
   var token = req.body.token || req.headers['token'];
   if (token) {
     jwt.verify(token, config.get('Presets.secret'), function(error, decode) {
@@ -159,7 +176,7 @@ protectedRoute.use(function(req, res, next) {
     res.send('no token received')
   }
 })
-
+*/
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
 Enters a new meeting into the database
@@ -186,7 +203,7 @@ NO OUTPUT OBJECT
 
 }*/
 
-protectedRoute.post('/save', function(req,res) {
+app.post('/save', function(req,res) {
 	serverLogic.enterNewMeeting(req, res)
 })
 
@@ -209,9 +226,9 @@ inputObject = req.body = {
 
 outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
-}
-*/
-protectedRoute.post('/search',function(req,res){
+}*/
+
+app.post('/search',function(req,res){
 	serverLogic.searchForMeetingDoc(req, res)
 })
 
@@ -231,7 +248,8 @@ inputObject = req.body = {
 
 NO OUTPUT OBJECT
 */
-protectedRoute.post('/deleteMeeting',function(req,res){
+
+app.post('/deleteMeeting',function(req,res){
 	serverLogic.deleteMeetingDoc(req, res)
 })
 
@@ -256,7 +274,7 @@ data: STRING // 'Feedback saved'
 }
 */
 
-protectedRoute.post('/feedback',function(req,res){
+app.post('/feedback',function(req,res){
 	serverLogic.enterNewFeedback(req, res)
 })
 
@@ -281,7 +299,8 @@ recipients: ARRAY_STRINGS
 
 NO OUTPUT OBJECT
 */
-protectedRoute.post('/emailMonettaMinutes', function(req,res){
+
+app.post('/emailMonettaMinutes', function(req,res){
 	serverLogic.emailMonettaMinutes(req, res)
 })
 
@@ -304,9 +323,10 @@ reference: STRING
 NO OUTPUT OBJECT
 */
 
-protectedRoute.post('/emailNewAlphaUser', function(req, res) {
+app.post('/emailNewAlphaUser', function(req, res) {
 	serverLogic.emailNewAlphaUser(req, res)
 })
+
 
 /* -----------------------------------------------------------------------------
 Counts the number of User documents in the database
@@ -319,12 +339,12 @@ Process =>
 NO INPUT OBJECT
 
 outputObject = res = {
-data: NUMBER
+  data: NUMBER
+  }
 }
+*/
 
-}*/
-
-protectedRoute.get('/usercount', function(req,res){
+app.get('/usercount', function(req,res){
 	serverLogic.countUsers(req, res);
 })
 
@@ -339,11 +359,11 @@ Process =>
 NO INPUT OBJECT
 
 outputObject = res = {
-data: UNKNOWN // Token identifier
+  data: UNKNOWN // Token identifier
+  }
 }
-
-}*/
-protectedRoute.get('/token', function(req,res){
+*/
+app.get('/token', function(req,res){
 	serverLogic.getWatsonToken(req, res)
 })
 
@@ -351,7 +371,7 @@ protectedRoute.get('/token', function(req,res){
 //------------------- GARBAGE START---------------------------------------------
 
 //Get Feedback
-protectedRoute.get('/feedback',function(req,res){
+app.get('/feedback',function(req,res){
 	Feedback.find({}).then(function(result){
 		res.send(JSON.stringify(result))
 	}).catch(function(err){
@@ -360,7 +380,7 @@ protectedRoute.get('/feedback',function(req,res){
 })
 
 //Dictation Time Save
-protectedRoute.post('/timesave', function(req,res){
+app.post('/timesave', function(req,res){
 	console.log('Called')
 	User.findOne({username: req.body.username}).then(function(user){
 		let newTime = 0;
@@ -373,7 +393,7 @@ protectedRoute.post('/timesave', function(req,res){
 })
 
 //Get users
-protectedRoute.get('/users', function(req,res){
+app.get('/users', function(req,res){
 	let users = []
 	User.find({}).then(function(userResults){
 		Meeting.find({}).then(function(meetingResults){
@@ -397,7 +417,7 @@ protectedRoute.get('/users', function(req,res){
 })
 
 //Getting user answered promp questions Array to ensure user does not answer same prompt question twice
-protectedRoute.post('/loadqs', function(req, response) {
+app.post('/loadqs', function(req, response) {
 	User.findOne({username: req.body.username}).then(function(result){
 		if (result === null || result === undefined) {
 			response.send('no user found')
@@ -410,7 +430,7 @@ protectedRoute.post('/loadqs', function(req, response) {
 })
 
 //Updating the user's prompt question list since they just answered a new question on the client side
-protectedRoute.post('/updateqs', function(req, response) {
+app.post('/updateqs', function(req, response) {
 	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
 		if (err) return handleError(err);
 		console.log('The raw response from Mongo was ', raw);

@@ -102,7 +102,6 @@ export default class App extends React.Component {
         }
 			)
 			.then (function(res) {
-        console.log(res)
         if(res.data != 'User not found'){
           var errors = self.state.errors;
           errors.username = "";
@@ -129,7 +128,6 @@ export default class App extends React.Component {
             errors.password = "Password does not match";
             self.setState( {errors:errors} )
         }
-
 			})
 			.catch(function(error) {
 				console.log(error)
@@ -529,16 +527,16 @@ export default class App extends React.Component {
       return(
         <div>
 
-           <Header
-              loggedin={this.state.loggedin}
-              username={this.state.username}
-              inside={true}
-              page={this.state.page}
-              enterLogin={this.enterLogin}
-              handlePageChange={this.handlePageChange}
-              handlePTerms={this.handlePTerms}
-              />
-
+        <Header
+           loggedin={this.state.loggedin}
+           username={this.state.username}
+           inside={true}
+           page={this.state.page}
+           enterLogin={this.enterLogin}
+           handlePageChange={this.handlePageChange}
+           handlePTerms={this.handlePTerms}
+           />
+           
            <Tabs value={this.state.tabValue} onChange={this.handleTabChange}>
              <Tab label="New Meeting" value='a'>
                <Meeting
@@ -577,3 +575,9 @@ export default class App extends React.Component {
     }
   }
 }
+
+/*
+
+
+
+*/

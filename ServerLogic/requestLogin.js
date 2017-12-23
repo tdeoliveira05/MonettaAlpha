@@ -4,7 +4,6 @@ const serverTools = requireDir('./serverTools', {recurse: true}) // special node
 const Users = require('../models/userModel')
 
 module.exports = function (req, res) {
-
   serverTools.find.singleDoc(Users, {username: req.body.username})
   .then((userDoc) => {
     return serverTools.check.thisPassword(userDoc, req.body.password)
@@ -14,6 +13,7 @@ module.exports = function (req, res) {
   })
   .then((token) => {
     res.send(token)
+    console.log('Current session token: ' + token)
   })
   .catch((error) => {
     console.log('[requestLogin.js]' + error)

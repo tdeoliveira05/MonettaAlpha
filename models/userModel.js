@@ -23,22 +23,6 @@ UserSchema.methods.generateJWT = function generateJWT () {
   return jwt.sign({id: this._id, username: this.username}, config.get('Presets.secret'), {expiresIn: '8h'})
 }
 
-UserSchema.methods.validateJWT = function validateJWT (token) {
-  jwt.verify(token, config.get('Presets.secret'), function(error, decode) {
-    if (error) {
-      return false
-    } else {
-      return true
-    }
-  })
-}
-
-/*
-UserSchema.methods.updateAndReturnJWT = function updateAndReturnJWT () {
-
-}
-*/
-
 const User = mongoose.model('user', UserSchema);
 
 module.exports = User;
