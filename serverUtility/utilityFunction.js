@@ -38,12 +38,13 @@ exports.enterDatabaseCodes = function (codes) {
 }
 
 // Function to Add a test user to a DB
-exports.enterDatabaseTestUser = function(testUser, testPass) {
+exports.enterDatabaseTestUser = function(testUser, testPass, testCode) {
 	bcrypt.hash(testPass, 10)
 	.then((hash) => {
 		var testUserDoc = new User ({
 			username: testUser,
-			password: hash
+			password: hash,
+			codeUsed: testCode
 		})
 		return testUserDoc.save()
 	})

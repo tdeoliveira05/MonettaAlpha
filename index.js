@@ -15,7 +15,7 @@ const User = require('./models/userModel.js')
 const Meeting = require('./models/meetingModel.js')
 const Feedback = require('./models/feedbackModel.js')
 const Code = require('./models/codeModel.js')
-const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
+//const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
 
 //initialize general app & protected routes
 const app = express();
@@ -119,8 +119,8 @@ TOKEN_OBJ = {
 }
 */
 
-app.post('/login',function(req, res){
-  console.log('reached')
+app.post('/loginRequest',function(req, res){
+  console.log('reached', req.body)
 	serverLogic.requestLogin(req, res)
 })
 
@@ -152,8 +152,8 @@ TOKEN_OBJ = {
 }
 */
 
-app.post('/signup', function(req, res) {
-	serverLogic.requestSignup(req, res)
+app.post('/signupRequest', function(req, res) {
+  serverLogic.requestSignup(req, res)
 })
 
 
@@ -446,10 +446,11 @@ app.post('/updateqs', function(req, response) {
 //----------------------------------------------------------------------------//
 
 
-
-//serverUtility.utilityFunction.dropDatabaseCollections()
-//serverUtility.utilityFunction.enterDatabaseCodes(codes)
-//serverLogic.utilityFunction.enterDatabaseTestUser('thiago', '1234')
+if (false) {
+  serverUtility.utilityFunction.dropDatabaseCollections()
+  serverUtility.utilityFunction.enterDatabaseCodes(codes)
+}
+//serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1234', 'qwerty')
 
 
 //----------------------------------------------------------------------------//
