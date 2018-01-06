@@ -5,7 +5,7 @@ import Divider from 'material-ui/Divider'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 
-const DumbPrepareMeeting = ({handleChangeMeetingData, handleIndexChange, meetingTitle, listInput, goalList}) => (
+const DumbPrepareMeeting = ({handleChange, nextStep, meetingTitle, listInput, goalList}) => (
   <div className = 'PrepareMeetingWrapper'>
     <div className = 'PrepareMeetingContent'>
       <Paper className = 'PrepareMeetingPaper'>
@@ -15,7 +15,7 @@ const DumbPrepareMeeting = ({handleChangeMeetingData, handleIndexChange, meeting
           hintText = 'Enter the Meeting Title'
           name = 'title'
           value = {meetingTitle}
-          onChange = {handleChangeMeetingData}
+          onChange = {handleChange}
           />
         <Divider/>
         <p style={{marginTop: '30px'}}> What are your goals for this meeting? </p>
@@ -34,7 +34,7 @@ const DumbPrepareMeeting = ({handleChangeMeetingData, handleIndexChange, meeting
           <RaisedButton
             label = 'Next'
             secondary = {true}
-            onClick = {() => handleIndexChange('forward')}
+            onClick = {() => nextStep()}
             />
       </div>
     </div>
