@@ -17,6 +17,10 @@ const Feedback = require('./models/feedbackModel.js')
 const Code = require('./models/codeModel.js')
 //const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
 
+//Amazon requirements
+const AWS = require('aws-sdk')
+AWS.config.region = process.env.REGION
+
 //initialize general app & protected routes
 const app = express();
 const protectedRoute = express.Router();
@@ -456,6 +460,7 @@ if (false) {
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 //------------------------------SERVER PORT-----------------------------------//
-app.listen(process.env.PORT || port,function() {
+
+app.listen(process.env.PORT || port, function() {
 	console.log('App listening on port', port)
 })

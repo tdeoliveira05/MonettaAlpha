@@ -21,7 +21,7 @@
       "7777",
       "8888",
       "9999"],
-    "port": 3000,
+    "port": 8080,
     "secret": "GordonPatrick"
   }
 }

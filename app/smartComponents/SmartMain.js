@@ -29,7 +29,8 @@ export default class SmartMain extends React.Component {
         <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue}>
           <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
             <SmartTeamMeeting
-            handleChangeTabValue = {this.handleChangeTabValue}
+              handleChangeTabValue = {this.handleChangeTabValue}
+              tokenObj             = {this.props.tokenObj}
               />
           </Tab>
           <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>

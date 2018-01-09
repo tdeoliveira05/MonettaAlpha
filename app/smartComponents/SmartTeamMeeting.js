@@ -17,8 +17,11 @@ export default class SmartTeamMeeting extends React.Component {
         date: '',
         members: [],
         actionItems: [],
+        host: '',
         goals: [],
-        generalNotes: []
+        generalNotes: [],
+        expectedDuration: 0,
+        actualDuration: 0
       }
     }
 
@@ -60,6 +63,9 @@ export default class SmartTeamMeeting extends React.Component {
 
   handleFinishedMeeting () {
     console.log('Submitting: ' + this.state.meetingData)
+
+    // compute the expected vs actual time of the meeting
+    // input the host's name into this.state.meetingData.host
   }
 
   render () {
