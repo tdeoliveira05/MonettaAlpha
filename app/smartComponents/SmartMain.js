@@ -2,7 +2,6 @@ import React from 'react'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import FontIcon from 'material-ui/FontIcon'
 
-import ReusableSmartTabBar from '../reusable/smart/ReusableSmartTabBar.js'
 import SmartTeamMeeting from './SmartTeamMeeting.js'
 import SmartDocumentStorage from './SmartDocumentStorage.js'
 

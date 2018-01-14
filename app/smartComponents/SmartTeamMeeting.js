@@ -4,22 +4,88 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
-import DumbConductMeeting from '../dumbComponents/TeamMeeting/DumbConductMeeting.js'
-import DumbReviewMinutes from '../dumbComponents/TeamMeeting/DumbReviewMinutes.js'
+import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
+import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'
 
 export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 0,
+      meetingIndex: 1,
       meetingData: {
         title: '',
         date: '',
         members: [],
-        actionItems: [],
+        notes: {
+          general: [
+            {
+              text: 'temporary text 1',
+              type: 'general',
+              color: 'gray',
+              timeStamp: '270000',
+              formattedTimeStamp: '4:30'
+            },
+            {
+              text: 'temporary text 3',
+              type: 'general',
+              color: 'gray',
+              timeStamp: '500000',
+              formattedTimeStamp: '8:20'
+            },
+            {
+              text: 'temporary text 7',
+              type: 'general',
+              color: 'gray',
+              timeStamp: '1740000',
+              formattedTimeStamp: '29:00'
+            }
+          ],
+            action: [
+            {
+              text: 'temporary text 2',
+              type: 'action',
+              color: 'rgb(70,153,255)',
+              timeStamp: '390000',
+              formattedTimeStamp: '6:30'
+            },
+            {
+              text: 'temporary text 4',
+              type: 'action',
+              color: 'rgb(70,153,255)',
+              timeStamp: '660000',
+              formattedTimeStamp: '11:00'
+            },
+            {
+              text: 'temporary text 8',
+              type: 'action',
+              color: 'rgb(70,153,255)',
+              timeStamp: '2100000',
+              formattedTimeStamp: '35:00'
+            }
+          ],
+            decision: [
+            {
+              text: 'temporary text 5',
+              type: 'decision',
+              color: 'rgb(70,153,255)',
+              timeStamp: '1160000',
+              formattedTimeStamp: '19:20'
+            },
+            {
+              text: 'temporary text 6',
+              color: 'rgb(70,153,255)',
+              type: 'decision',
+              timeStamp: '1620000',
+              formattedTimeStamp: '27:00'
+            }
+          ]
+        },
+        timeElapsed: {
+          duration: 0,
+          formattedDuration: '00:00'
+        },
         host: '',
-        goals: [],
-        generalNotes: [],
+        goals: ['this is the goal 1', 'this is the second goal in the list'],
         expectedDuration: 0,
         actualDuration: 0
       }
@@ -40,7 +106,7 @@ export default class SmartTeamMeeting extends React.Component {
 
   submitMeetingData (meetingData) {
     console.log('ORIGINAL (submit): ')
-    console.log(this.state.meetingData)
+    console.log(meetingData)
     console.log('---')
     this.setState(meetingData)
   }
@@ -70,9 +136,6 @@ export default class SmartTeamMeeting extends React.Component {
 
   render () {
     //---------------------------VARIABLE CREATION------------------------------
-    // consider making this its own separate smart component (notice qty of code lines)
-    // also this is pretty hack...
-
     //---------------------------CONDITIONS-------------------------------------
 
     switch (this.state.meetingIndex) {
@@ -81,7 +144,7 @@ export default class SmartTeamMeeting extends React.Component {
         var MeetingComponent  = (
           <SmartPrepareMeeting
             handleIndexChange       = {this.handleIndexChange}
-            meetingTitle            = {this.state.meetingData.title}
+            meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
             />
@@ -91,10 +154,11 @@ export default class SmartTeamMeeting extends React.Component {
       case 1:
         var MeetingHeader     = 'Conduct the Meeting'
         var MeetingComponent  = (
-          <DumbConductMeeting
+          <SmartConductMeeting
             handleIndexChange       = {this.handleIndexChange}
             meetingData             = {this.state.meetingData}
-            handleChangeMeetingData = {this.handleChangeMeetingData}
+            getMeetingData          = {this.getMeetingData}
+            submitMeetingData       = {this.submitMeetingData}
             />
         )
         break
@@ -102,10 +166,11 @@ export default class SmartTeamMeeting extends React.Component {
       case 2:
         var MeetingHeader     = 'Review the Minutes'
         var MeetingComponent  = (
-          <DumbReviewMinutes
+          <SmartReviewMinutes
             handleIndexChange       = {this.handleIndexChange}
             meetingData             = {this.state.meetingData}
-            handleChangeMeetingData = {this.handleChangeMeetingData}
+            getMeetingData          = {this.getMeetingData}
+            submitMeetingData       = {this.submitMeetingData}
             />
         )
         break
@@ -121,3 +186,71 @@ export default class SmartTeamMeeting extends React.Component {
     )
   }
 }
+
+/* default for testing
+
+notes: {
+  general: [
+    {
+      text: 'temporary text 1',
+      type: 'general',
+      color: 'gray',
+      timeStamp: '270000',
+      formattedTimeStamp: '4:30'
+    },
+    {
+      text: 'temporary text 3',
+      type: 'general',
+      color: 'gray',
+      timeStamp: '500000',
+      formattedTimeStamp: '8:20'
+    },
+    {
+      text: 'temporary text 7',
+      type: 'general',
+      color: 'gray',
+      timeStamp: '1740000',
+      formattedTimeStamp: '29:00'
+    }
+  ],
+    action: [
+    {
+      text: 'temporary text 2',
+      type: 'action',
+      color: 'rgb(70,153,255)',
+      timeStamp: '390000',
+      formattedTimeStamp: '6:30'
+    },
+    {
+      text: 'temporary text 4',
+      type: 'action',
+      color: 'rgb(70,153,255)',
+      timeStamp: '660000',
+      formattedTimeStamp: '11:00'
+    },
+    {
+      text: 'temporary text 8',
+      type: 'action',
+      color: 'rgb(70,153,255)',
+      timeStamp: '2100000',
+      formattedTimeStamp: '35:00'
+    }
+  ],
+    decision: [
+    {
+      text: 'temporary text 5',
+      type: 'decision',
+      color: 'rgb(70,153,255)',
+      timeStamp: '1160000',
+      formattedTimeStamp: '19:20'
+    },
+    {
+      text: 'temporary text 6',
+      color: 'rgb(70,153,255)',
+      type: 'decision',
+      timeStamp: '1620000',
+      formattedTimeStamp: '27:00'
+    }
+  ]
+},
+*/

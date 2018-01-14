@@ -14,44 +14,263 @@
   align-items: center
   justify-content: center
   width: 100%
-  .PrepareMeetingStepper
-    display: flex
-    flex-direction: column
-    align-items: center
-    justify-content: center
-    width: 100%
-    padding-top: 20px
-    .PrepareMeetingStepperButtons
-      display: flex
-      justify-content: space-around
-      width: 100%
   .PrepareMeetingContent
     display: flex
     flex-direction: column
     align-items: center
     justify-content: center
     text-align: center
-    margin-top: 7vh
-    margin-bottom: 50px
+    margin-top: 20px
+    width: 100%
     .PrepareMeetingPaper
       display: flex
       flex-direction: column
       text-align: center
       justify-content: center
       overflow: auto
-      min-width: 300px
-      width: 33%
       padding: 20px
-      .PrepareMeetingListItem
+      min-width: 300px
+      width: 40%
+      max-width: 450px
+      .PrepareMeetingMemberList
+        display: flex
+        align-items: center
+        flex-direction: column
+        width: 100%
+        padding: 5px 0px 5px 0px
+        margin: 0px 0px 5px 0px
+        .PrepareMeetingMemberInput
+          display: flex
+          flex-direction: row
+          align-items: center
+          justify-content: center
+          margin: 5px 0px 5px 0px
+          width: 100%
+        .PrepareMeetingMemberItem
+          display: flex
+          justify-content: space-between
+          align-items: center
+          flex-direction: row
+          margin: 2px 2px
+          padding: 0px 15px 0px 10px
+          width: 100%
+          .PrepareMeetingMemberItemButton
+            display: flex
+            align-items: center
+            justify-content: center
+            background-color: $blueMain
+            color: white
+            border-radius: 25%
+            border: none
+            cursor: pointer
+            font-weight: bold
+      .PrepareMeetingGoalItem
         display: flex
         justify-content: space-between
         align-items: center
-        padding: 2px 10px 2px 5px
-        .PrepareMeetingListItemButton
+        padding: 0px 15px 0px 10px
+        .PrepareMeetingGoalItemButton
           display: flex
+          align-items: center
+          justify-content: center
           background-color: $blueMain
           color: white
           border-radius: 25%
           border: none
           cursor: pointer
           font-weight: bold
+  .PrepareMeetingStepper
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    width: 50%
+    margin-bottom: 20px
+    .PrepareMeetingStepperButtons
+      display: flex
+      justify-content: space-around
+      @include mobileMedia {flex-direction: column}
+      min-width: 250px
+      width: 100%
+
+.ConductMeetingWrapper
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 100%
+  .ConductMeetingContent
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    padding-top: 20px
+    height: 100%
+    max-width: 600px
+    min-width: 300px
+    width: 90%
+    .ConductMeetingStopwatch
+      display: flex
+      text-align: center
+      align-items: center
+      justify-content: center
+      margin-bottom: 10px
+    .ConductMeetingInput
+      display: flex
+      @include mobileMedia {flex-direction: column}
+      @include mobileMedia {align-items: center}
+      justify-content: space-between
+      width: 100%
+      margin-top: 20px
+      @include mobileMedia {margin-top: 5px}
+      .ConductMeetingInputText
+        display: flex
+        align-items: flex-end
+        padding-right: 10px
+        @include mobileMedia {width: 65%}
+        @include mobileMedia {margin-bottom: 10px}
+        width: 100%
+    .ConductMeetingSelect
+      display: flex
+      flex-direction: row
+      @include mobileMedia {flex-direction: column}
+      @include mobileMedia {justify-content: space-around}
+      @include mobileMedia {align-items: center}
+      justify-content: space-around
+      width: 100%
+      margin-top: 10px
+      @include mobileMedia {height: 120px}
+      height: 50px
+      .ConductMeetingSelectColumn
+        display: flex
+        flex-direction: row
+        align-items: center
+        justify-content: center
+        width: 25%
+    .ConductMeetingPaper
+      display: flex
+      flex-direction: row
+      @include mobileMedia {flex-direction: column}
+      @include mobileMedia {align-items: center}
+      width: 100%
+      height: 350px
+      @include mobileMedia {height: 250px}
+      @include mobileMedia {height: 100%}
+      .ConductMeetingGoalDisplay
+        display: flex
+        width: 35%
+        @include mobileMedia {width: 100%}
+        flex-direction: column
+        padding: 5px
+        .ConductMeetingGoalItem
+          display: flex
+          align-items: center
+          width: 100%
+          h2
+            width: 80%
+            margin-right: 2px
+            @include mobileMedia {font-size: 12px}
+            @include mobileMedia {width: 90%}
+      .ConductMeetingTextDisplay
+        display: flex
+        text-align: center
+        flex-direction: column
+        width: 70%
+        @include mobileMedia {width: 100%}
+        @include mobileMedia {height: 230px}
+        .ConductMeetingTextNotesWrapper
+          display: flex
+          overflow: auto
+          flex-direction: column
+          text-align: left
+          justify-content: flex-end
+          @include mobileMedia {height: 180px}
+          height: 100%
+          .ConductMeetingTextNotes
+            padding: 10px
+            overflow: auto
+            .ConductMeetingTextItem
+              display: flex
+              align-items: center
+              flex-direction: column
+              text-align: left !important
+              padding: 2px
+              color: white
+              .ConductMeetingTextItemPaper
+                display: flex
+                flex-direction: column
+                justify-content: space-between
+                color: white !important
+                width: 100% !important
+                padding: 0px 0px 10px 5px !important
+                .ConductMeetingTextItemHeading
+                  display: flex
+                  align-items: center
+                  flex-direction: row
+                  width: 100%
+                  justify-content: space-between
+  .ConductMeetingStepper
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    width: 50%
+    margin-top: 20px
+    margin-bottom: 20px
+    .ConductMeetingStepperButtons
+      display: flex
+      @include mobileMedia {flex-direction: column}
+      justify-content: space-around
+      min-width: 250px
+      width: 100%
+
+.ReviewMeetingWrapper
+  .ReviewMeetingContent
+    .ReviewMeetingNotes
+      display: flex
+      flex-direction: row
+      @include mobileMedia {flex-direction: column}
+      justify-content: space-around
+      width: 100%
+      align-items: stretch
+      min-height: 200px
+      margin-top: 20px
+      @include mobileMedia {margin-top: 0px}
+      @include mobileMedia {height: 100%}
+      .ReviewMeetingNotesUnit
+        display: flex
+        flex-direction: column
+        align-items: center
+        width: 28%
+        @include mobileMedia {width: 100%}
+        .ReviewMeetingNotesUnitHeading
+          display: flex
+          width: 100%
+          padding: 0px 10px 5px 10px
+          margin-bottom: 1px
+        .ReviewMeetingNotesUnitItems
+          display: flex
+          flex-direction: column
+          width: 100%
+          height: 100%
+          padding: 0px 10px 0px 10px
+          .ReviewMeetingNotesUnitItemDiv
+            display: flex
+            flex-direction: row
+    .ReviewMeetingStepper
+      display: flex
+      flex-direction: column
+      align-items: center
+      justify-content: center
+      width: 100%
+      margin-top: 10px
+      .ReviewMeetingStepperButtons
+        display: flex
+        flex-direction: row
+        @include mobileMedia {flex-direction: column}
+        margin-top: 10px
+        width: 100%
+        justify-content: space-around
+
+
+
+    .ReviewMeetingStats

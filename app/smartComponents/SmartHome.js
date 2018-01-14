@@ -1,15 +1,15 @@
 import React from 'react'
 import Dialog from 'material-ui/Dialog'
 
-import DumbHomeMain from '../dumbComponents/home/DumbHomeMain.js'
-import DumbHomeHeader from '../dumbComponents/home/DumbHomeHeader.js'
-import DumbHomeFooter from '../dumbComponents/home/DumbHomeFooter.js'
-import DumbHomeLogin from '../dumbComponents/home/DumbHomeLogin.js'
-import DumbHomeSignup from '../dumbComponents/home/DumbHomeSignup.js'
-import DumbHomeAlpha from '../dumbComponents/home/DumbHomeAlpha.js'
-import DumbHomePrivacyAndTerms from '../dumbComponents/home/DumbHomePrivacyAndTerms.js'
+import DumbHomeMain from '../DumbComponents/Home/DumbHomeMain.js'
+import DumbHomeHeader from '../DumbComponents/Home/DumbHomeHeader.js'
+import DumbHomeFooter from '../DumbComponents/Home/DumbHomeFooter.js'
+import DumbHomeLogin from '../DumbComponents/Home/DumbHomeLogin.js'
+import DumbHomeSignup from '../DumbComponents/Home/DumbHomeSignup.js'
+import DumbHomeAlpha from '../DumbComponents/Home/DumbHomeAlpha.js'
+import DumbHomePrivacyAndTerms from '../DumbComponents/Home/DumbHomePrivacyAndTerms.js'
 
-import ReusableDumbDialog from '../reusable/dumb/ReusableDumbDialog.js'
+import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
 export default class SmartHome extends React.Component {
   constructor(props) {

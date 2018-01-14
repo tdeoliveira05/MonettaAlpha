@@ -5,7 +5,7 @@ import Divider from 'material-ui/Divider'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 
-const DumbPrepareMeeting = ({handleChange, nextStep, meetingTitle, listInput, goalList, memberList, errorText}) => (
+const DumbPrepareMeeting = ({handleChange, nextStep, addMemberListItem, removeMemberListItem, addGoalListItem, removeGoalListItem, changeGoalListItem, meetingTitle, listInput, tempMember, memberList, goalList, errorText}) => (
   <div className = 'PrepareMeetingWrapper'>
     <div className = 'PrepareMeetingContent'>
       <Paper className = 'PrepareMeetingPaper'>
@@ -16,15 +16,79 @@ const DumbPrepareMeeting = ({handleChange, nextStep, meetingTitle, listInput, go
           name = 'title'
           value = {meetingTitle}
           onChange = {handleChange}
+          hintStyle = {{textAlign: 'center'}}
+          inputStyle = {{textAlign: 'center'}}
+          style = {{display: 'flex', justifyContent: 'center'}}
           />
         <Divider/>
 
-        {memberList}
+        <div className = 'PrepareMeetingMemberList'>
+          <div className = 'PrepareMeetingMemberInput'>
+            <TextField
+              underlineShow = {false}
+              hintText = 'Enter Participants'
+              value = {tempMember}
+              name = 'tempMember'
+              onChange = {handleChange}
+              onKeyPress = {(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  addMemberListItem()
+                }
+              }}
+              />
+            <RaisedButton
+              label = 'Add'
+              onClick = {() => addMemberListItem()}
+              primary = {true}
+              />
+            <Divider />
+          </div>
+            {memberList.map((item, index) => {
+              return (
+                <Paper key = {index} className = 'PrepareMeetingMemberItem' >
+                  <h3> {item} </h3>
+                  <button
+                    type = 'button'
+                    onClick={() => removeMemberListItem({index})}
+                    className = 'PrepareMeetingMemberItemButton'
+                    > X </button>
+                </Paper>
+              )
+            })}
+        </div>
         <Divider/>
 
-        <p style={{marginTop: '30px'}}> What are your goals for this meeting? </p>
+        <h2 style={{marginTop: '30px'}}> What are your goals for this meeting? </h2>
 
-        {goalList}
+        <div>
+          {goalList.map((item, index) => {
+            return (
+              <Paper key = {index} className = 'PrepareMeetingGoalItem'>
+                <h2 style = {{padding: '4px'}}> {index + 1}. </h2>
+                <TextField
+                  underlineShow = {false}
+                  value         = {goalList[index]}
+                  name          = {JSON.stringify(index)}
+                  onChange      = {changeGoalListItem}
+                  multiLine     = {true}
+                  rowsMax       = {3}
+                  />
+                <button
+                  type      = 'button'
+                  onClick   = {() => removeGoalListItem({index})}
+                  className = 'PrepareMeetingGoalItemButton'
+                  > X </button>
+              </Paper>
+            )
+          })}
+          <RaisedButton
+            label   = 'Add a new goal'
+            style   = {{width:'100%'}}
+            onClick = {() => addGoalListItem()}
+            primary = {true}
+            />
+        </div>
 
       </Paper>
       <h2 style={{color: 'red', fontWeight: 'bold'}}> {errorText} </h2>
@@ -33,7 +97,7 @@ const DumbPrepareMeeting = ({handleChange, nextStep, meetingTitle, listInput, go
         <div className = 'PrepareMeetingStepperButtons'>
           <FlatButton
             label = 'Back'
-            disabled = {false}
+            disabled = {true}
             primary = {true}
             />
           <RaisedButton

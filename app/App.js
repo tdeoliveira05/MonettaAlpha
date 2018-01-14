@@ -1,8 +1,8 @@
 import React from 'react'
 import axios from 'axios'
 
-import SmartHome from './smartComponents/SmartHome.js'
-import SmartMain from './smartComponents/SmartMain.js'
+import SmartHome from './SmartComponents/SmartHome.js'
+import SmartMain from './SmartComponents/SmartMain.js'
 
 export default class App extends React.Component {
   constructor(props) {

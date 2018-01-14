@@ -28,6 +28,7 @@ const DumbHomeMain = ({handleOnTempChange, handleSetDialogCall, username}) => (
         <div className='block1content'>
 
           <div className='block1top'>
+            <h1> UPDATED </h1>
             <h1> Take your team meetings a step further with the power of voice recognition technology. </h1>
             <p> Monetta helps your team keep track of everything happening in your daily meetings in the easiest way possible, by letting you use your voice to take notes. </p>
             <div className='block1input'>

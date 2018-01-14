@@ -42,14 +42,15 @@ const MeetingSchema = new Schema({
 
 /* this is what it should be
 
+SUNNY USE THIS TO PLAN SmartDocumentStorage.js
+
 const MeetingSchema = new Schema({
   hostUsername: String,
   participantUsernames: Array,
   guestEmails: Array,
-  location: String,
   date: {type: String, default: Date.now()},
-  type: String,
   meetingData: {
+    title: String,
     generalNotes: String,
     actionItems: String,
     teamDecisions: String

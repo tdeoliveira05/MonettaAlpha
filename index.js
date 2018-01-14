@@ -1,4 +1,4 @@
-// THIS IS THE SERVER [ROUTER] //
+// THIS IS THE SERVER [ROUTER FILE] //
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
@@ -21,16 +21,13 @@ const Code = require('./models/codeModel.js')
 const AWS = require('aws-sdk')
 AWS.config.region = process.env.REGION
 
-//initialize general app & protected routes
+//initialize general app
 const app = express();
-const protectedRoute = express.Router();
 
 // Import entire directory of server logic and tools
 const requireDir = require('require-dir')
 const serverLogic = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
-//console.log(serverLogic)
 const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
-
 
 // Setting up sendgrid connection for use in any email functions
 const sgMail = require('@sendgrid/mail')
@@ -39,7 +36,6 @@ sgMail.setApiKey('SG.PRoR2Z0rQZmC4n_xp8WSjw.WIJzhAJtJkGpOqws_yxs9pO6MLcQBRkfFH7l
 //Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
-app.use('/protected-api', protectedRoute)
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -80,18 +76,7 @@ mongoose.connection.once('open',function(){
 //-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
 //----------------------------------------------------------------------------//
 
-//Redirecting to https----------------------------------------------------------
-/*
 if(process.env.NODE_ENV=='production') app.use(yes());;
-*/
-
-//Slack OAuth-------------------------------------------------------------------
-/*
-const slack = SlackOAuthClient.connect(
-	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
-);
-if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
-*/
 
 //----------------------------------------------------------------------------//
 //--------------------------------SERVER ROUTES-------------------------------//
@@ -449,11 +434,12 @@ app.post('/updateqs', function(req, response) {
 //--------------------------proceed with caution------------------------------//
 //----------------------------------------------------------------------------//
 
-
+/*
 if (false) {
   serverUtility.utilityFunction.dropDatabaseCollections()
   serverUtility.utilityFunction.enterDatabaseCodes(codes)
 }
+*/
 //serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1234', 'qwerty')
 
 
