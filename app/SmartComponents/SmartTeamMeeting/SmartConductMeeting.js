@@ -50,37 +50,8 @@ export default class SmartConductMeeting extends React.Component {
       hasNotes: false,
       scrollToBottom: false,
       startDate: Date.now(),
-      timeElapsed: {
-        duration: 0,
-        formattedDuration: '00:00'
-      },
-      errorText: { inputText: ''},
-      typeList: [
-        { text: 'General Note',
-          type: 'general',
-          activated: true,
-          style: { // first value is for inactive, second is for active selection of that chip
-            primaryColor: ['gray', 'white'], // color for borders and font
-            secondaryColor: ['white', 'gray'] // color for chip background
-          }
-        },
-        { text: 'Action Item',
-          type: 'action',
-          activated: false,
-          style: { // first value is for inactive, second is for active selection of that chip
-            primaryColor: ['rgb(255,172,77)', 'white'], // color for borders and font
-            secondaryColor: ['white', 'rgb(255,172,77)'] // color for chip background
-          }
-        },
-        { text: 'Team Decision',
-          type: 'decision',
-          activated: false,
-          style: { // first value is for inactive, second is for active selection of that chip
-            primaryColor: ['rgb(70,153,255)', 'white'], // color for borders and font
-            secondaryColor: ['white', 'rgb(70,153,255)'] // color for chip background
-          }
-        }
-      ]
+      timeElapsed: this.props.meetingData.timeElapsed,
+      errorText: { inputText: ''}
 
     }
 
@@ -134,9 +105,10 @@ export default class SmartConductMeeting extends React.Component {
   }
 
   getAndUpdateDuration () {
-    var durationVal          = Date.now() - this.state.startDate
+
+    var durationVal          = this.props.meetingData.timeElapsed.duration + Date.now() - this.state.startDate //props added to carry on from when they left the conduct meeting tab
     var formattedDurationVal = this.formatDuration(durationVal)
-    var timeElapsed          = {timeElapsed: {duration: durationVal, formattedDuration: formattedDurationVal}}
+    var timeElapsed          = {timeElapsed: {duration: durationVal, formattedDuration: formattedDurationVal, expectedDuration: this.props.meetingData.timeElapsed.expectedDuration}}
 
     this.setState(timeElapsed)
   }
@@ -180,10 +152,11 @@ export default class SmartConductMeeting extends React.Component {
     //submits the tempItem to the list and overwrites the state to update it
     newNoteList[itemType].push(newNoteItem)
     this.setState({tempItemText: '', notes: newNoteList, hasNotes: true, scrollToBottom: true})
+    console.log(newNoteList)
   }
 
   handleTypeClick (index) {
-    var tempTypeList = this.state.typeList
+    var tempTypeList = this.props.typeList
 
     // reset all activated booleans
     tempTypeList[0].activated = false
@@ -236,7 +209,7 @@ export default class SmartConductMeeting extends React.Component {
   render () {
     //---------------------------CONDITIONS-------------------------------------
     var noteList = []
-    if (this.state.hasNotes) noteList = this.createList() // if there are notes, will create a sorted list
+    if (this.state.hasNotes) noteList = this.createList() // if there are notes, will create a sorted list for display
     //----------------------------RETURN----------------------------------------
     return(
       <div>
@@ -244,7 +217,7 @@ export default class SmartConductMeeting extends React.Component {
           noteList = {noteList}
           setRef = {this.setRef}
           goalList = {this.props.meetingData.goals}
-          typeList = {this.state.typeList}
+          typeList = {this.props.typeList}
           selectedIndex = {this.state.selectedIndex}
           tempItemText = {this.state.tempItemText}
           tempItemType = {this.state.tempItemType}

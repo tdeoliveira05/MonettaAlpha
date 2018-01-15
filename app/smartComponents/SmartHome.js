@@ -50,17 +50,17 @@ export default class SmartHome extends React.Component {
 
     switch(this.state.dialogComponentType) {
       case 'login':
-        this.props.handleLoginRequest(data)
+        //this.props.handleLoginRequest(data)
         this.dialogToggleFunction()
         break
 
       case 'signup':
-        this.props.handleSignupRequest(data)
+        //this.props.handleSignupRequest(data)
         this.dialogToggleFunction()
         break
 
       case 'alpha':
-        this.props.handleAlphaRequest(data)
+        //this.props.handleAlphaRequest(data)
         this.dialogToggleFunction()
         break
     }

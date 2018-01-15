@@ -50,7 +50,7 @@ export default class SmartReviewMinutes extends React.Component {
 
   finishMeeting () {
     this.updateParentMeetingData()
-    this.props.handleIndexChange('finish')
+    this.props.handleIndexChange('finished')
   }
 
   previousStep () {
@@ -83,19 +83,27 @@ export default class SmartReviewMinutes extends React.Component {
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
+    var generalNotesList = []
+    if (this.state.noteLists.general) generalNotesList = this.state.noteLists.general
 
+    var actionItemsList = []
+    if (this.state.noteLists.action) actionItemsList = this.state.noteLists.action
+
+    var teamDecisionsList = []
+    if (this.state.noteLists.decision) teamDecisionsList = this.state.noteLists.decision
     //----------------------------RETURN----------------------------------------
     return(
       <div>
         <DumbReviewMeeting
           handleIndexChange    = {this.props.handleIndexChange}
           meetingData          = {this.props.meetingData}
-          generalNotesList     = {this.state.noteLists.general}
-          actionItemsList      = {this.state.noteLists.action}
-          teamDecisionsList    = {this.state.noteLists.decision}
+          generalNotesList     = {generalNotesList}
+          actionItemsList      = {actionItemsList}
+          teamDecisionsList    = {teamDecisionsList}
           handleNoteItemChange = {this.handleNoteItemChange}
           finishMeeting        = {this.finishMeeting}
           previousStep         = {this.previousStep}
+          typeList             = {this.props.typeList}
           />
       </div>
     )

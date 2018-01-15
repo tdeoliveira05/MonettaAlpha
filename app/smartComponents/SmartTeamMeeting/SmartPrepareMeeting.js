@@ -16,13 +16,16 @@ export default class SmartPrepareMeeting extends React.Component {
       goals: [],
       members: ['Thiago De Oliveira', 'Donald Duck', 'Paul Lafont'],
       tempMember: '',
+      tempExpectedDuration: 15,
       host: '',
-      errorText: ''
+      errorText: '',
+      maxDuration: false
     }
 
     //General Function binds
     this.handleChange         = this.handleChange.bind(this)
     this.nextStep             = this.nextStep.bind(this)
+    this.changeDuration       = this.changeDuration.bind(this)
 
     // GoalList Function binds
     this.removeGoalListItem   = this.removeGoalListItem.bind(this)
@@ -36,7 +39,6 @@ export default class SmartPrepareMeeting extends React.Component {
   }
 
   handleChange (event) {
-    console.log( event.target.name + ' -> ' + event.target.value)
     this.setState({[event.target.name]: event.target.value})
   }
 
@@ -103,6 +105,16 @@ export default class SmartPrepareMeeting extends React.Component {
       this.setState({members: tempMemberList})
   }
 
+  // Duration function
+
+  changeDuration (event, value) {
+    if (value === 120) {
+      this.setState({tempExpectedDuration: value, maxDuration: true})
+    } else {
+      this.setState({tempExpectedDuration: value, maxDuration: false})
+    }
+  }
+
   render () {
     //---------------------------CONDITIONS-------------------------------------
     //----------------------------RETURN----------------------------------------
@@ -120,6 +132,9 @@ export default class SmartPrepareMeeting extends React.Component {
         changeGoalListItem    = {this.changeGoalListItem}
         removeGoalListItem    = {this.removeGoalListItem}
         addGoalListItem       = {this.addGoalListItem}
+        tempExpectedDuration  = {this.state.tempExpectedDuration}
+        changeDuration        = {this.changeDuration}
+        maxDuration           = {this.state.maxDuration}
         />
     )
   }

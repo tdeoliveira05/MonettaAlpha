@@ -6,17 +6,17 @@ import RaisedButton from 'material-ui/RaisedButton'
 
 
 
-const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, generalNotesList, actionItemsList, teamDecisionsList}) => (
+const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, generalNotesList, typeList, actionItemsList, teamDecisionsList}) => (
   <div className = 'ReviewMeetingWrapper'>
     <div className = 'ReviewMeetingContent'>
 
       <div className = 'ReviewMeetingNotes'>
 
         <div className = 'ReviewMeetingNotesUnit'>
-          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: generalNotesList[0].color, color: 'white'}}>
+          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: typeList[0].style.primaryColor[0], color: 'white'}}>
             <h2> General Notes </h2>
           </Paper>
-          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: generalNotesList[0].color}}>
+          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[0].style.primaryColor[0]}}>
             {generalNotesList.map((item, index) => {
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
@@ -36,10 +36,10 @@ const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, g
         </div>
 
         <div className = 'ReviewMeetingNotesUnit'>
-          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: actionItemsList[0].color, color: 'white'}}>
+          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: typeList[1].style.primaryColor[0], color: 'white'}}>
             <h2> Action Items </h2>
           </Paper>
-          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: actionItemsList[0].color}}>
+          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[1].style.primaryColor[0]}}>
             {actionItemsList.map((item, index) => {
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
@@ -59,10 +59,10 @@ const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, g
         </div>
 
         <div className = 'ReviewMeetingNotesUnit'>
-          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: teamDecisionsList[0].color, color: 'white'}}>
+          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: typeList[2].style.primaryColor[0], color: 'white'}}>
             <h2> Team Decisions </h2>
           </Paper>
-          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: teamDecisionsList[0].color}}>
+          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[2].style.primaryColor[0]}}>
             {teamDecisionsList.map((item, index) => {
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>

@@ -4,33 +4,51 @@ import TextField from 'material-ui/TextField'
 import Divider from 'material-ui/Divider'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
+import Slider from 'material-ui/Slider'
 
-const DumbPrepareMeeting = ({handleChange, nextStep, addMemberListItem, removeMemberListItem, addGoalListItem, removeGoalListItem, changeGoalListItem, meetingTitle, listInput, tempMember, memberList, goalList, errorText}) => (
+const DumbPrepareMeeting = ({
+  handleChange,
+  nextStep,
+  addMemberListItem,
+  removeMemberListItem,
+  addGoalListItem,
+  removeGoalListItem,
+  changeGoalListItem,
+  meetingTitle,
+  listInput,
+  tempMember,
+  errorText,
+  memberList,
+  goalList,
+  tempExpectedDuration,
+  changeDuration,
+  maxDuration
+}) => (
   <div className = 'PrepareMeetingWrapper'>
     <div className = 'PrepareMeetingContent'>
       <Paper className = 'PrepareMeetingPaper'>
 
         <TextField
           underlineShow = {false}
-          hintText = 'Enter the Meeting Title'
-          name = 'title'
-          value = {meetingTitle}
-          onChange = {handleChange}
-          hintStyle = {{textAlign: 'center'}}
-          inputStyle = {{textAlign: 'center'}}
-          style = {{display: 'flex', justifyContent: 'center'}}
+          hintText      = 'Enter the Meeting Title'
+          name          = 'title'
+          value         = {meetingTitle}
+          onChange      = {handleChange}
+          hintStyle     = {{textAlign: 'center'}}
+          inputStyle    = {{textAlign: 'center'}}
+          style         = {{display: 'flex', justifyContent: 'center'}}
           />
-        <Divider/>
+        <Divider style = {{width: '100%'}}/>
 
         <div className = 'PrepareMeetingMemberList'>
           <div className = 'PrepareMeetingMemberInput'>
             <TextField
               underlineShow = {false}
-              hintText = 'Enter Participants'
-              value = {tempMember}
-              name = 'tempMember'
-              onChange = {handleChange}
-              onKeyPress = {(event) => {
+              hintText      = 'Add Participants'
+              value         = {tempMember}
+              name          = 'tempMember'
+              onChange      = {handleChange}
+              onKeyPress    = {(event) => {
                 if (event.key === 'Enter') {
                   event.preventDefault();
                   addMemberListItem()
@@ -38,42 +56,59 @@ const DumbPrepareMeeting = ({handleChange, nextStep, addMemberListItem, removeMe
               }}
               />
             <RaisedButton
-              label = 'Add'
+              label   = 'Add'
               onClick = {() => addMemberListItem()}
               primary = {true}
               />
-            <Divider />
           </div>
-            {memberList.map((item, index) => {
-              return (
-                <Paper key = {index} className = 'PrepareMeetingMemberItem' >
-                  <h3> {item} </h3>
-                  <button
-                    type = 'button'
-                    onClick={() => removeMemberListItem({index})}
-                    className = 'PrepareMeetingMemberItemButton'
-                    > X </button>
-                </Paper>
-              )
-            })}
+          <Divider style = {{width: '100%'}}/>
+          {memberList.map((item, index) => {
+            return (
+              <Paper key = {index} className = 'PrepareMeetingMemberItem' >
+                <h3> {item} </h3>
+                <button
+                  type      = 'button'
+                  onClick   = {() => removeMemberListItem({index})}
+                  className = 'PrepareMeetingMemberItemButton'
+                  > X </button>
+              </Paper>
+            )
+          })}
         </div>
-        <Divider/>
-
+        <Divider />
+        <div className = 'PrepareMeetingSetDuration'>
+          <div>
+            <h2 style={{marginTop: '10px'}}> How long will this meeting be? </h2>
+            <h1 style = {{fontSize: '4em', margin: '0'}}> { maxDuration ? tempExpectedDuration + '+' : tempExpectedDuration } </h1>
+            <h3 style = {{margin: '0px 0px 10px 0px'}}> minutes </h3>
+          </div>
+          <div>
+            <Slider
+              onChange = {changeDuration}
+              value    = {tempExpectedDuration}
+              min      = {0}
+              max      = {120}
+              step     = {5}
+              sliderStyle    = {{margin: '0', padding: '0'}}
+            />
+          </div>
+        </div>
         <h2 style={{marginTop: '30px'}}> What are your goals for this meeting? </h2>
-
-        <div>
+        <div className = 'PrepareMeetingGoalList'>
           {goalList.map((item, index) => {
             return (
               <Paper key = {index} className = 'PrepareMeetingGoalItem'>
-                <h2 style = {{padding: '4px'}}> {index + 1}. </h2>
-                <TextField
-                  underlineShow = {false}
-                  value         = {goalList[index]}
-                  name          = {JSON.stringify(index)}
-                  onChange      = {changeGoalListItem}
-                  multiLine     = {true}
-                  rowsMax       = {3}
+                <div style = {{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <h2 style = {{padding: '4px'}}> {index + 1}. </h2>
+                  <TextField
+                    underlineShow = {false}
+                    value         = {goalList[index]}
+                    name          = {JSON.stringify(index)}
+                    onChange      = {changeGoalListItem}
+                    multiLine     = {true}
+                    rowsMax       = {3}
                   />
+                </div>
                 <button
                   type      = 'button'
                   onClick   = {() => removeGoalListItem({index})}
@@ -96,14 +131,14 @@ const DumbPrepareMeeting = ({handleChange, nextStep, addMemberListItem, removeMe
         <h2> Proceed? </h2>
         <div className = 'PrepareMeetingStepperButtons'>
           <FlatButton
-            label = 'Back'
-            disabled = {true}
-            primary = {true}
+            label     = 'Back'
+            disabled  = {true}
+            primary   = {true}
             />
           <RaisedButton
-            label = 'Next'
+            label     = 'Next'
             secondary = {true}
-            onClick = {() => nextStep()}
+            onClick   = {() => nextStep()}
             />
       </div>
     </div>
@@ -113,27 +148,3 @@ const DumbPrepareMeeting = ({handleChange, nextStep, addMemberListItem, removeMe
 )
 
 export default DumbPrepareMeeting
-
-/*
-<Paper className = 'PrepareMeetingListInput' zDepth={3}>
-
-  <div className = 'PrepareMeetingListItem'>
-    <h2> 1. </h2>
-    <div className = 'PrepareMeetingListInputText'>
-      <TextField
-        underlineShow = {false}
-        name = 'listInput'
-        value = {listInput}
-        onChange = {handleChangeTempData}
-        />
-    </div>
-    <button type = 'button'> delete </button>
-  </div>
-
-</Paper>
-
-
-<RaisedButton
-  label='Add another goal'
-  />
-*/

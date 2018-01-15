@@ -11,7 +11,33 @@ export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 1,
+      typeList: [
+        { text: 'General Note',
+          type: 'general',
+          activated: true,
+          style: { // first value is for inactive, second is for active selection of that chip
+            primaryColor: ['gray', 'white'], // color for borders and font
+            secondaryColor: ['white', 'gray'] // color for chip background
+          }
+        },
+        { text: 'Action Item',
+          type: 'action',
+          activated: false,
+          style: { // first value is for inactive, second is for active selection of that chip
+            primaryColor: ['rgb(255,172,77)', 'white'], // color for borders and font
+            secondaryColor: ['white', 'rgb(255,172,77)'] // color for chip background
+          }
+        },
+        { text: 'Team Decision',
+          type: 'decision',
+          activated: false,
+          style: { // first value is for inactive, second is for active selection of that chip
+            primaryColor: ['rgb(70,153,255)', 'white'], // color for borders and font
+            secondaryColor: ['white', 'rgb(70,153,255)'] // color for chip background
+          }
+        }
+      ],
+      meetingIndex: 0,
       meetingData: {
         title: '',
         date: '',
@@ -82,12 +108,11 @@ export default class SmartTeamMeeting extends React.Component {
         },
         timeElapsed: {
           duration: 0,
-          formattedDuration: '00:00'
+          formattedDuration: '00:00',
+          expectedDuration: 0
         },
         host: '',
-        goals: ['this is the goal 1', 'this is the second goal in the list'],
-        expectedDuration: 0,
-        actualDuration: 0
+        goals: ['this is the goal 1', 'this is the second goal in the list']
       }
     }
 
@@ -128,7 +153,8 @@ export default class SmartTeamMeeting extends React.Component {
   }
 
   handleFinishedMeeting () {
-    console.log('Submitting: ' + this.state.meetingData)
+    console.log('Submitting: ')
+    console.log(this.state.meetingData)
 
     // compute the expected vs actual time of the meeting
     // input the host's name into this.state.meetingData.host
@@ -159,6 +185,7 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
+            typeList                = {this.state.typeList}
             />
         )
         break
@@ -171,6 +198,7 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
+            typeList                = {this.state.typeList}
             />
         )
         break
@@ -253,4 +281,10 @@ notes: {
     }
   ]
 },
+
+-------------------------------------------------------------------------------
+for redux include:
+
+user token
+this.state.meetingData.typeList
 */
