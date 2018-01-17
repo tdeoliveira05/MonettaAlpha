@@ -11,7 +11,7 @@ export default class SmartMain extends React.Component {
   constructor(props) {
     super(props)
     this.state={
-      tabValue: 'Meeting'
+      tabValue: 'Storage'
     }
 
     this.handleChangeTabValue = this.handleChangeTabValue.bind(this)
