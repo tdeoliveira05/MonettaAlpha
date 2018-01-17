@@ -12,9 +12,10 @@ import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
 
 
-const DumbConductMeeting = ({handleChange, setRef, handleTypeClick, deleteNoteItem, nextStep, previousStep, submitTempItem, errorText, goalList, formattedDuration, noteList, typeList, tempItemText, hasNotes, tempItemType, selectorAction, selectorDecision, selectorGeneral, selectedIndex, minutesElapsed, secondsElapsed}) => (
+const DumbConductMeeting = ({handleChange, meetingInfoHeading, setRef, handleTypeClick, deleteNoteItem, nextStep, previousStep, submitTempItem, errorText, goalList, formattedDuration, noteList, typeList, tempItemText, hasNotes, tempItemType, selectorAction, selectorDecision, selectorGeneral, selectedIndex, minutesElapsed, secondsElapsed}) => (
   <div className = 'ConductMeetingWrapper'>
     <div className = 'ConductMeetingContent'>
+      {meetingInfoHeading}
       <div className = 'ConductMeetingStopwatch'>
         <h1>{formattedDuration}</h1>
       </div>

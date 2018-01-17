@@ -64,7 +64,7 @@ export default class SmartConductMeeting extends React.Component {
     //and reset the state property, scroll to bottom of notes list
 
     if (this.state.scrollToBottom) {
-      var targetBottomScrollElement = this.scrollRef
+      var targetBottomScrollElement       = this.scrollRef
       targetBottomScrollElement.scrollTop = targetBottomScrollElement.scrollHeight
       this.setState({scrollToBottom: false})
     }
@@ -169,8 +169,8 @@ export default class SmartConductMeeting extends React.Component {
 
   createList () {
     //This function will likely be stored in a separate file since it can be used many times
-    var generalNotesList = this.state.notes.general
-    var actionItemsList = this.state.notes.action
+    var generalNotesList  = this.state.notes.general
+    var actionItemsList   = this.state.notes.action
     var teamDecisionsList = this.state.notes.decision
 
     // Adding arrays together to form an unsorted array
@@ -201,25 +201,34 @@ export default class SmartConductMeeting extends React.Component {
     //---------------------------CONDITIONS-------------------------------------
     var noteList = []
     if (this.state.hasNotes) noteList = this.createList() // if there are notes, will create a sorted list for display
+
+    var meetingInfoHeading = (
+      <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.title + '(' + this.props.meetingData.timeElapsed.expectedDuration + ' mins)'}  </p>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.members.map((item) => (item + ', '))} </p>
+      </div>
+
+    )
     //----------------------------RETURN----------------------------------------
     return(
       <div>
         <DumbConductMeeting
-          noteList = {noteList}
-          setRef = {this.setRef}
-          goalList = {this.props.meetingData.goals}
-          typeList = {this.props.typeList}
-          selectedIndex = {this.state.selectedIndex}
-          tempItemText = {this.state.tempItemText}
-          tempItemType = {this.state.tempItemType}
-          handleChange = {this.handleChange}
-          submitTempItem = {this.submitTempItem}
-          handleTypeClick = {this.handleTypeClick}
-          deleteNoteItem = {this.deleteNoteItem}
-          nextStep = {this.nextStep}
-          previousStep = {this.previousStep}
-          errorText = {this.state.errorText}
-          formattedDuration = {this.state.timeElapsed.formattedDuration}
+          noteList            = {noteList}
+          meetingInfoHeading  = {meetingInfoHeading}
+          setRef              = {this.setRef}
+          goalList            = {this.props.meetingData.goals}
+          typeList            = {this.props.typeList}
+          selectedIndex       = {this.state.selectedIndex}
+          tempItemText        = {this.state.tempItemText}
+          tempItemType        = {this.state.tempItemType}
+          handleChange        = {this.handleChange}
+          submitTempItem      = {this.submitTempItem}
+          handleTypeClick     = {this.handleTypeClick}
+          deleteNoteItem      = {this.deleteNoteItem}
+          nextStep            = {this.nextStep}
+          previousStep        = {this.previousStep}
+          errorText           = {this.state.errorText}
+          formattedDuration   = {this.state.timeElapsed.formattedDuration}
           />
       </div>
     )
