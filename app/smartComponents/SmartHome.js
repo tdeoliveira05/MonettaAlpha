@@ -25,7 +25,16 @@ export default class SmartHome extends React.Component {
         organization: '',
         referenceNotes: ''
       },
-      tempErrors: {},
+      errorText: {
+        username: '',
+        password: '',
+        codeUsed: '',
+        firstName: '',
+        lastName: '',
+        jobPosition: '',
+        organization: '',
+        referenceNotes: ''
+      },
       dialogToggle: false,
       dialogComponentType: 'alpha'
     }
@@ -34,10 +43,81 @@ export default class SmartHome extends React.Component {
     this.handleSetDialogCall    = this.handleSetDialogCall.bind(this)
     this.handleSubmit           = this.handleSubmit.bind(this)
     this.handleOnTempChange     = this.handleOnTempChange.bind(this)
+    this.resetTemp              = this.resetTemp.bind(this)
+
+    this.handleLoginRequest   = this.handleLoginRequest.bind(this)
+    this.handleSignupRequest  = this.handleSignupRequest.bind(this)
+    this.handleAlphaRequest   = this.handleAlphaRequest.bind(this)
+  }
+
+  handleLoginRequest (loginData) {
+    console.log('dev restrictions')
+    /*
+    const self = this
+    axios.post('http://localhost:3000/loginRequest', loginData)
+    .then((tokenResponse) => {
+      tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
+    })
+    .catch((error) => {
+      console.log('[App.js] - handleLoginRequest() ' + error)
+    })
+    */
+  }
+
+  handleSignupRequest (signupData) {
+    console.log('dev restrictions')
+    /*
+    const self = this
+    axios.post('http://localhost:3000/signupRequest', signupData)
+    .then((tokenResponse) => {
+      tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
+    })
+    .catch((error) => {
+      console.log('[SmartHome.js]  - handleSignupRequest() ' + error)
+    })
+    */
+  }
+
+  handleAlphaRequest (alphaData) {
+    console.log('alpha accessed')
+    const self = this
+    axios.post('http://localhost:8080/alphaRequest', alphaData)
+    .then((response) => {
+      console.log('server responded')
+      console.log(response)
+      alert('We sent you an email!')
+    })
+    .catch((error) => {
+      console.log('server gave error')
+      console.log(error)
+      alert('Well that was not supposed to happen... Please send us a message with the following server error: ' + error)
+    })
   }
 
   dialogToggleFunction () {
     this.setState({dialogToggle: !this.state.dialogToggle})
+  }
+
+  resetTemp () {
+    this.setState({
+      temp: {
+        username: '',
+        password: '',
+        codeUsed: '',
+        firstName: '',
+        lastName: '',
+        jobPosition: '',
+        organization: '',
+        referenceNotes: ''
+      }
+    })
+  }
+
+  checkForErrors () {
+    var errorText = this.state.errorText
+
+    if (temp.username === '') {
+    }
   }
 
   handleSetDialogCall (target, activate) {
@@ -48,38 +128,28 @@ export default class SmartHome extends React.Component {
   handleSubmit (submitType) {
     var data = this.state.temp
 
+
     switch(this.state.dialogComponentType) {
       case 'login':
-        //this.props.handleLoginRequest(data)
-        this.dialogToggleFunction()
+        //this.handleLoginRequest(data)
         break
 
       case 'signup':
-        //this.props.handleSignupRequest(data)
-        this.dialogToggleFunction()
+        //this.handleSignupRequest(data)
         break
 
       case 'alpha':
-        this.props.handleAlphaRequest(data)
-        this.dialogToggleFunction()
+        this.handleAlphaRequest(data)
+        this.resetTemp()
+        break
+
+      case 'soon':
+        console.log('coming soon!')
         break
     }
   }
 
   handleOnTempChange(event) {
-    // The following three lines of code use immutability helpers---------------
-    /*
-    This is to allow this function to ADD to the this.state.temp obj by copying
-    it into a variable, modifying the variable, overwriting the old temp object
-    with a new (modified) temp object. If this were not done, every time the user
-    switched from filling out one text field to the other, the previous text field
-    value would be deleted and this.state.temp would be assigned to the new value
-
-    The alternative incorrect function can be seen by replacing the following
-    three lines with the usual single line function call for an onChange handler:
-
-    this.setState({temp: {[event.target.name]: event.target.value}})
-    */
     var newTempObj = this.state.temp // a new object of this.state.temp is created
     newTempObj[event.target.name] = event.target.value // new object is modified
     this.setState(newTempObj) // overwrites the old this.state.temp obj with the new object
@@ -94,7 +164,6 @@ export default class SmartHome extends React.Component {
           <DumbHomeLogin
             username            = {this.state.temp.username}
             password            = {this.state.temp.password}
-            tempErrors          = {this.state.tempErrors}
             handleOnTempChange  = {this.handleOnTempChange}
             handleSubmit        = {this.handleSubmit}
             handleSetDialogCall = {this.handleSetDialogCall}
@@ -108,7 +177,6 @@ export default class SmartHome extends React.Component {
             username            = {this.state.temp.username}
             password            = {this.state.temp.password}
             codeUsed            = {this.state.temp.codeUsed}
-            tempErrors          = {this.state.tempErrors}
             handleSubmit        = {this.handleSubmit}
             handleOnTempChange  = {this.handleOnTempChange}
             handleSetDialogCall = {this.handleSetDialogCall}
@@ -130,6 +198,13 @@ export default class SmartHome extends React.Component {
             />
         )
          break
+
+       case 'soon':
+       var dialogComponent = (
+         <div>
+          <h1> Coming soon! </h1>
+        </div>
+       )
 
        case 'privacyTerms':
         var dialogComponent = (

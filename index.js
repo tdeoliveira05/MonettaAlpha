@@ -15,7 +15,6 @@ const User = require('./models/userModel.js')
 const Meeting = require('./models/meetingModel.js')
 const Feedback = require('./models/feedbackModel.js')
 const Code = require('./models/codeModel.js')
-//const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
 
 //Amazon requirements
 const AWS = require('aws-sdk')
@@ -28,10 +27,6 @@ const app = express();
 const requireDir = require('require-dir')
 const serverLogic = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
 const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
-
-// Setting up sendgrid connection for use in any email functions
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey('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')
 
 //Establishing middleware
 app.use(cors())
@@ -109,7 +104,6 @@ TOKEN_OBJ = {
 */
 
 app.post('/loginRequest',function(req, res){
-  console.log('reached', req.body)
 	serverLogic.requestLogin(req, res)
 })
 
@@ -170,6 +164,7 @@ data: STRING // response from server
 */
 
 app.post('/alphaRequest', function(req, res) {
+  console.log('accessed alpha route')
   serverLogic.requestAlpha(req, res)
 })
 
@@ -317,33 +312,9 @@ recipients: ARRAY_STRINGS
 NO OUTPUT OBJECT
 */
 
-app.post('/emailMonettaMinutes', function(req,res){
+app.post('/email/monettaMinutes', function(req,res){
 	serverLogic.emailMonettaMinutes(req, res)
 })
-
-/* -----------------------------------------------------------------------------
-Emails team@monettatech.com with new alpha user information
-Process =>
-NOT OPTIMIZED
-
--------------------
-
-inputObject = req.body = {
-firstName: STRING,
-lastName: STRING,
-email: STRING,
-position: STRING,
-company: STRING,
-reference: STRING
-}
-
-NO OUTPUT OBJECT
-*/
-
-app.post('/emailNewAlphaUser', function(req, res) {
-	serverLogic.emailNewAlphaUser(req, res)
-})
-
 
 /* -----------------------------------------------------------------------------
 Counts the number of User documents in the database
@@ -384,78 +355,6 @@ app.get('/token', function(req,res){
 	serverLogic.getWatsonToken(req, res)
 })
 
-//------------------------------------------------------------------------------
-//------------------- GARBAGE START---------------------------------------------
-
-//Get Feedback
-app.get('/feedback',function(req,res){
-	Feedback.find({}).then(function(result){
-		res.send(JSON.stringify(result))
-	}).catch(function(err){
-		console.log(err)
-	});
-})
-
-//Dictation Time Save
-app.post('/timesave', function(req,res){
-	console.log('Called')
-	User.findOne({username: req.body.username}).then(function(user){
-		let newTime = 0;
-		newTime = user.time + req.body.time;
-		User.update({username: req.body.username}, {time: newTime}, {upsert: true}).then(function(err){
-			res.send('Updated Time')
-			console.log(err)
-		})
-	})
-})
-
-//Get users
-app.get('/users', function(req,res){
-	let users = []
-	User.find({}).then(function(userResults){
-		Meeting.find({}).then(function(meetingResults){
-			for(let i=0;i<userResults.length;i++){
-				let meetingCount = 0
-				for(let j=0;j<meetingResults.length;j++){
-					if(meetingResults[j].username==userResults[i].username){
-						meetingCount++
-					}
-				}
-				users.push({username:userResults[i].username,meetingCount:meetingCount,time:userResults[i].time})
-			}
-			console.log(users)
-			res.send(JSON.stringify(users))
-		}).catch(function(err){
-			console.log(err)
-		})
-	}).catch(function(err){
-		console.log(err)
-	})
-})
-
-//Getting user answered promp questions Array to ensure user does not answer same prompt question twice
-app.post('/loadqs', function(req, response) {
-	User.findOne({username: req.body.username}).then(function(result){
-		if (result === null || result === undefined) {
-			response.send('no user found')
-		} else {
-		response.send(result)
-		}
-  }).catch(function(err){
-    console.log(err)
-  })
-})
-
-//Updating the user's prompt question list since they just answered a new question on the client side
-app.post('/updateqs', function(req, response) {
-	User.findOneAndUpdate({username: req.body.username}, {$push: {promptqs: req.body.newNumber}}, function(err, raw){
-		if (err) return handleError(err);
-		console.log('The raw response from Mongo was ', raw);
-	})
-})
-
-//------------------- GARBAGE END-----------------------------------------------
-//------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------//
 //---------------------------UTILITY FUNCTIONS--------------------------------//

@@ -4,7 +4,7 @@ import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
 
 
-const DumbHomeSignup = ({ handleSetDialogCall, handleSubmit, handleOnTempChange, tempErrors, username, password, code}) => (
+const DumbHomeSignup = ({ handleSetDialogCall, handleSubmit, handleOnTempChange, username, password, code}) => (
   <div className="LogSig" >
       <h2>Create Account</h2>
 
@@ -12,7 +12,6 @@ const DumbHomeSignup = ({ handleSetDialogCall, handleSubmit, handleOnTempChange,
         <TextField
           floatingLabelText="Email"
           name="username"
-          errorText={tempErrors.username}
           onChange={handleOnTempChange}
           value={username}
         />
@@ -24,7 +23,6 @@ const DumbHomeSignup = ({ handleSetDialogCall, handleSubmit, handleOnTempChange,
           type="password"
           name="password"
           onChange={handleOnTempChange}
-          errorText={tempErrors.password}
           value={password}
         />
       </div>
@@ -34,7 +32,6 @@ const DumbHomeSignup = ({ handleSetDialogCall, handleSubmit, handleOnTempChange,
           floatingLabelText="Sign Up Code"
           name="codeUsed"
           onChange={handleOnTempChange}
-          errorText={tempErrors.codeUsed}
           value={code}
         />
       </div>

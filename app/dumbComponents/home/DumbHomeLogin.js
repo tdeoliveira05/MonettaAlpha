@@ -6,14 +6,13 @@ import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
 
 
-const DumbHomeLogin = ({handleSubmit, handleSetDialogCall, handleOnTempChange, tempErrors, username, password}) => (
+const DumbHomeLogin = ({handleSubmit, handleSetDialogCall, handleOnTempChange, username, password}) => (
   <div className='LogSig'>
       <h2>Login</h2>
       <div>
         <TextField
           floatingLabelText="Email"
           name="username"
-          errorText={tempErrors.username}
           onChange={handleOnTempChange}
           value={username}
         />
@@ -24,7 +23,6 @@ const DumbHomeLogin = ({handleSubmit, handleSetDialogCall, handleOnTempChange, t
           type="password"
           name="password"
           onChange={handleOnTempChange}
-          errorText={tempErrors.password}
           value={password}
           onKeyPress= {(ev) => {
             if (ev.key == 'Enter') {

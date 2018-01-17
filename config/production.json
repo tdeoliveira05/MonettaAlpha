@@ -5,14 +5,13 @@
     }
   },
   "Presets":{
-    "users":{
-      "teamuser":"team@monettatech.com",
-      "teampassword":"Gordon_Patrick1",
-      "testuser":"test@example.com",
-      "testpassword":"test"
-    },
-    "codes":["1234","5678"],
+    "adminUsers":{},
+    "codes":[],
     "port":8080,
     "secret": "GordonPatrick"
+  },
+  "Mailjet":{
+    "publicKey": "e27349f0743f50b01d5104d7d540f035",
+    "privateKey": "bdb8cfd5a1f78614ac5127775a72e20e"
   }
 }
