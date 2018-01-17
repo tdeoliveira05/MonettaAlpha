@@ -204,7 +204,7 @@ export default class SmartConductMeeting extends React.Component {
 
     var meetingInfoHeading = (
       <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.title + '(' + this.props.meetingData.timeElapsed.expectedDuration + ' mins)'}  </p>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {'Expected Duration: (' + this.props.meetingData.timeElapsed.expectedDuration + ' mins)'}  </p>
         <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.members.map((item) => (item + ', '))} </p>
       </div>
 

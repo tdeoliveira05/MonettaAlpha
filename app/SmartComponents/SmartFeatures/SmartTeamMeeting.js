@@ -13,7 +13,7 @@ export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 2,
+      meetingIndex: 0,
       typeList: [
         { text: 'General Note',
           type: 'general',
