@@ -145,6 +145,34 @@ app.post('/signupRequest', function(req, res) {
   serverLogic.requestSignup(req, res)
 })
 
+/* -----------------------------------------------------------------------------
+Processes an alpha trial request
+Process =>
+1. parses data into an email
+2. sends to team@monettatech.com
+
+-------------------
+
+inputObject = req.body = {
+  username: STRING, // this is the email
+  password: empty,
+  codeUsed: empty,
+  firstName: STRING,
+  lastName: STRING,
+  jobPosition: STRING,
+  organization: STRING,
+  referenceNotes: STRING
+}
+
+outputObject = res = {
+data: STRING // response from server
+}
+*/
+
+app.post('/alphaRequest', function(req, res) {
+  serverLogic.requestAlpha(req, res)
+})
+
 
 
 //--------------------------AUTHENTICATION MIDDLEWARE-------------------------//

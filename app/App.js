@@ -9,8 +9,12 @@ export default class App extends React.Component {
 		super(props);
 		this.state = {
       appLocation: 'app',
-      tokenObj: {}
+      userTokenObj: {
+        firstName: 'Thiago',
+        lastName: 'De Oliveira'
+      }
     }
+    /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
 
     this.handleLoginRequest   = this.handleLoginRequest.bind(this)
     this.handleSignupRequest  = this.handleSignupRequest.bind(this)
@@ -40,7 +44,15 @@ export default class App extends React.Component {
   }
 
   handleAlphaRequest (alphaData) {
-    console.log('in app.js - alpha, ' + alphaData)
+    const self = this
+    axios.post('http://monettatech.com/alphaRequest', alphaData)
+    .then((response) => {
+      console.log('server responded')
+      console.log(response)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
   }
 
   render() {
@@ -49,7 +61,7 @@ export default class App extends React.Component {
       case 'home':
       return (
         <SmartHome
-          tokenObj              = {this.state.tokenObj}
+          userTokenObj          = {this.state.userTokenObj}
           handleLoginRequest    = {this.handleLoginRequest}
           handleSignupRequest   = {this.handleSignupRequest}
           handleAlphaRequest    = {this.handleAlphaRequest}
@@ -60,7 +72,7 @@ export default class App extends React.Component {
       return (
         <div>
           <SmartMain
-            tokenObj            = {this.state.tokenObj}
+            userTokenObj            = {this.state.userTokenObj}
           />
         </div>
       )

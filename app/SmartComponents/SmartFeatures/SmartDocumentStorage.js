@@ -12,7 +12,8 @@ export default class SmartTeamStorage extends React.Component {
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <h1> SmartTeamStorage </h1>
+        <h1> Coming soon to a Monetta near you. </h1>
+        <h1> SmartDocumentStorage </h1>
       </div>
     )
   }

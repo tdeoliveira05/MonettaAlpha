@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DumbReviewMeeting from '../../DumbComponents/TeamMeeting/DumbReviewMeeting.js'
+import DumbReviewMeeting from '../../../DumbComponents/TeamMeeting/DumbReviewMeeting.js'
 
 export default class SmartReviewMinutes extends React.Component {
   constructor(props) {
@@ -23,18 +23,6 @@ export default class SmartReviewMinutes extends React.Component {
     Because of this, the use of this prop is in fact NOT an anti-pattern. Please
     communicate any concerns or newfound inefficiencies with this method to the
     technical staff.
-    ---------------------------------------------------------------------------
-
-    this.props.meetingDate.notes = {general: [...], actionL: [...], decision: [...]}
-
-    therefore:
-
-    noteLists : {
-        general: [...],
-        action: [...],
-        decision: [...]
-      }
-
     ---------------------------------------------------------------------------
     */
 

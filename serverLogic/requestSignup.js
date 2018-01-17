@@ -22,8 +22,7 @@ module.exports = function (signupData, res) {
     console.log('Current session user token: ' + token)
     res.status(200).send({
       token: token,
-      username: userDoc.username,
-      id: userDoc.id
+      userDoc: userDoc
     })
   })
   .catch((error) => {

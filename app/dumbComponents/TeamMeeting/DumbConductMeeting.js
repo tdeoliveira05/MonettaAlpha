@@ -20,6 +20,7 @@ const DumbConductMeeting = ({handleChange, setRef, handleTypeClick, deleteNoteIt
       </div>
       <div className = 'ConductMeetingPaper'>
         <Paper className = 'ConductMeetingGoalDisplay'>
+          <h3> Meeting Goals </h3>
           {goalList.map((item, index) => {
             return (
             <div key = {index} >

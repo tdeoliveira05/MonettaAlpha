@@ -7,6 +7,52 @@
   border-width: 0px 0px 3px 0px
   border-color: $blueMid2
 
+.ChooseMeetingWrapper
+  width: 100%
+  height: 100%
+  .ChooseMeetingContent
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    min-height: 400px
+    width: 100%
+    text-align: center
+    .ChooseMeetingHeader
+      margin-top: 30px
+      margin-bottom: 30px
+      color: $gold
+      font-size: 1.5em
+      @include mobileMedia {font-size: 1em}
+    .ChooseMeetingOptions
+      display: flex
+      flex-direction: row
+      @include mobileMedia {flex-direction: column}
+      align-items: stretch
+      justify-content: space-around
+      height: 100%
+      width: 60%
+      @include mobileMedia {width: 100%}
+      .ChooseMeetingOptionPaperDiv
+        display: flex
+        flex-direction: column
+        align-items: stretch
+        padding: 0px 20px 0px 20px
+        @include mobileMedia {padding: 0}
+        width: 50%
+        @include mobileMedia {width: 100%}
+        @include mobileMedia {margin: 10px 0px 10px 0px}
+        .ChooseMeetingOptionPaper
+          display: flex
+          flex-direction: column
+          align-items: stretch
+          justify-content: flex-start
+          padding: 10px
+          height: 240px
+          @include mobileMedia {height: 180px}
+          p
+            font-size: 1.2em
+
 
 .PrepareMeetingWrapper
   display: flex
@@ -20,71 +66,102 @@
     align-items: center
     justify-content: center
     text-align: center
-    margin-top: 20px
+    margin-top: 80px
+    @include mobileMedia {margin-top: 20px}
     width: 100%
-    .PrepareMeetingPaper
+    .PrepareMeetingSetDuration
       display: flex
       flex-direction: column
-      text-align: center
-      justify-content: center
+      justify-content: flex-end
       align-items: center
-      overflow: auto
-      padding: 20px
-      min-width: 300px
-      width: 40%
-      max-width: 600px
-      .PrepareMeetingMemberList
+      width: 30%
+      margin-bottom: 20px
+      .PrepareMeetingDurationButtons
         display: flex
-        align-items: center
+        justify-content: space-around
+        width: 100%
+        margin-top: 15px
+      .PrepareMeetingDurationInfo
+        width: 50%
+        display: flex
+        justify-content: space-around
+    .PrepareMeetingDiv
+      display: flex
+      flex-direction: row
+      @include mobileMedia {flex-direction: column}
+      justify-content: center
+      align-items: flex-start
+      width: 80%
+      .PrepareMeetingDivLeft
+        display: flex
         flex-direction: column
-        width: 100%
-        padding: 5px 0px 5px 0px
-        margin: 0px 0px 5px 0px
-        .PrepareMeetingMemberInput
+        align-items: center
+        justify-content: center
+        width: 40%
+        margin: 0px 15px 0px 15px
+        .PrepareMeetingPaperLeft
           display: flex
-          flex-direction: row
+          flex-direction: column
+          padding: 10px
+          width: 100%
+        .PrepareMeetingMemberList
+          display: flex
           align-items: center
+          flex-direction: column
+          width: 100%
+          .PrepareMeetingMemberItem
+            display: flex
+            justify-content: space-between
+            align-items: center
+            flex-direction: row
+            margin: 2px 2px
+            padding: 0px 15px 0px 10px
+            width: 100%
+            .PrepareMeetingMemberItemButton
+              display: flex
+              align-items: center
+              justify-content: center
+              background-color: $blueMain
+              color: white
+              border-radius: 25%
+              border: none
+              cursor: pointer
+              font-weight: bold
+      .PrepareMeetingDivRight
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        width: 40%
+        margin: 0px 15px 0px 15px
+        padding: 0px 0px 10px 0px
+        .PrepareMeetingPaperRight
+          display: flex
+          flex-direction: column
+          padding: 10px
+          width: 100%
+        .PrepareMeetingGoalList
+          width: 100%
+          display: flex
+          flex-direction: column
           justify-content: center
-          margin: 5px 0px 5px 0px
-          width: 100%
-        .PrepareMeetingMemberItem
-          display: flex
-          justify-content: space-between
-          align-items: center
-          flex-direction: row
-          margin: 2px 2px
-          padding: 0px 15px 0px 10px
-          width: 100%
-          .PrepareMeetingMemberItemButton
+          .PrepareMeetingGoalItem
             display: flex
+            justify-content: space-between
             align-items: center
-            justify-content: center
-            background-color: $blueMain
-            color: white
-            border-radius: 25%
-            border: none
-            cursor: pointer
-            font-weight: bold
-      .PrepareMeetingSetDuration
-        width: 80%
-      .PrepareMeetingGoalList
-        width: 100%
-        .PrepareMeetingGoalItem
-          display: flex
-          justify-content: space-between
-          align-items: center
-          padding: 0px 15px 0px 10px
-          width: 100%
-          .PrepareMeetingGoalItemButton
-            display: flex
-            align-items: center
-            justify-content: center
-            background-color: $blueMain
-            color: white
-            border-radius: 25%
-            border: none
-            cursor: pointer
-            font-weight: bold
+            padding: 0px 15px 0px 10px
+            width: 100%
+            .PrepareMeetingGoalItemButton
+              display: flex
+              align-items: center
+              justify-content: center
+              background-color: $blueMain
+              color: white
+              border-radius: 25%
+              border: none
+              cursor: pointer
+              font-weight: bold
+
   .PrepareMeetingStepper
     display: flex
     flex-direction: column
@@ -166,7 +243,8 @@
         width: 35%
         @include mobileMedia {width: 100%}
         flex-direction: column
-        padding: 5px
+        text-align: center
+        padding: 0px 5px 5px 5px
         .ConductMeetingGoalItem
           display: flex
           align-items: center

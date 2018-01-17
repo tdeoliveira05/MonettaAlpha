@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DumbConductMeeting from '../../DumbComponents/TeamMeeting/DumbConductMeeting.js'
+import DumbConductMeeting from '../../../DumbComponents/TeamMeeting/DumbConductMeeting.js'
 
 export default class SmartConductMeeting extends React.Component {
   constructor(props) {
@@ -16,43 +16,25 @@ export default class SmartConductMeeting extends React.Component {
     "However, it’s not an anti-pattern if you make it clear that the prop is only
     seed data for the component’s internally-controlled state:"
 
-    In this case, the noteLists state key is storing the prop value passed to it when
-    it rendered to allow the user to change.
-
     Because of this, the use of this prop is in fact NOT an anti-pattern. Please
     communicate any concerns or newfound inefficiencies with this method to the
     technical staff.
-    ---------------------------------------------------------------------------
 
-    this.props.meetingDate.notes = {general: [...], actionL: [...], decision: [...]}
-
-    therefore:
-
-    noteLists : {
-        general: [...],
-        action: [...],
-        decision: [...]
-      }
 
     ---------------------------------------------------------------------------
     */
 
     this.state = {
+      notes: this.props.meetingData.notes,
+      timeElapsed: this.props.meetingData.timeElapsed,
       tempItemText: '',
       tempItemType: 'general',
       tempItemColor: 'gray',
       selectedIndex: 0,
-      notes: {
-        general: [],
-        action: [],
-        decision: []
-      },
       hasNotes: false,
       scrollToBottom: false,
       startDate: Date.now(),
-      timeElapsed: this.props.meetingData.timeElapsed,
       errorText: { inputText: ''}
-
     }
 
     this.handleChange         = this.handleChange.bind(this)
@@ -65,10 +47,12 @@ export default class SmartConductMeeting extends React.Component {
     this.formatDuration       = this.formatDuration.bind(this)
     this.createList           = this.createList.bind(this)
     this.setRef               = this.setRef.bind(this)
+    this.updateMeetingData    = this.updateMeetingData.bind(this)
   }
 
   componentDidMount () {
     this.interval = setInterval(this.getAndUpdateDuration, 1000)
+    if (Object.keys(this.props.meetingData.notes).length > 0) this.setState({hasNotes: true})
   }
 
   componentWillUnmount () {
@@ -78,6 +62,7 @@ export default class SmartConductMeeting extends React.Component {
   componentDidUpdate () {
     //if this.state.scrollToBottom === true then scroll to the bottom of notes list
     //and reset the state property, scroll to bottom of notes list
+
     if (this.state.scrollToBottom) {
       var targetBottomScrollElement = this.scrollRef
       targetBottomScrollElement.scrollTop = targetBottomScrollElement.scrollHeight
@@ -93,15 +78,21 @@ export default class SmartConductMeeting extends React.Component {
   }
 
   nextStep () {
-    var dataObj         = this.props.getMeetingData()
-    dataObj.notes       = this.state.notes
-    dataObj.timeElapsed = this.state.timeElapsed
-    this.props.submitMeetingData(dataObj)
+    this.updateMeetingData()
     this.props.handleIndexChange('forward')
   }
 
   previousStep () {
+    this.updateMeetingData()
     this.props.handleIndexChange('backward')
+  }
+
+  updateMeetingData () {
+    var dataObj         = this.props.getMeetingData()
+    dataObj.notes       = this.state.notes
+    dataObj.timeElapsed = this.state.timeElapsed
+    this.props.submitMeetingData(dataObj)
+    console.log('update')
   }
 
   getAndUpdateDuration () {

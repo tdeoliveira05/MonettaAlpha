@@ -27,7 +27,7 @@ export default class SmartHome extends React.Component {
       },
       tempErrors: {},
       dialogToggle: false,
-      dialogComponentType: 'login'
+      dialogComponentType: 'alpha'
     }
 
     this.dialogToggleFunction   = this.dialogToggleFunction.bind(this)
@@ -60,7 +60,7 @@ export default class SmartHome extends React.Component {
         break
 
       case 'alpha':
-        //this.props.handleAlphaRequest(data)
+        this.props.handleAlphaRequest(data)
         this.dialogToggleFunction()
         break
     }

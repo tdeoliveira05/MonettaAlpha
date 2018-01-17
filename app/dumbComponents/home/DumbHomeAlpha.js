@@ -4,7 +4,7 @@ import TextField from 'material-ui/TextField'
 
 const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastName, username, jobPosition, organization, referenceNotes}) => (
   <div className="LogSig" >
-      <h2>Send us your information and we will get back to you!</h2>
+      <h2>Join our Alpha Trials today and help us build a great tool for you!</h2>
 
       <div>
         <TextField

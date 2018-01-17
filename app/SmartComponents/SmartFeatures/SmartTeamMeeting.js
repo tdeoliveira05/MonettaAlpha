@@ -3,14 +3,17 @@ import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 
+import DumbChooseMeeting from '../../DumbComponents/TeamMeeting/DumbChooseMeeting.js'
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
 import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
 import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'
+
 
 export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      meetingIndex: 1,
       typeList: [
         { text: 'General Note',
           type: 'general',
@@ -37,74 +40,14 @@ export default class SmartTeamMeeting extends React.Component {
           }
         }
       ],
-      meetingIndex: 0,
       meetingData: {
         title: '',
         date: '',
         members: [],
         notes: {
-          general: [
-            {
-              text: 'temporary text 1',
-              type: 'general',
-              color: 'gray',
-              timeStamp: '270000',
-              formattedTimeStamp: '4:30'
-            },
-            {
-              text: 'temporary text 3',
-              type: 'general',
-              color: 'gray',
-              timeStamp: '500000',
-              formattedTimeStamp: '8:20'
-            },
-            {
-              text: 'temporary text 7',
-              type: 'general',
-              color: 'gray',
-              timeStamp: '1740000',
-              formattedTimeStamp: '29:00'
-            }
-          ],
-            action: [
-            {
-              text: 'temporary text 2',
-              type: 'action',
-              color: 'rgb(70,153,255)',
-              timeStamp: '390000',
-              formattedTimeStamp: '6:30'
-            },
-            {
-              text: 'temporary text 4',
-              type: 'action',
-              color: 'rgb(70,153,255)',
-              timeStamp: '660000',
-              formattedTimeStamp: '11:00'
-            },
-            {
-              text: 'temporary text 8',
-              type: 'action',
-              color: 'rgb(70,153,255)',
-              timeStamp: '2100000',
-              formattedTimeStamp: '35:00'
-            }
-          ],
-            decision: [
-            {
-              text: 'temporary text 5',
-              type: 'decision',
-              color: 'rgb(70,153,255)',
-              timeStamp: '1160000',
-              formattedTimeStamp: '19:20'
-            },
-            {
-              text: 'temporary text 6',
-              color: 'rgb(70,153,255)',
-              type: 'decision',
-              timeStamp: '1620000',
-              formattedTimeStamp: '27:00'
-            }
-          ]
+          general: [],
+          action: [],
+          decision: []
         },
         timeElapsed: {
           duration: 0,
@@ -112,8 +55,9 @@ export default class SmartTeamMeeting extends React.Component {
           expectedDuration: 0
         },
         host: '',
-        goals: ['this is the goal 1', 'this is the second goal in the list']
-      }
+        goals: []
+      },
+      userData: this.props.userTokenObj
     }
 
     this.handleIndexChange        = this.handleIndexChange.bind(this)
@@ -137,6 +81,8 @@ export default class SmartTeamMeeting extends React.Component {
   }
 
   handleIndexChange(direction) {
+    if (typeof(direction) === 'number')  this.setState({meetingIndex: direction})
+
     switch (direction) {
       case 'forward':
         this.setState({meetingIndex: this.state.meetingIndex + 1})
@@ -166,7 +112,19 @@ export default class SmartTeamMeeting extends React.Component {
 
     switch (this.state.meetingIndex) {
       case 0:
-        var MeetingHeader     = 'Prepare the Meeting'
+        var MeetingHeader     = ''
+        var MeetingComponent  = (
+          <DumbChooseMeeting
+            handleIndexChange = {this.handleIndexChange}
+            />
+        )
+        break
+
+      case 1:
+        var MeetingHeader     = (
+          <div>
+          </div>
+        )
         var MeetingComponent  = (
           <SmartPrepareMeeting
             handleIndexChange       = {this.handleIndexChange}
@@ -177,8 +135,12 @@ export default class SmartTeamMeeting extends React.Component {
         )
         break
 
-      case 1:
-        var MeetingHeader     = 'Conduct the Meeting'
+      case 2:
+        var MeetingHeader     = (
+          <div>
+            <Paper className  = 'MeetingHeader'> <h1>{this.state.meetingData.title}</h1> </Paper>
+          </div>
+        )
         var MeetingComponent  = (
           <SmartConductMeeting
             handleIndexChange       = {this.handleIndexChange}
@@ -190,8 +152,12 @@ export default class SmartTeamMeeting extends React.Component {
         )
         break
 
-      case 2:
-        var MeetingHeader     = 'Review the Minutes'
+      case 3:
+        var MeetingHeader     = (
+          <div>
+            <Paper className  = 'MeetingHeader'> <h1>{this.state.meetingData.title}</h1> </Paper>
+          </div>
+        )
         var MeetingComponent  = (
           <SmartReviewMinutes
             handleIndexChange       = {this.handleIndexChange}
@@ -206,9 +172,7 @@ export default class SmartTeamMeeting extends React.Component {
     //----------------------------RETURN----------------------------------------
     return (
       <div>
-        <div>
-          <Paper className='MeetingHeader'> <h1> {MeetingHeader} </h1> </Paper>
-        </div>
+        {MeetingHeader}
         {MeetingComponent}
       </div>
     )
