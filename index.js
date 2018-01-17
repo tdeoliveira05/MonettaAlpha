@@ -1,4 +1,4 @@
-// THIS IS THE SERVER [ROUTER] //
+// THIS IS THE SERVER [ROUTER FILE] //
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
@@ -15,18 +15,19 @@ const User = require('./models/userModel.js')
 const Meeting = require('./models/meetingModel.js')
 const Feedback = require('./models/feedbackModel.js')
 const Code = require('./models/codeModel.js')
-const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
+//const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
 
-//initialize general app & protected routes
+//Amazon requirements
+const AWS = require('aws-sdk')
+AWS.config.region = process.env.REGION
+
+//initialize general app
 const app = express();
-const protectedRoute = express.Router();
 
 // Import entire directory of server logic and tools
 const requireDir = require('require-dir')
 const serverLogic = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
-//console.log(serverLogic)
 const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
-
 
 // Setting up sendgrid connection for use in any email functions
 const sgMail = require('@sendgrid/mail')
@@ -35,7 +36,6 @@ sgMail.setApiKey('SG.PRoR2Z0rQZmC4n_xp8WSjw.WIJzhAJtJkGpOqws_yxs9pO6MLcQBRkfFH7l
 //Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
-app.use('/protected-api', protectedRoute)
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -76,18 +76,7 @@ mongoose.connection.once('open',function(){
 //-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
 //----------------------------------------------------------------------------//
 
-//Redirecting to https----------------------------------------------------------
-/*
 if(process.env.NODE_ENV=='production') app.use(yes());;
-*/
-
-//Slack OAuth-------------------------------------------------------------------
-/*
-const slack = SlackOAuthClient.connect(
-	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
-);
-if(process.env.NODE_ENV=='production') slack.postMessage('Feedback', 'Deployed');
-*/
 
 //----------------------------------------------------------------------------//
 //--------------------------------SERVER ROUTES-------------------------------//
@@ -119,8 +108,8 @@ TOKEN_OBJ = {
 }
 */
 
-app.post('/login',function(req, res){
-  console.log('reached')
+app.post('/loginRequest',function(req, res){
+  console.log('reached', req.body)
 	serverLogic.requestLogin(req, res)
 })
 
@@ -152,8 +141,36 @@ TOKEN_OBJ = {
 }
 */
 
-app.post('/signup', function(req, res) {
-	serverLogic.requestSignup(req, res)
+app.post('/signupRequest', function(req, res) {
+  serverLogic.requestSignup(req, res)
+})
+
+/* -----------------------------------------------------------------------------
+Processes an alpha trial request
+Process =>
+1. parses data into an email
+2. sends to team@monettatech.com
+
+-------------------
+
+inputObject = req.body = {
+  username: STRING, // this is the email
+  password: empty,
+  codeUsed: empty,
+  firstName: STRING,
+  lastName: STRING,
+  jobPosition: STRING,
+  organization: STRING,
+  referenceNotes: STRING
+}
+
+outputObject = res = {
+data: STRING // response from server
+}
+*/
+
+app.post('/alphaRequest', function(req, res) {
+  serverLogic.requestAlpha(req, res)
 })
 
 
@@ -445,16 +462,19 @@ app.post('/updateqs', function(req, response) {
 //--------------------------proceed with caution------------------------------//
 //----------------------------------------------------------------------------//
 
-
-
-//serverUtility.utilityFunction.dropDatabaseCollections()
-//serverUtility.utilityFunction.enterDatabaseCodes(codes)
-//serverLogic.utilityFunction.enterDatabaseTestUser('thiago', '1234')
+/*
+if (false) {
+  serverUtility.utilityFunction.dropDatabaseCollections()
+  serverUtility.utilityFunction.enterDatabaseCodes(codes)
+}
+*/
+//serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1234', 'qwerty')
 
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 //------------------------------SERVER PORT-----------------------------------//
-app.listen(process.env.PORT || port,function() {
+
+app.listen(process.env.PORT || port, function() {
 	console.log('App listening on port', port)
 })

@@ -2,12 +2,12 @@
 module.exports = function (Schema, paramObjs) {
   return new Promise (function(resolve, reject) {
 
-    var doc = Schema.findOne(paramObjs)
-
-    if (doc) {
-      resolve(doc)
-    } else {
-      reject("ERROR(findThis.js): No such document matched the parameter object")
-    }
+    Schema.findOne(paramObjs)
+    .then((userDoc) => {
+      userDoc ? resolve(userDoc) : reject('userDoc object is empty ')
+    })
+    .catch((error) => {
+      reject('ERROR (find.singleDoc.js) -b: ' + error)
+    })
   })
 };

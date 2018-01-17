@@ -18,9 +18,12 @@ module.exports = function (signupData, res) {
   .then((newUserDoc) => {
     return serverTools.authenticate.generateJWT(newUserDoc)
   })
-  .then((token) => {
-    res.status(200).send(token)
-    console.log('current session token: ' + token)
+  .then(({token, userDoc}) => {
+    console.log('Current session user token: ' + token)
+    res.status(200).send({
+      token: token,
+      userDoc: userDoc
+    })
   })
   .catch((error) => {
     console.log(error)

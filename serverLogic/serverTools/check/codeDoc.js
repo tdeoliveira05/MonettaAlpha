@@ -4,7 +4,7 @@ const Code = require('../../../models/codeModel')
 module.exports = function (dataParam) {
   return new Promise (function(resolve, reject) {
 
-    Code.findOne({code: dataParam.body.code})
+    Code.findOne({code: dataParam.body.codeUsed})
     .then((codeDoc) => {
       if (!codeDoc) reject('ERROR(check.codeDoc.js): code does not exist')
       if (codeDoc.used) reject('ERROR(check.codeDoc.js): code has already been used')

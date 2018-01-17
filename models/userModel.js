@@ -13,7 +13,13 @@ const UserSchema = new mongoose.Schema({
   organization: String,
   data: {
     schemaDataVersion: {type: Number, default: 1.0},
-    totalServiceMinutes: Number
+    appUsage: {
+      totalMinutes: Number,
+      totalSpeechRecognitionMinutes: Number
+    }
+  },
+  settings: {
+    quickMeeting: String
   }
 }, {timestamps: true});
 

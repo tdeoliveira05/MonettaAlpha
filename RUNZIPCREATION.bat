@@ -1,0 +1,1 @@
+zip -r MonettaAlpha.zip . -x \*node_modules\*

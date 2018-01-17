@@ -10,7 +10,7 @@ module.exports = function (signupData) {
       var newUserDoc = new User({
         username: signupData.body.username,
         password: hashPass,
-        codeUsed: signupData.body.code
+        codeUsed: signupData.body.codeUsed
       });
       resolve(newUserDoc)
     })
