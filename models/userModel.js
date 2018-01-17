@@ -10,7 +10,9 @@ const UserSchema = new mongoose.Schema({
   password: String,
   firstName: String,
   lastName: String,
+  jobPosition: String,
   organization: String,
+  referenceNotes: String,
   data: {
     schemaDataVersion: {type: Number, default: 1.0},
     appUsage: {
@@ -19,7 +21,7 @@ const UserSchema = new mongoose.Schema({
     }
   },
   settings: {
-    quickMeeting: String
+    quickMeeting: Object
   }
 }, {timestamps: true});
 
@@ -43,4 +45,16 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model('user', UserSchema);
 
 module.exports = User;
+
+/*
+inputObject = req.body = {
+  username: STRING, // this is the email
+  password: empty,
+  codeUsed: empty,
+  firstName: STRING,
+  lastName: STRING,
+  jobPosition: STRING,
+  organization: STRING,
+  referenceNotes: STRING
+}
 */

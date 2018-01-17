@@ -2,13 +2,13 @@ import React from 'react'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 
-const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastName, username, jobPosition, organization, referenceNotes}) => (
+const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastName, username, errorText, jobPosition, organization, referenceNotes}) => (
   <div className="LogSig" >
       <h2>Join our Alpha Trials today and help us build a great tool for you!</h2>
 
       <div>
         <TextField
-          floatingLabelText="First Name"
+          floatingLabelText="First Name*"
           name="firstName"
           onChange={handleOnTempChange}
           value={firstName}
@@ -16,7 +16,7 @@ const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastNa
       </div>
       <div>
         <TextField
-          floatingLabelText="Last Name"
+          floatingLabelText="Last Name*"
           name="lastName"
           onChange={handleOnTempChange}
           value={lastName}
@@ -25,7 +25,7 @@ const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastNa
 
       <div>
         <TextField
-          floatingLabelText="Email"
+          floatingLabelText="Email*"
           name="username"
           onChange={handleOnTempChange}
           value={username}
@@ -34,7 +34,7 @@ const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastNa
 
       <div>
         <TextField
-          floatingLabelText="Job Position"
+          floatingLabelText="Job Position*"
           name="jobPosition"
           onChange={handleOnTempChange}
           value={jobPosition}
@@ -43,7 +43,7 @@ const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastNa
 
       <div>
         <TextField
-          floatingLabelText="Company"
+          floatingLabelText="Company*"
           name="organization"
           onChange={handleOnTempChange}
           value={organization}
@@ -61,6 +61,11 @@ const AlphaUserComponent = ({handleOnTempChange, handleSubmit, firstName, lastNa
 
       <div>
         <RaisedButton onClick={()=>handleSubmit('alpha')} label="Submit" secondary={true} style={{marginTop: '20px'}} />
+      </div>
+      <div>
+        <h2>
+          {errorText}
+        </h2>
       </div>
   </div>
 )

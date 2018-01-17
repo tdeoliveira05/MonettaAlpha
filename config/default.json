@@ -23,5 +23,9 @@
       "9999"],
     "port": 8080,
     "secret": "GordonPatrick"
+  },
+  "Mailjet":{
+    "publicKey": "e27349f0743f50b01d5104d7d540f035",
+    "privateKey": "bdb8cfd5a1f78614ac5127775a72e20e"
   }
 }
