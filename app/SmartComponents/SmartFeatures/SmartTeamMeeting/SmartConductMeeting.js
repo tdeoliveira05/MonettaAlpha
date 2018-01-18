@@ -26,12 +26,14 @@ export default class SmartConductMeeting extends React.Component {
 
     this.state = {
       notes: this.props.meetingData.notes,
-      timeElapsed: this.props.meetingData.timeElapsed,
+      timeElapsed: this.props.meetingData.meetingStats.timeElapsed,
+      goals: this.props.meetingData.goals,
       tempItemText: '',
       tempItemType: 'general',
       tempItemColor: 'gray',
       selectedIndex: 0,
       hasNotes: false,
+      updateTime: true,
       scrollToBottom: false,
       startDate: Date.now(),
       errorText: { inputText: ''}
@@ -45,9 +47,15 @@ export default class SmartConductMeeting extends React.Component {
     this.previousStep         = this.previousStep.bind(this)
     this.getAndUpdateDuration = this.getAndUpdateDuration.bind(this)
     this.formatDuration       = this.formatDuration.bind(this)
-    this.createList           = this.createList.bind(this)
+    this.createNoteList       = this.createNoteList.bind(this)
     this.setRef               = this.setRef.bind(this)
     this.updateMeetingData    = this.updateMeetingData.bind(this)
+  }
+
+  componentWillMount () {
+    var newNoteList = this.state.notes
+    newNoteList.timeSorted = this.createNoteList()
+    this.setState(newNoteList)
   }
 
   componentDidMount () {
@@ -88,20 +96,29 @@ export default class SmartConductMeeting extends React.Component {
   }
 
   updateMeetingData () {
-    var dataObj         = this.props.getMeetingData()
-    dataObj.notes       = this.state.notes
-    dataObj.timeElapsed = this.state.timeElapsed
+    var dataObj                       = this.props.getMeetingData()
+    dataObj.notes                     = this.state.notes
+    dataObj.notes.timeSorted          = this.createNoteList()
+    dataObj.meetingStats.timeElapsed  = this.state.timeElapsed
     this.props.submitMeetingData(dataObj)
-    console.log('update')
   }
 
   getAndUpdateDuration () {
 
-    var durationVal          = this.props.meetingData.timeElapsed.duration + Date.now() - this.state.startDate //props added to carry on from when they left the conduct meeting tab
-    var formattedDurationVal = this.formatDuration(durationVal)
-    var timeElapsed          = {timeElapsed: {duration: durationVal, formattedDuration: formattedDurationVal, expectedDuration: this.props.meetingData.timeElapsed.expectedDuration}}
+    if (this.state.updateTime) {
+      var durationVal = this.props.meetingData.meetingStats.timeElapsed.actualDuration + Date.now() - this.state.startDate //props added to carry on from when they left the conduct meeting tab
+      this.setState({updateTime: false})
+    } else {
+      var durationVal = Date.now() - this.state.startDate
+    }
 
-    this.setState(timeElapsed)
+    var formattedActualDurationVal    = this.formatDuration(durationVal)
+    var timeElapsedObj                = this.state.timeElapsed
+
+    timeElapsedObj.actualDuration            = durationVal
+    timeElapsedObj.formattedActualDuration   = formattedActualDurationVal
+
+    this.setState(timeElapsedObj)
   }
 
   formatDuration (durationVal) {
@@ -115,9 +132,17 @@ export default class SmartConductMeeting extends React.Component {
     this.setState({[event.target.name]: event.target.value})
   }
 
-  deleteNoteItem (index) {
+  deleteNoteItem (targetString) {
+    //Preparing for information extraction
+    var indexToSplit = targetString.indexOf('[') //designating a flag to split in relation to
+
+    // information extraction
+    var targetName   = targetString.substr(0, indexToSplit) // extracting type of note item
+    var targetIndex  = targetString.substr(indexToSplit + 1, 1) // extracting index of target note item
+
+    //immutability helpers
     var newNoteList = this.state.notes
-    newNoteList.splice(index, 1)
+    newNoteList[targetName].splice(targetIndex, 1)
 
     this.setState(newNoteList)
   }
@@ -134,10 +159,10 @@ export default class SmartConductMeeting extends React.Component {
     var newNoteList = this.state.notes
     var newNoteItem = {
                       text: this.state.tempItemText,
-                      type: this.state.tempItemType,
+                      itemType: this.state.tempItemType,
                       color: this.state.tempItemColor,
-                      timeStamp: this.state.timeElapsed.duration,
-                      formattedTimeStamp: this.state.timeElapsed.formattedDuration
+                      timeStamp: this.state.timeElapsed.actualDuration,
+                      formattedTimeStamp: this.state.timeElapsed.formattedActualDuration
                       }
 
     //submits the tempItem to the list and overwrites the state to update it
@@ -167,7 +192,7 @@ export default class SmartConductMeeting extends React.Component {
     this.setState(newItemColor)
   }
 
-  createList () {
+  createNoteList () {
     //This function will likely be stored in a separate file since it can be used many times
     var generalNotesList  = this.state.notes.general
     var actionItemsList   = this.state.notes.action
@@ -197,15 +222,28 @@ export default class SmartConductMeeting extends React.Component {
 
   }
 
+  createGoalList () {
+    var tempList = this.state.goals
+    var goalList = []
+
+    tempList.map((item) => {
+      goalList.push(item.text)
+    })
+    return goalList
+  }
+
   render () {
     //---------------------------CONDITIONS-------------------------------------
     var noteList = []
-    if (this.state.hasNotes) noteList = this.createList() // if there are notes, will create a sorted list for display
+    if (this.state.hasNotes) noteList = this.createNoteList() // if there are notes, will create a sorted list for display
+
+    var goalList = this.createGoalList()
 
     var meetingInfoHeading = (
-      <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {'Expected Duration: (' + this.props.meetingData.timeElapsed.expectedDuration + ' mins)'}  </p>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.members.map((item) => (item + ', '))} </p>
+      <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0', padding: '0'}}>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.userTokenObj.fullName + this.props.meetingData.participants.map((item) => (', '+ item.fullName))} </p>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.location} </p>
+
       </div>
 
     )
@@ -216,7 +254,7 @@ export default class SmartConductMeeting extends React.Component {
           noteList            = {noteList}
           meetingInfoHeading  = {meetingInfoHeading}
           setRef              = {this.setRef}
-          goalList            = {this.props.meetingData.goals}
+          goalList            = {goalList}
           typeList            = {this.props.typeList}
           selectedIndex       = {this.state.selectedIndex}
           tempItemText        = {this.state.tempItemText}
@@ -228,7 +266,7 @@ export default class SmartConductMeeting extends React.Component {
           nextStep            = {this.nextStep}
           previousStep        = {this.previousStep}
           errorText           = {this.state.errorText}
-          formattedDuration   = {this.state.timeElapsed.formattedDuration}
+          formattedDuration   = {this.state.timeElapsed.formattedActualDuration}
           />
       </div>
     )

@@ -1,5 +1,7 @@
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import Dialog from 'material-ui/Dialog'
+import axios from 'axios'
 
 import DumbHomeMain from '../DumbComponents/Home/DumbHomeMain.js'
 import DumbHomeHeader from '../DumbComponents/Home/DumbHomeHeader.js'
@@ -54,7 +56,7 @@ export default class SmartHome extends React.Component {
     console.log('dev restrictions')
     /*
     const self = this
-    axios.post('http://localhost:3000/loginRequest', loginData)
+    axios.post('http://localhost:3000/request/login', loginData)
     .then((tokenResponse) => {
       tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
     })
@@ -68,7 +70,7 @@ export default class SmartHome extends React.Component {
     console.log('dev restrictions')
     /*
     const self = this
-    axios.post('http://localhost:3000/signupRequest', signupData)
+    axios.post('http://localhost:3000/request/signup', signupData)
     .then((tokenResponse) => {
       tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
     })
@@ -81,7 +83,7 @@ export default class SmartHome extends React.Component {
   handleAlphaRequest (alphaData) {
     console.log('alpha accessed')
     const self = this
-    axios.post('http://localhost:8080/alphaRequest', alphaData)
+    axios.post('http://localhost:8080/request/alpha', alphaData)
     .then((response) => {
       console.log('server responded')
       console.log(response)

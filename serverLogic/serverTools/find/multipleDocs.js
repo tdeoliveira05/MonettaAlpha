@@ -1,6 +1,9 @@
 // This function will search for a specific document based on a matching parameter
 module.exports = function (Schema, paramObjs) {
   return new Promise (function(resolve, reject) {
+    console.log('paramObjs: ')
+    console.log(paramObjs)
+    console.log(typeof(paramObjs))
 
     var docArray = Schema.find(paramObjs)
 

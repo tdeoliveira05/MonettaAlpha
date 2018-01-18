@@ -44,6 +44,7 @@
     "react-tap-event-plugin": "^2.0.1",
     "react-time": "^4.3.0",
     "react-voice-components": "^1.0.0",
+    "reactstrap": "^4.8.0",
     "require-dir": "^0.3.2",
     "sass-loader": "^6.0.6",
     "sendgrid": "^5.2.3",

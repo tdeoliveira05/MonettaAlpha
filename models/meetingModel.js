@@ -3,30 +3,74 @@ const Schema = mongoose.Schema;
 
 const MeetingSchema = new Schema({
   title: String,
-  hostUsername: String,
+  host: {
+    fullName: String,
+    username: String
+  },
   participants: [
     {
-      firstName: {type: String, required: [true, 'Participant data needs to include a firstName']},
-      lastName: {type: String, required: [true, 'Participant data needs to include a lastName']},
-      username: {type: String, required: [true, 'Participant data needs to include a username']}
+    fullName: String,
+    email: String,
+    guest: Boolean
     }
   ],
-  guestEmails: Array,
   date: {type: String, default: Date.now()},
   location: String,
-  meetingNotes: {
-    generalNotes: String,
-    actionItems: String,
-    teamDecisions: String
+  goals: [
+    {
+      text: String,
+      completed: Boolean,
+      completionTimeStamp: Number
+    }
+  ],
+  notes: {
+    general: [
+      {
+        text: String,
+        itemType: String,
+        color: String,
+        timeStamp: Number,
+        formattedTimeStamp: String
+      }
+    ],
+    action: [
+      {
+        text: String,
+        itemType: String,
+        color: String,
+        timeStamp: Number,
+        formattedTimeStamp: String
+      }
+    ],
+    decision: [
+      {
+        text: String,
+        itemType: String,
+        color: String,
+        timeStamp: Number,
+        formattedTimeStamp: String
+      }
+    ],
+    timeSorted: [
+      {
+        text: String,
+        itemType: String,
+        color: String,
+        timeStamp: Number,
+        formattedTimeStamp: String
+      }
+    ]
   },
   metaData: {
     starred: Boolean,
     category: String
   },
   meetingStats: {
-    duration: {
+    timeElapsed: {
       actualDuration: Number,
+      formattedActualDuration: String,
       expectedDuration: Number,
+      formattedExpectedDuration: String
     }
   }
 })
@@ -35,54 +79,3 @@ const Meeting = mongoose.model('meeting', MeetingSchema);
 
 
 module.exports = Meeting;
-
-/* this is what it currently is in the server
-
-const MeetingSchema = new Schema({
-  username: String,
-  title: String,
-  type: String,
-  date: Number,
-  location:String,
-  groups: Array,
-  chair: String,
-  lists: Array,
-  members: Array,
-  minutes: Array,
-  actions: Array,
-  decisions:Array
-});
-
-*/
-
-/* this is what it should be
-
-SUNNY USE THIS TO PLAN SmartDocumentStorage.js
-
-const MeetingSchema = new Schema({
-  title: String,
-  hostUsername: String,
-  participants: [
-
-  ],
-  guestEmails: Array,
-  date: {type: String, default: Date.now()},
-  meetingNotes: {
-    generalNotes: String,
-    actionItems: String,
-    teamDecisions: String
-  },
-  metaData: {
-    starred: Boolean,
-    category: String
-  },
-  meetingStats: {
-    duration: {
-      actualDuration: Number,
-      expectedDuration: Number,
-    }
-  }
-
-});
-
-*/

@@ -8,24 +8,26 @@ import Slider from 'material-ui/Slider'
 
 const DumbPrepareMeeting = ({
   handleChange,
+  changeParticipantListItem,
   nextStep,
   previousStep,
-  addMemberListItem,
-  removeMemberListItem,
+  addParticipantListItem,
+  removeParticipantListItem,
   addGoalListItem,
   removeGoalListItem,
   changeGoalListItem,
   tempGoal,
   meetingTitle,
   listInput,
-  tempMember,
+  tempParticipant,
   titleError,
-  memberError,
+  participantError,
   goalError,
-  memberList,
+  participantsList,
   goalList,
   tempExpectedDuration,
   changeDuration,
+  meetingLocation,
   setDuration,
   maxDuration
 }) => (
@@ -37,88 +39,112 @@ const DumbPrepareMeeting = ({
         name          = 'title'
         value         = {meetingTitle}
         onChange      = {handleChange}
-        hintStyle     = {{textAlign: 'center', fontSize: '1.5em'}}
+        hintStyle     = {{textAlign: 'center', fontSize: '1.7em'}}
         inputStyle    = {{textAlign: 'center', fontSize: '1.5em', fontWeight: 'bold'}}
         style         = {{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px'}}
         />
-      <Divider style = {{marginBottom: '30px', width: '100%'}}/>
-      <div className = 'PrepareMeetingSetDuration'>
+      <Divider style = {{width: '100%'}}/>
+      <TextField
+        underlineShow = {false}
+        hintText      = 'Enter a location'
+        name          = 'location'
+        value         = {meetingLocation}
+        onChange      = {handleChange}
+        hintStyle     = {{textAlign: 'center'}}
+        inputStyle    = {{textAlign: 'center'}}
+        style         = {{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px'}}
+        />
+      <Divider style = {{width: '25%', marginBottom: '40px'}}/>
+
+      <div className = 'PrepareMeetingDurationDiv'>
         <h2 style = {{marginTop: '10px', color: 'gray'}}> How long will this meeting be? </h2>
-        <div className = 'PrepareMeetingDurationInfo'>
-          <div>
+        <div className = 'PrepareMeetingSetDuration'>
+          <div className = 'PrepareMeetingDurationInfo'>
             <h1 style = {{fontSize: '4em', margin: '0'}}> { maxDuration ? tempExpectedDuration + '+' : tempExpectedDuration } </h1>
             <h3 style = {{margin: '0'}}> minutes </h3>
           </div>
-          <Slider
-            onChange    = {changeDuration}
-            value       = {tempExpectedDuration}
-            min         = {0}
-            max         = {120}
-            step        = {5}
-            axis        = 'y'
-            sliderStyle = {{margin: '0', padding: '0'}}
-          />
+          <div className = 'PrepareMeetingDurationButtons'>
+            <Slider
+              onChange    = {changeDuration}
+              value       = {tempExpectedDuration}
+              min         = {0}
+              max         = {120}
+              step        = {5}
+              axis        = 'y'
+              sliderStyle = {{margin: '0', padding: '0'}}
+            />
+            <div>
+              <button
+                className = 'PrepareMeetingDurationButtonItems'
+                style = {{color: '#ffac4d'}}
+                onClick = {() => setDuration(15)}
+              > 15 min </button>
+              <button
+                className = 'PrepareMeetingDurationButtonItems'
+                style = {{color: '#6699ff'}}
+                onClick = {() => setDuration(30)}
+              > 30 min </button>
+            </div>
+            <div>
+            <button
+              className = 'PrepareMeetingDurationButtonItems'
+              style = {{color: 'gray'}}
+              onClick = {() => setDuration(60)}
+            > 60 min </button>
+            <button
+              className = 'PrepareMeetingDurationButtonItems'
+              style = {{color: 'gray'}}
+              onClick = {() => setDuration(120)}
+            > 120 min </button>
+            </div>
+          </div>
         </div>
-        <div className = 'PrepareMeetingDurationButtons'>
-          <FlatButton
-            label = '15 mins'
-            style = {{color: '#ffac4d'}}
-            onClick = {() => setDuration(15)}
-          />
-          <FlatButton
-            label = '30 mins'
-            style = {{color: '#6699ff'}}
-            onClick = {() => setDuration(30)}
-          />
-          <FlatButton
-            label = '60 mins'
-            style = {{color: 'gray'}}
-            onClick = {() => setDuration(60)}
-          />
-          <FlatButton
-            label = '120 mins'
-            style = {{color: 'gray'}}
-            onClick = {() => setDuration(120)}
-          />
-        </div>
-
       </div>
 
 
-      <div className = 'PrepareMeetingDiv'>
-        <div className = 'PrepareMeetingDivLeft'>
-          <Paper className = 'PrepareMeetingPaperLeft'>
+      <div className = 'PrepareMeetingInfo'>
+        <div className = 'PrepareMeetingInfoDiv'>
+          <Paper className = 'PrepareMeetingInfoPaper'>
             <h2> Participants </h2>
-            <div>
+            <div className = 'PrepareMeetingInfoPaperItems'>
               <TextField
                 underlineShow = {false}
                 hintText      = 'Add Participants'
-                value         = {tempMember}
-                name          = 'tempMember'
+                value         = {tempParticipant}
+                name          = 'tempParticipant'
                 onChange      = {handleChange}
                 onKeyPress    = {(event) => {
                   if (event.key === 'Enter') {
                     event.preventDefault();
-                    addMemberListItem()
+                    addParticipantListItem()
                   }
                 }}
               />
-              <RaisedButton
-                label   = 'Add'
-                onClick = {() => addMemberListItem()}
-                primary = {true}
-              />
+              <div>
+                <RaisedButton
+                  label   = 'Add'
+                  onClick = {() => addParticipantListItem()}
+                  primary = {true}
+                  style = {{margin: '0', padding: '0'}}
+                />
+              </div>
             </div>
           </Paper>
-          <div className = 'PrepareMeetingMemberList'>
-            {memberList.map((item, index) => {
+          <div className = 'PrepareMeetingDivList'>
+            {participantsList.map((item, index) => {
               return (
-                <Paper key = {index} className = 'PrepareMeetingMemberItem' >
-                  <h3> {item} </h3>
+                <Paper key = {index} className = 'PrepareMeetingDivItem' >
+                  <TextField
+                    underlineShow = {false}
+                    value         = {participantsList[index]}
+                    name          = {JSON.stringify(index)}
+                    onChange      = {changeParticipantListItem}
+                    multiLine     = {true}
+                    rowsMax       = {3}
+                  />
                   <button
-                    type      = 'button'
-                    onClick   = {() => removeMemberListItem({index})}
-                    className = 'PrepareMeetingMemberItemButton'
+                    onClick   = {() => removeParticipantListItem({index})}
+                    className = 'PrepareMeetingDivItemButton'
                     > X </button>
                 </Paper>
               )
@@ -126,10 +152,10 @@ const DumbPrepareMeeting = ({
           </div>
           <Divider />
         </div>
-        <div className = 'PrepareMeetingDivRight'>
-          <Paper className = 'PrepareMeetingPaperRight'>
+        <div className = 'PrepareMeetingInfoDiv'>
+          <Paper className = 'PrepareMeetingInfoPaper'>
             <h2> Meeting Goals </h2>
-            <div>
+            <div className = 'PrepareMeetingInfoPaperItems'>
               <TextField
                 underlineShow = {false}
                 hintText      = 'Add Meeting Goals'
@@ -143,41 +169,46 @@ const DumbPrepareMeeting = ({
                   }
                 }}
               />
-              <RaisedButton
-                label   = 'Add'
-                onClick = {() => addGoalListItem()}
-                secondary = {true}
-              />
+              <div>
+                <RaisedButton
+                  label   = 'Add'
+                  onClick = {() => addGoalListItem()}
+                  secondary = {true}
+                />
+              </div>
             </div>
           </Paper>
 
-          <div className = 'PrepareMeetingGoalList'>
+          <div className = 'PrepareMeetingDivList'>
             {goalList.map((item, index) => {
               return (
-                <Paper key = {index} className = 'PrepareMeetingGoalItem'>
-                  <div style = {{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <h2 style = {{padding: '4px'}}> {index + 1}. </h2>
-                    <TextField
-                      underlineShow = {false}
-                      value         = {goalList[index]}
-                      name          = {JSON.stringify(index)}
-                      onChange      = {changeGoalListItem}
-                      multiLine     = {true}
-                      rowsMax       = {3}
-                    />
-                  </div>
-                  <button type = 'button' onClick = {() => removeGoalListItem({index})} className = 'PrepareMeetingGoalItemButton'>
+                <Paper key = {index} className = 'PrepareMeetingDivItem'>
+                  <h2 style = {{padding: '4px'}}> {index + 1}. </h2>
+                  <TextField
+                    underlineShow = {false}
+                    value         = {goalList[index].text}
+                    name          = {JSON.stringify(index)}
+                    onChange      = {changeGoalListItem}
+                    multiLine     = {true}
+                    rowsMax       = {3}
+                  />
+                  <button
+                   onClick = {() => removeGoalListItem({index})}
+                   className = 'PrepareMeetingDivItemButton'
+                   >
                     X
-                  </button>
+                   </button>
                 </Paper>
               )
             })}
           </div>
         </div>
       </div>
+      <div style = {{height: '20px', color: 'red'}}>
         {goalError}
-        {memberError}
+        {participantError}
         {titleError}
+      </div>
       <div className = 'PrepareMeetingStepper'>
         <h2> Proceed? </h2>
         <div className = 'PrepareMeetingStepperButtons'>

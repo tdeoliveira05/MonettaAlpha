@@ -1,3 +1,4 @@
+
 import React from 'react'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import FontIcon from 'material-ui/FontIcon'
@@ -11,7 +12,7 @@ export default class SmartMain extends React.Component {
   constructor(props) {
     super(props)
     this.state={
-      tabValue: 'Storage'
+      tabValue: 'Meeting'
     }
 
     this.handleChangeTabValue = this.handleChangeTabValue.bind(this)
@@ -32,19 +33,20 @@ export default class SmartMain extends React.Component {
             <SmartTeamMeeting
               handleChangeTabValue = {this.handleChangeTabValue}
               userTokenObj         = {this.props.userTokenObj}
-              />
+            />
           </Tab>
           <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>
             <SmartDocumentStorage
-              />
+              userTokenObj         = {this.props.userTokenObj}
+            />
           </Tab>
           <Tab label='Productivity Data' value='Data' icon={<FontIcon className='material-icons'>trending_up</FontIcon>}>
             <SmartProductivityData
-              />
+            />
           </Tab>
           <Tab label='User Settings' value='Settings' icon={<FontIcon className='material-icons'>settings_applications</FontIcon>}>
             <SmartUserSettings
-              />
+            />
           </Tab>
         </Tabs>
       </div>

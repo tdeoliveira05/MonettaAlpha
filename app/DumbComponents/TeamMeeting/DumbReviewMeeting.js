@@ -3,10 +3,20 @@ import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
+import { Button } from 'reactstrap'
 
 
 
-const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, generalNotesList, typeList, actionItemsList, teamDecisionsList}) => (
+const DumbReviewMeeting = ({
+  handleNoteItemChange,
+  finishMeeting,
+  previousStep,
+  handleNoteItemDelete,
+  generalNotesList,
+  typeList,
+  actionItemsList,
+  teamDecisionsList
+}) => (
   <div className = 'ReviewMeetingWrapper'>
     <div className = 'ReviewMeetingContent'>
 
@@ -18,17 +28,24 @@ const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, g
           </Paper>
           <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[0].style.primaryColor[0]}}>
             {generalNotesList.map((item, index) => {
+              var targetString = 'general[' + index + ']'
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
                   <TextField
                     underlineShow = {false}
                     multiLine = {true}
                     value = {item.text}
-                    name = {'action[' + index + ']'}
+                    name = {targetString}
                     inputStyle = {{color: item.color, margin: '0', padding: '0'}}
                     style = {{width: '100%'}}
                     onChange = {handleNoteItemChange}
                   />
+                  <button
+                    className = 'ReviewMeetingNotesUnitItemButton'
+                    onClick = {() => handleNoteItemDelete(targetString)}
+                  >
+                    x
+                  </button>
                 </div>
               )
             })}
@@ -41,17 +58,24 @@ const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, g
           </Paper>
           <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[1].style.primaryColor[0]}}>
             {actionItemsList.map((item, index) => {
+              var targetString = 'action[' + index + ']'
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
                   <TextField
                     underlineShow = {false}
                     multiLine = {true}
                     value = {item.text}
-                    name = {'action[' + index + ']'}
+                    name = {targetString}
                     inputStyle = {{color: item.color, margin: '0', padding: '0'}}
                     style = {{width: '100%'}}
                     onChange = {handleNoteItemChange}
                   />
+                  <button
+                    className = 'ReviewMeetingNotesUnitItemButton'
+                    onClick = {() => handleNoteItemDelete(targetString)}
+                  >
+                    x
+                  </button>
                 </div>
               )
             })}
@@ -64,17 +88,24 @@ const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, g
           </Paper>
           <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[2].style.primaryColor[0]}}>
             {teamDecisionsList.map((item, index) => {
+              var targetString = 'decision[' + index + ']'
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
                   <TextField
                     underlineShow = {false}
                     multiLine = {true}
                     value = {item.text}
-                    name = {'action[' + index + ']'}
+                    name = {targetString}
                     inputStyle = {{color: item.color, margin: '0', padding: '0'}}
                     style = {{width: '100%'}}
                     onChange = {handleNoteItemChange}
                   />
+                  <button
+                    className = 'ReviewMeetingNotesUnitItemButton'
+                    onClick = {() => handleNoteItemDelete(targetString)}
+                  >
+                    x
+                  </button>
                 </div>
               )
             })}
@@ -98,7 +129,7 @@ const DumbReviewMeeting = ({handleNoteItemChange, finishMeeting, previousStep, g
             onClick = {() => previousStep()}
             />
           <RaisedButton
-            label = 'Submit'
+            label = 'Save'
             secondary = {true}
             onClick = {() => finishMeeting()}
             />

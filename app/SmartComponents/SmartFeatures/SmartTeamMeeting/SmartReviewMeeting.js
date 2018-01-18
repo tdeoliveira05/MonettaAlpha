@@ -17,7 +17,7 @@ export default class SmartReviewMinutes extends React.Component {
     "However, it’s not an anti-pattern if you make it clear that the prop is only
     seed data for the component’s internally-controlled state:"
 
-    In this case, the noteLists state key is storing the prop value passed to it when
+    In this case, the notes state key is storing the prop value passed to it when
     it rendered to allow the user to change.
 
     Because of this, the use of this prop is in fact NOT an anti-pattern. Please
@@ -27,13 +27,14 @@ export default class SmartReviewMinutes extends React.Component {
     */
 
     this.state = {
-      noteLists: this.props.meetingData.notes
+      notes: this.props.meetingData.notes
     }
 
     this.handleNoteItemChange    = this.handleNoteItemChange.bind(this)
     this.finishMeeting           = this.finishMeeting.bind(this)
     this.previousStep            = this.previousStep.bind(this)
     this.updateParentMeetingData = this.updateParentMeetingData.bind(this)
+    this.handleNoteItemDelete    = this.handleNoteItemDelete.bind(this)
   }
 
   finishMeeting () {
@@ -48,7 +49,7 @@ export default class SmartReviewMinutes extends React.Component {
 
   updateParentMeetingData () {
     var dataObj   = this.props.getMeetingData()
-    dataObj.notes = this.state.noteLists
+    dataObj.notes = this.state.notes
 
     this.props.submitMeetingData(dataObj)
   }
@@ -63,22 +64,38 @@ export default class SmartReviewMinutes extends React.Component {
     var targetIndex  = targetString.substr(indexToSplit + 1, 1) // extracting index of target note item
 
     //immutability helpers
-    var newNoteLists = this.state.noteLists
+    var newNoteList = this.state.notes
 
-    newNoteLists[targetName][targetIndex].text = event.target.value
-    this.setState(newNoteLists)
+    newNoteList[targetName][targetIndex].text = event.target.value
+    this.setState(newNoteList)
   }
+
+  handleNoteItemDelete (targetString) {
+    //Preparing for information extraction
+    var indexToSplit = targetString.indexOf('[') //designating a flag to split in relation to
+
+    // information extraction
+    var targetName   = targetString.substr(0, indexToSplit) // extracting type of note item
+    var targetIndex  = targetString.substr(indexToSplit + 1, 1) // extracting index of target note item
+
+    //immutability helpers
+    var newNoteList = this.state.notes
+    newNoteList[targetName].splice(targetIndex, 1)
+
+    this.setState(newNoteList)
+  }
+
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
     var generalNotesList = []
-    if (this.state.noteLists.general) generalNotesList = this.state.noteLists.general
+    if (this.state.notes.general) generalNotesList = this.state.notes.general
 
     var actionItemsList = []
-    if (this.state.noteLists.action) actionItemsList = this.state.noteLists.action
+    if (this.state.notes.action) actionItemsList = this.state.notes.action
 
     var teamDecisionsList = []
-    if (this.state.noteLists.decision) teamDecisionsList = this.state.noteLists.decision
+    if (this.state.notes.decision) teamDecisionsList = this.state.notes.decision
     //----------------------------RETURN----------------------------------------
     return(
       <div>
@@ -89,6 +106,7 @@ export default class SmartReviewMinutes extends React.Component {
           actionItemsList      = {actionItemsList}
           teamDecisionsList    = {teamDecisionsList}
           handleNoteItemChange = {this.handleNoteItemChange}
+          handleNoteItemDelete = {this.handleNoteItemDelete}
           finishMeeting        = {this.finishMeeting}
           previousStep         = {this.previousStep}
           typeList             = {this.props.typeList}
