@@ -29,18 +29,25 @@ import StarToggleOFF  from 'material-ui/svg-icons/toggle/star-border';
 
 
 
-// const styles = {
-//   block: {
-//     positionTop: 100,
-//   },
-//   checkbox: {
-//     positionBottom: 0,
-//   },
-//   icon: {
-//     boxColor: '#000000',
-//     checkedColor: "#fecb45",
-//   },
-// };
+const styles = {
+  block: {
+    height: 'auto',
+    // display: 'flex',
+  },
+  cardHeader: {
+    // display: "inline-block",
+    // position: "relative",
+    top: -48,
+    left: 35,
+    marginRight: 35,
+    // maxWidth: 1300,
+    // width: 1300,
+  },
+  cardIcon: {
+    display: "inline-block",
+    maxWidth: 25,
+  },
+};
 
 export default class SmartDocumentMain extends React.Component {
   constructor(props) {
@@ -65,50 +72,37 @@ export default class SmartDocumentMain extends React.Component {
 
     const meetingCards = meetingNames.map(meetingName => {
       		return (
-            <Card className="MeetingPreviewCard">
-            <CardActions>
-              <Checkbox
-                checkedIcon={<StarToggleON />}
-                uncheckedIcon={<StarToggleOFF />}
-              />
-            </CardActions>
-              <CardHeader
-                title={meetingName}
-                subtitle="Subtitle"
-                actAsExpander={true}
-                showExpandableButton={true}
-              />
+            <div className="MeetingPreviewCardWrapper" >
+              <Card style={styles.block} className="MeetingPreviewCard">
+                <CardActions>
+                  <Checkbox
+                    style={styles.cardIcon}
+                    checkedIcon={<StarToggleON />}
+                    uncheckedIcon={<StarToggleOFF />}
+                  />
+                  {/*<IconButton><MoreVertIcon/></IconButton>*/}
+                </CardActions>
+                <CardHeader
+                  style={styles.cardHeader}
+                  title={meetingName}
+                  subtitle= "Meeting Date"
+                  actAsExpander={true}
+                  showExpandableButton={true}
+                />
 
-              <CardText expandable={true}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-              </CardText>
-            </Card>
+                <CardText expandable={true}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
+                  Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
+                  Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+                </CardText>
+              </Card>
+            </div>
       		)
     	});
 
     return (
       <div className="DocumentStorageCardsWrapper" >
-        {/*/<Card>
-          <CardHeader
-            title="Without Avatar"
-            subtitle="Subtitle"
-            actAsExpander={true}
-            showExpandableButton={true}
-          />
-          <CardActions>
-            <FlatButton label="Action1" />
-            <FlatButton label="Action2" />
-          </CardActions>
-          <CardText expandable={true}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-            Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-            Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-          </CardText>
-        </Card>*/}
         {meetingCards}
       </div>
     );
