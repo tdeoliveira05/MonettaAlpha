@@ -1,7 +1,9 @@
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import axios from 'axios'
 
 import DumbChooseMeeting from '../../DumbComponents/TeamMeeting/DumbChooseMeeting.js'
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
@@ -13,7 +15,7 @@ export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 0,
+      meetingIndex: 1,
       typeList: [
         { text: 'General Note',
           type: 'general',
@@ -42,20 +44,29 @@ export default class SmartTeamMeeting extends React.Component {
       ],
       meetingData: {
         title: '',
-        date: '',
-        members: [],
+        host: {
+          fullName: this.props.userTokenObj.fullName,
+          username: this.props.userTokenObj.username
+        },
+        participants: [],
+        date: Date.now(),
+        location: '',
+        goals: [],
         notes: {
           general: [],
           action: [],
-          decision: []
+          decision: [],
+          timeSorted: []
         },
-        timeElapsed: {
-          duration: 0,
-          formattedDuration: '00:00',
-          expectedDuration: 0
-        },
-        host: '',
-        goals: []
+        metaData: {},
+        meetingStats: {
+          timeElapsed: {
+            actualDuration: 0,
+            formattedActualDuration: '00:00',
+            expectedDuration: 0,
+            formattedExpectedDuration: '00 mins'
+          }
+        }
       },
       userData: this.props.userTokenObj
     }
@@ -67,16 +78,11 @@ export default class SmartTeamMeeting extends React.Component {
   }
 
   getMeetingData () {
-    console.log('---')
-    console.log('ORIGINAL (get): ')
-    console.log(this.state.meetingData)
     return this.state.meetingData
+
   }
 
   submitMeetingData (meetingData) {
-    console.log('ORIGINAL (submit): ')
-    console.log(meetingData)
-    console.log('---')
     this.setState(meetingData)
   }
 
@@ -102,8 +108,14 @@ export default class SmartTeamMeeting extends React.Component {
     console.log('Submitting: ')
     console.log(this.state.meetingData)
 
-    // compute the expected vs actual time of the meeting
-    // input the host's name into this.state.meetingData.host
+    axios.post('http://localhost:8080/enter/newMeeting', this.state.meetingData)
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((errorText) => {
+      console.log(errorText)
+    })
+
   }
 
   render () {
@@ -131,6 +143,7 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
+            userTokenObj            = {this.props.userTokenObj}
             />
         )
         break
@@ -138,7 +151,7 @@ export default class SmartTeamMeeting extends React.Component {
       case 2:
         var MeetingHeader     = (
           <div>
-            <Paper className  = 'MeetingHeader'> <h1>{this.state.meetingData.title}</h1> </Paper>
+            <Paper className  = 'MeetingHeader'> <h1>{this.state.meetingData.title + ' (' + this.state.meetingData.meetingStats.timeElapsed.formattedExpectedDuration + ')'}</h1> </Paper>
           </div>
         )
         var MeetingComponent  = (
@@ -148,6 +161,7 @@ export default class SmartTeamMeeting extends React.Component {
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
             typeList                = {this.state.typeList}
+            userTokenObj            = {this.props.userTokenObj}
             />
         )
         break
@@ -165,6 +179,7 @@ export default class SmartTeamMeeting extends React.Component {
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
             typeList                = {this.state.typeList}
+            userTokenObj            = {this.props.userTokenObj}
             />
         )
         break

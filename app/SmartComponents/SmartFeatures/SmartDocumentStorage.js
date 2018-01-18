@@ -19,7 +19,9 @@ export default class SmartDocumentStorage extends React.Component {
     return(
       <div className='DocumentStorageWrapper'>
         <SmartDocumentHeader />
-        <SmartDocumentMain />
+        <SmartDocumentMain
+          userTokenObj = {this.props.userTokenObj}                           // Propagate the userTokenObj down the chain
+          />
       </div>
     );
   }

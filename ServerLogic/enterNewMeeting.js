@@ -8,10 +8,13 @@ module.exports = function (meetingData, res) {
   .then((newDoc) => {
     return serverTools.save.thisDoc(newDoc)
   })
-  .then(() => {
-  	res.send(JSON.stringify('Meeting Saved'))
+  .then((newDoc) => {
+    console.log('sucessfully saved meeting document')
+    console.log(newDoc)
+  	res.send({sucess: true, errorText: null})
   })
   .catch((error) => {
     console.log('[enterNewMeeting.js]' + error)
+    res.send({sucess: false, errorText: error})
   })
 }

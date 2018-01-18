@@ -32,14 +32,14 @@ export default class SmartPrepareMeeting extends React.Component {
     this.state = {
       title: this.props.meetingData.title,
       goals: this.props.meetingData.goals,
-      members: this.props.meetingData.members,
-      host: this.props.meetingData.host,
-      tempMember: '',
+      participants: this.props.meetingData.participants,
+      location: this.props.meetingData.location,
+      tempParticipant: '',
       tempGoal: '',
       tempExpectedDuration: 15,
       errorText: {
         goalInput: '',
-        memberInput: '',
+        participantInput: '',
         meetingTitle: ''
       },
       maxDuration: false
@@ -58,10 +58,11 @@ export default class SmartPrepareMeeting extends React.Component {
     this.changeGoalListItem   = this.changeGoalListItem.bind(this)
     this.addGoalListItem      = this.addGoalListItem.bind(this)
 
-    //MemberList Function binds
-    this.removeMemberListItem = this.removeMemberListItem.bind(this)
-    this.changeTempMember     = this.changeTempMember.bind(this)
-    this.addMemberListItem    = this.addMemberListItem.bind(this)
+    // Participants Function binds
+    this.removeParticipantListItem = this.removeParticipantListItem.bind(this)
+    this.addParticipantListItem    = this.addParticipantListItem.bind(this)
+    this.createParticipantList     = this.createParticipantList.bind(this)
+    this.changeParticipantListItem = this.changeParticipantListItem.bind(this)
   }
 
   componentDidUpdate () {
@@ -80,10 +81,9 @@ export default class SmartPrepareMeeting extends React.Component {
     }
 
     // if the participant list is not empty, make sure there is no participant error text
-    if (this.state.members.length !== 0 && errorText.memberInput !== '') {
-      errorText.memberInput = ''
+    if (this.state.participants.length !== 0 && errorText.participantInput !== '') {
+      errorText.participantInput = ''
       this.setState(errorText)
-      console.log('error member')
     }
   }
 
@@ -93,11 +93,17 @@ export default class SmartPrepareMeeting extends React.Component {
 
   nextStep () {
     if (!this.checkErrors()) {
-      var dataObj     = this.props.getMeetingData()
-      dataObj.title   = this.state.title
-      dataObj.goals   = this.state.goals
-      dataObj.date    = Date.now()
-      dataObj.members = this.state.members
+      var dataObj          = this.props.getMeetingData()
+      dataObj.title        = this.state.title
+      dataObj.goals        = this.state.goals
+      dataObj.date         = Date.now()
+      dataObj.participants = this.state.participants
+      dataObj.location     = this.state.location
+
+      dataObj.meetingStats.timeElapsed.expectedDuration          = this.state.tempExpectedDuration*60000 // converting minutes to milliseconds
+      dataObj.meetingStats.timeElapsed.formattedExpectedDuration = this.state.tempExpectedDuration + ' mins'
+
+
       this.props.submitMeetingData(dataObj)
       this.props.handleIndexChange('forward')
     } else {
@@ -111,21 +117,19 @@ export default class SmartPrepareMeeting extends React.Component {
 
   checkErrors () {
     var errorText = this.state.errorText
+
     if (this.state.goals.length === 0) {
       errorText.goalInput = (<p> Your meeting should have at least one goal. Click the *Add a New Goal* button to prepare the meeting! </p>)
       this.setState(errorText)
       return true
-      console.log('error 1')
     } else if (this.state.title === ''){
       errorText.meetingTitle = (<p> You forgot to add a title to the meeting at the top! </p>)
       this.setState(errorText)
       return true
-      console.log('error 2')
-    } else if (this.state.members.length === 0) {
-      errorText.memberInput = (<p> You forgot to add participants to the meeting! </p>)
+    } else if (this.state.participants.length === 0) {
+      errorText.participantInput = (<p> You forgot to add participants to the meeting! </p>)
       this.setState(errorText)
       return true
-      console.log('error 3')
     } else {
       return false
     }
@@ -142,38 +146,63 @@ export default class SmartPrepareMeeting extends React.Component {
   }
 
   changeGoalListItem (event) {
-    var tempGoalList = this.state.goals
-    tempGoalList[event.target.name] = event.target.value
+    var tempGoalList                     = this.state.goals
+    tempGoalList[event.target.name].text = event.target.value
 
     this.setState({goals: tempGoalList})
   }
 
   addGoalListItem () {
     var tempGoalList = this.state.goals
-    tempGoalList.push(this.state.tempGoal)
+    tempGoalList.push({text: this.state.tempGoal, completed: false, completionTimeStamp: 0})
 
     this.setState({goals: tempGoalList, tempGoal: '', errorText: {goalInput: ''}})
   }
 
 
-  // MEMBER LIST FUNCTIONS -----------------------------------------------------
+  // PARTICIPANT LIST FUNCTIONS ----------------------------------------------
 
-  changeTempMember (val) {
-    this.setState({tempMember: val})
+  addParticipantListItem () {
+    var participantList     = this.state.participants
+    var tempParticipantObj  = {fullName: this.state.tempParticipant, email: '', guest: true}
+    participantList.push(tempParticipantObj)
+
+    this.setState({participants: participantList, tempParticipant: ''})
   }
 
-  addMemberListItem () {
-    var memberList = this.state.members
-    memberList.push(this.state.tempMember)
+  removeParticipantListItem (mapObj) {
+    var participantList = this.state.participants
+    participantList.splice(mapObj.index, 1)
 
-    this.setState({members: memberList, tempMember: ''})
+    this.setState({participants: participantList, errorText: {goalInput: ''}})
   }
 
-  removeMemberListItem (mapObj) {
-    var tempMemberList = this.state.members
-    tempMemberList.splice(mapObj.index, 1)
+  createParticipantList () {
+    var participantsList    = [this.props.userTokenObj.fullName]
+    var currentParticipants = this.state.participants
 
-    this.setState({members: tempMemberList, errorText: {goalInput: ''}})
+    currentParticipants.map((item) => {
+      var participantName = item.fullName
+      participantsList.push(participantName)
+    })
+    return participantsList
+  }
+
+
+  changeParticipantListItem (event) {
+    if (event.target.name === '0') {
+      console.log('cannot change host name at this page')
+    } else {
+      var index = event.target.name - 1
+      var newParticipants = this.state.participants
+
+      var targetParticipantObj = newParticipants[index]
+      targetParticipantObj.fullName = event.target.value
+      newParticipants[index] = targetParticipantObj
+
+      this.setState(newParticipants)
+    }
+
   }
 
   // DURATION FUNCTIONS --------------------------------------------------------
@@ -196,29 +225,34 @@ export default class SmartPrepareMeeting extends React.Component {
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
+    var participantsList = this.createParticipantList()
+
+
     //----------------------------RETURN----------------------------------------
     return(
       <DumbPrepareMeeting
-        nextStep              = {this.nextStep}
-        tempGoal              = {this.state.tempGoal}
-        previousStep          = {this.previousStep}
-        handleChange          = {this.handleChange}
-        addMemberListItem     = {this.addMemberListItem}
-        removeMemberListItem  = {this.removeMemberListItem}
-        meetingTitle          = {this.state.title}
-        goalError             = {this.state.errorText.goalInput}
-        titleError            = {this.state.errorText.meetingTitle}
-        memberError           = {this.state.errorText.memberInput}
-        tempMember            = {this.state.tempMember}
-        memberList            = {this.state.members}
-        goalList              = {this.state.goals}
-        changeGoalListItem    = {this.changeGoalListItem}
-        removeGoalListItem    = {this.removeGoalListItem}
-        addGoalListItem       = {this.addGoalListItem}
-        tempExpectedDuration  = {this.state.tempExpectedDuration}
-        changeDuration        = {this.changeDuration}
-        maxDuration           = {this.state.maxDuration}
-        setDuration           = {this.setDuration}
+        nextStep                    = {this.nextStep}
+        tempGoal                    = {this.state.tempGoal}
+        previousStep                = {this.previousStep}
+        handleChange                = {this.handleChange}
+        addParticipantListItem      = {this.addParticipantListItem}
+        removeParticipantListItem   = {this.removeParticipantListItem}
+        tempParticipant             = {this.state.tempParticipant}
+        participantsList            = {participantsList}
+        changeParticipantListItem   = {this.changeParticipantListItem}
+        meetingTitle                = {this.state.title}
+        meetingLocation             = {this.state.location}
+        goalError                   = {this.state.errorText.goalInput}
+        titleError                  = {this.state.errorText.meetingTitle}
+        participantError            = {this.state.errorText.participantInput}
+        goalList                    = {this.state.goals}
+        changeGoalListItem          = {this.changeGoalListItem}
+        removeGoalListItem          = {this.removeGoalListItem}
+        addGoalListItem             = {this.addGoalListItem}
+        tempExpectedDuration        = {this.state.tempExpectedDuration}
+        changeDuration              = {this.changeDuration}
+        maxDuration                 = {this.state.maxDuration}
+        setDuration                 = {this.setDuration}
         />
     )
   }

@@ -103,7 +103,7 @@ TOKEN_OBJ = {
 }
 */
 
-app.post('/loginRequest',function(req, res){
+app.post('/request/login',function(req, res){
 	serverLogic.requestLogin(req, res)
 })
 
@@ -135,7 +135,7 @@ TOKEN_OBJ = {
 }
 */
 
-app.post('/signupRequest', function(req, res) {
+app.post('/request/signup', function(req, res) {
   serverLogic.requestSignup(req, res)
 })
 
@@ -163,8 +163,7 @@ data: STRING // response from server
 }
 */
 
-app.post('/alphaRequest', function(req, res) {
-  console.log('accessed alpha route')
+app.post('/request/alpha', function(req, res) {
   serverLogic.requestAlpha(req, res)
 })
 
@@ -199,42 +198,85 @@ Process =>
 -------------------
 
 inputObject = req.body = {
-title: STRING,
-type: STRING,
-date: DATE_CONSTRUCTOR,
-location: STRING,
-groups: ARRAY_STRINGS, //outdated
-chair: ARRAY_STRINGS, //outdated
-members: ARRAY_STRINGS,
-minutes: ARRAY_STRINGS,
-actions: ARRAY_STRINGS,
-decisions: ARRAY_STRINGS,
-username: STRING
+  title: String,
+  host: { fullName: String, email: String},
+  participants: [{fullName: String, email: String, guest: Boolean}],
+  date: {type: String, default: Date.now()},
+  location: String,
+  goals: [{text: String, completed: Boolean, completionTimeStamp: Number}],
+  notes: {
+    general: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
+    action: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
+    decision: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
+    timeSorted: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
+  },
+  metaData: {starred: Boolean, category: String},
+  meetingStats: {
+    timeElapsed: {
+      actualDuration: Number,
+      formattedActualDuration: String,
+      expectedDuration: Number,
+      formattedExpectedDuration: String
+    }
+  }
+}
 
-NO OUTPUT OBJECT
+outputObject = req.body = {
+  sucess: Boolean,
+  errorText: String
+}
 
 }*/
 
-app.post('/save', function(req,res) {
+app.post('/enter/newMeeting', function(req,res) {
 	serverLogic.enterNewMeeting(req, res)
 })
 
+/* -----------------------------------------------------------------------------
+NOT CURRENTLY USED
+Finds and returns ALL meeting documents belonging to a host
+Process =>
+1. search DB for all meeting documents matching the host user
+2. return a JSON.stringify(docArray) which is an array of meeting documents owned by the host user
+
+-------------------
+
+inputObject = req.body = usernameParam = {
+  hostUsername: ''
+}
+
+
+outputObject = res = {
+data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
+}*/
+
+app.post('/get/allMeetingDocs',function(req,res){
+  console.log('get route accessed')
+  console.log(req.body)
+	serverLogic.findAllMeetingDocs(req, res)
+})
+
+
 
 /* -----------------------------------------------------------------------------
-Finds a meeting document from DB base on certain parameters
+NOT CURRENTLY USED
+Finds multiple meeting document from DB base on certain parameters that are passed as an input obj
 Process =>
 1. Define search parameters requested by user
 2. Search DB for meeting document matching parameters
 
 -------------------
 
-inputObject = req.body = {
-	username: STRING,
-	search: STRING,
-	searchType: STRING,
-	minDate: NUMBER,
-	maxDate: NUMBER
-}
+inputObject = req.body = searchParam
+example of searchParam:
+searchParam = {
+              	username: STRING,
+              	search: STRING,
+              	searchType: STRING,
+              	minDate: NUMBER,
+              	maxDate: NUMBER
+              }
+
 
 outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
@@ -245,6 +287,7 @@ app.post('/search',function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
+NOT CURRENTLY USED
 Finds and permanently deletes a meeting document from DB
 Process =>
 1. Finds the document in the database using the received _id
@@ -266,6 +309,7 @@ app.post('/deleteMeeting',function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
+NOT CURRENTLY USED
 Enters a new feedback document into the Database
 Process =>
 1. Creates a new feedback document using the Feedback Schema
@@ -291,6 +335,7 @@ app.post('/feedback',function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
+NOT CURRENTLY USED
 Emails users with their meeting minutes
 Process =>
 NOT OPTIMIZED
@@ -317,6 +362,7 @@ app.post('/email/monettaMinutes', function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
+NOT CURRENTLY USED
 Counts the number of User documents in the database
 Process =>
 1. Defines Schema type to be a User schema
@@ -337,6 +383,7 @@ app.get('/usercount', function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
+NOT CURRENTLY USED
 Retrieve the IBM Watson Speech-to-text (STT) token for use
 Process =>
 1. Creates a watson constructor using 'new watson.AuthorizationV1({})'

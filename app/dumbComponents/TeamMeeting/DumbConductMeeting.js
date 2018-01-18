@@ -12,7 +12,30 @@ import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
 
 
-const DumbConductMeeting = ({handleChange, meetingInfoHeading, setRef, handleTypeClick, deleteNoteItem, nextStep, previousStep, submitTempItem, errorText, goalList, formattedDuration, noteList, typeList, tempItemText, hasNotes, tempItemType, selectorAction, selectorDecision, selectorGeneral, selectedIndex, minutesElapsed, secondsElapsed}) => (
+const DumbConductMeeting = ({
+  handleChange,
+  meetingInfoHeading,
+  setRef,
+  handleTypeClick,
+  deleteNoteItem,
+  nextStep,
+  previousStep,
+  submitTempItem,
+  errorText,
+  goalList,
+  formattedDuration,
+  noteList,
+  typeList,
+  tempItemText,
+  hasNotes,
+  tempItemType,
+  selectorAction,
+  selectorDecision,
+  selectorGeneral,
+  selectedIndex,
+  minutesElapsed,
+  secondsElapsed
+}) => (
   <div className = 'ConductMeetingWrapper'>
     <div className = 'ConductMeetingContent'>
       {meetingInfoHeading}
@@ -43,6 +66,7 @@ const DumbConductMeeting = ({handleChange, meetingInfoHeading, setRef, handleTyp
           <div className = 'ConductMeetingTextNotesWrapper'>
             <div className = 'ConductMeetingTextNotes' ref = {setRef}>
               {noteList.map((item, index) => {
+                  var name = item.itemType + '[' + index + ']'
                   return (
                     <div key = {index} className = 'ConductMeetingTextItem' >
                       <Paper
@@ -50,12 +74,11 @@ const DumbConductMeeting = ({handleChange, meetingInfoHeading, setRef, handleTyp
                         className = 'ConductMeetingTextItemPaper'
                       >
                         <div className = 'ConductMeetingTextItemHeading'>
-                          <h3 style = {{margin: '0', padding: '0'}}> ({item.formattedTimeStamp}) - {item.type.toUpperCase()} </h3>
+                          <h3 style = {{margin: '0', padding: '0'}}> ({item.formattedTimeStamp}) - {item.itemType.toUpperCase()} </h3>
                           <FlatButton
-                            name = ''
                             label = 'x'
                             labelStyle = {{color: 'white'}}
-                            onClick = {() => deleteNoteItem(index)}
+                            onClick = {() => deleteNoteItem(name)}
                           />
                         </div>
                         <p style = {{color: 'white', padding: '0', margin: '0', fontWeight: 'bold'}}> {item.text} </p>

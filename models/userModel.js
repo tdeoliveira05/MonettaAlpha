@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.plugin(uniqueValidator, {message: 'is already taken. (userModel.js)'});
 
 UserSchema.methods.generateJWT = function generateJWT () {
-  return jwt.sign({id: this._id, username: this.username}, config.get('Presets.secret'), {expiresIn: '8h'})
+  return jwt.sign({id: this._id, username: this.username, fullName: this.firstName + ' ' + this.lastName}, config.get('Presets.secret'), {expiresIn: '8h'})
 }
 
 const User = mongoose.model('user', UserSchema);
