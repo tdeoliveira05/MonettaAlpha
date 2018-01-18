@@ -20,13 +20,14 @@ const config = {
 			{test: /\.(eot|svg|ttf|woff|woff2)$/, use: 'file-loader?name=./assets/fonts/[name].[ext]' }
 		]
 	},
+
 	devServer: {
-    watchOptions: {
-      ignored: [
-        path.resolve(__dirname, 'node_modules')
-      ]
-    }
-  },
+  	watchOptions: {
+    	ignored: /node_modules/,
+			poll: 1000
+  	}
+	},
+
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: './app/index.html',
