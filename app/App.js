@@ -8,6 +8,7 @@ export default class App extends React.Component {
 		super(props);
 		this.state = {
       appLocation: 'app',
+
       userTokenObj: {
         id: '5a61409107c40326400fcc17',       //the actual id of my user doc
         username: 'thiago1@gmail.com',        //the actual username of my user doc

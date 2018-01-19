@@ -11,8 +11,16 @@ const muiTheme = getMuiTheme({
   palette: {
     primary1Color: '#6699ff',
 		accent1Color: '#ffcc33',
-    alternateTextColor: '#f3f5f2'
-  }
+    textColor: '#454545',
+    alternateTextColor: '#f3f5f2',
+  },
+
+  checkbox: {
+    checkedColor: "#ffcc33",
+    boxColor: "#222222",
+    requiredColor: "#e1f5fe"
+  },
+
 });
 
 var routes = (

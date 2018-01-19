@@ -17,7 +17,7 @@
     "chart.js": "^2.7.1",
     "config": "^1.29.2",
     "cors": "^2.8.4",
-    "css-loader": "^0.28.8",
+    "css-loader": "^0.28.9",
     "express": "^4.16.2",
     "file-loader": "^0.11.2",
     "html-webpack-plugin": "^2.29.0",
@@ -73,5 +73,8 @@
   "bugs": {
     "url": "https://github.com/ColinLMacLeod1/MonetaMVP/issues"
   },
-  "homepage": "https://github.com/ColinLMacLeod1/MonetaMVP#readme"
+  "homepage": "https://github.com/ColinLMacLeod1/MonetaMVP#readme",
+  "devDependencies": {
+    "install-peers": "^1.0.2"
+  }
 }
