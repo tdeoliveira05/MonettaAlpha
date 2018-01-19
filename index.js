@@ -228,8 +228,8 @@ outputObject = req.body = {
 
 }*/
 
-app.post('/enter/newMeeting', function(req,res) {
-	serverLogic.enterNewMeeting(req, res)
+app.post('/meetingDocument/submit', function(req,res) {
+	serverLogic.submitNewMeeting(req, res)
 })
 
 /* -----------------------------------------------------------------------------
@@ -242,7 +242,10 @@ Process =>
 -------------------
 
 inputObject = req.body = usernameParam = {
-  hostUsername: ''
+  host {
+    username: String,
+    ...
+  }
 }
 
 
@@ -250,10 +253,54 @@ outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
 }*/
 
-app.post('/get/allMeetingDocs',function(req,res){
-  console.log('get route accessed')
-  console.log(req.body)
+app.post('/meetingDocument/findByUser',function(req,res){
 	serverLogic.findAllMeetingDocs(req, res)
+})
+
+/* -----------------------------------------------------------------------------
+Finds and permanently deletes a meeting document from DB
+Process =>
+1. Finds the document in the database using the received _id
+2. Deletes the found document from the database
+
+SECURITY RISK - the user is requesting PERMANENT deletion of the chosen document
+
+-------------------
+
+inputObject = req.body = {
+	targetDocumentId: String,        // id to delete
+  userTokenObj: Object
+}
+
+NO OUTPUT OBJECT
+*/
+
+app.post('/meetingDocument/deleteById',function(req,res){
+	serverLogic.deleteMeetingDocById(req, res)
+})
+
+/* -----------------------------------------------------------------------------
+Finds and updates a meeting document by overwriting it in the DB
+Process =>
+1.
+
+SECURITY RISK - the user is requesting PERMANENT update of the chosen document
+
+-------------------
+
+inputObject = req.body = {
+	targetDocument: Object,  // this is the ENTIRE target document, not just the updated piece
+  userTokenObj: Object
+}
+
+outputObject = res.data = sucessObject = {
+  success: Boolean,
+  errorText: String
+}
+*/
+
+app.post('/meetingDocument/updateThisDocument', function(req,res){
+	serverLogic.updateThisMeetingDocument(req, res)
 })
 
 
@@ -286,27 +333,7 @@ app.post('/search',function(req,res){
 	serverLogic.searchForMeetingDoc(req, res)
 })
 
-/* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
-Finds and permanently deletes a meeting document from DB
-Process =>
-1. Finds the document in the database using the received _id
-2. Deletes the found document from the database
 
-SECURITY RISK - the user is requesting PERMANENT deletion of the chosen document
-
--------------------
-
-inputObject = req.body = {
-	_id: UNKNOWN // meeting document ID
-}
-
-NO OUTPUT OBJECT
-*/
-
-app.post('/deleteMeeting',function(req,res){
-	serverLogic.deleteMeetingDoc(req, res)
-})
 
 /* -----------------------------------------------------------------------------
 NOT CURRENTLY USED
@@ -407,15 +434,13 @@ app.get('/token', function(req,res){
 //---------------------------UTILITY FUNCTIONS--------------------------------//
 //--------------------------proceed with caution------------------------------//
 //----------------------------------------------------------------------------//
-
 /*
 if (false) {
   serverUtility.utilityFunction.dropDatabaseCollections()
   serverUtility.utilityFunction.enterDatabaseCodes(codes)
 }
+serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111', 'qwerty')
 */
-//serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1234', 'qwerty')
-
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//

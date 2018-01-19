@@ -108,7 +108,7 @@ export default class SmartTeamMeeting extends React.Component {
     console.log('Submitting: ')
     console.log(this.state.meetingData)
 
-    axios.post('http://localhost:8080/enter/newMeeting', this.state.meetingData)
+    axios.post('http://localhost:8080/meetingDocument/submit', this.state.meetingData)
     .then((response) => {
       console.log(response)
     })

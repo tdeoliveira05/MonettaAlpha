@@ -9,8 +9,8 @@ module.exports = function (userTokenObjReq, res) {
 
   serverTools.find.multipleDocs(Meeting, {'host.username': userTokenObjReq.body.username})
   .then((docArray) => {
-    console.log('returning docArray')
-    console.log(docArray)
+    //console.log('returning docArray')
+    //console.log(docArray)
     res.status(200).send(JSON.stringify(docArray))
   })
   .catch((error) => {

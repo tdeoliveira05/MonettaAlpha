@@ -5,7 +5,7 @@ module.exports = function (Schema, paramObjs) {
     console.log(paramObjs)
     console.log(typeof(paramObjs))
 
-    var docArray = Schema.find(paramObjs)
+    var docArray = Schema.find(paramObjs).lean()
 
     if (docArray) {
       resolve(docArray)
