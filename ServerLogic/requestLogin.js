@@ -17,7 +17,7 @@ module.exports = function (req, res) {
     res.status(200).send({
       token: token,
       userDoc: userDoc
-    })
+    })  
   })
   .catch((error) => {
     console.log('[requestLogin.js]' + error)
