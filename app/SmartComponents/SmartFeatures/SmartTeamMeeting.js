@@ -175,6 +175,7 @@ export default class SmartTeamMeeting extends React.Component {
         var MeetingComponent  = (
           <SmartReviewMinutes
             handleIndexChange       = {this.handleIndexChange}
+            handleChangeTabValue    = {this.props.handleChangeTabValue}
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}

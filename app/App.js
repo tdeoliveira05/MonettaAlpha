@@ -10,10 +10,10 @@ export default class App extends React.Component {
       appLocation: 'app',
 
       userTokenObj: {
-        id: '',
-        username: 't@gmail.com',
-        fullName: 'Thiago De Oliveira',
-        token: ''
+        id: '5a6142517e790da03688e448',
+        username: 'sunny.p.panchal@gmail.com',
+        fullName: 'Sunny Panchal',
+        token: '7gah3kh47sdfg98fdg'
       }
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/

@@ -40,6 +40,7 @@ export default class SmartReviewMinutes extends React.Component {
   finishMeeting () {
     this.updateParentMeetingData()
     this.props.handleIndexChange('finished')
+    this.props.handleChangeTabValue('Storage')
   }
 
   previousStep () {
