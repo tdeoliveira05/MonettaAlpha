@@ -2,13 +2,17 @@
 const Meeting = require('../../../models/meetingModel')
 
 module.exports = function (Schema, paramObj) {
+  return new Promise (function(resolve, reject) {
+    console.log('parameter object: ')
+    console.log(paramObj)
 
-  Schema.remove(paramObj)
-  .then(() => {
-    console.log('sucess deleting doc of Schema')
-    resolve()
-  })
-  .catch((error) => {
-    reject('ERROR(delete/singleDoc.js):' + error)
+    Schema.remove(paramObj)
+    .then(() => {
+      console.log('sucess deleting doc matching: ' + paramObj)
+      resolve()
+    })
+    .catch((error) => {
+      reject('ERROR(delete/singleDoc.js):' + error)
+    })
   })
 }
