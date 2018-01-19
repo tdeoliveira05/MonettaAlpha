@@ -170,7 +170,6 @@ app.post('/request/alpha', function(req, res) {
 
 
 //--------------------------AUTHENTICATION MIDDLEWARE-------------------------//
-
 // This function will authenticate every user looking to use any post/get route
 // that follows underneath using the protectRoute router
 // token always needs to be sent with the request if the client-side is making
@@ -300,134 +299,9 @@ outputObject = res.data = sucessObject = {
 */
 
 app.post('/meetingDocument/updateThisDocument', function(req,res){
-	serverLogic.updateThisMeetingDocument(req, res)
+	serverLogic.updateThisMeetingDoc(req, res)
 })
 
-
-
-/* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
-Finds multiple meeting document from DB base on certain parameters that are passed as an input obj
-Process =>
-1. Define search parameters requested by user
-2. Search DB for meeting document matching parameters
-
--------------------
-
-inputObject = req.body = searchParam
-example of searchParam:
-searchParam = {
-              	username: STRING,
-              	search: STRING,
-              	searchType: STRING,
-              	minDate: NUMBER,
-              	maxDate: NUMBER
-              }
-
-
-outputObject = res = {
-data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
-}*/
-
-app.post('/search',function(req,res){
-	serverLogic.searchForMeetingDoc(req, res)
-})
-
-
-
-/* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
-Enters a new feedback document into the Database
-Process =>
-1. Creates a new feedback document using the Feedback Schema
-2. Saves the resultant feedback document to the DB
-
--------------------
-
-inputObject = req.body = {
-username: STRING,
-date: DATE_CONSTRUCTOR,
-issue: STRING,
-suggestion: STRING,
-likes: STRING
-}
-
-outputObject = res = {
-data: STRING // 'Feedback saved'
-}
-*/
-
-app.post('/feedback',function(req,res){
-	serverLogic.enterNewFeedback(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
-Emails users with their meeting minutes
-Process =>
-NOT OPTIMIZED
-
--------------------
-
-inputObject = req.body = {
-title: STRING,
-type: STRING,
-location: STRING,
-date: DATE_CONSTRUCTOR,
-members: ARRAY_STRINGS,
-decisions: ARRAY_STRINGS,
-actions: ARRAY_STRINGS,
-minutes: ARRAY_STRINGS,
-recipients: ARRAY_STRINGS
-}
-
-NO OUTPUT OBJECT
-*/
-
-app.post('/email/monettaMinutes', function(req,res){
-	serverLogic.emailMonettaMinutes(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
-Counts the number of User documents in the database
-Process =>
-1. Defines Schema type to be a User schema
-2. Counts how many documents in the database were made with the User Schema
-
--------------------
-
-NO INPUT OBJECT
-
-outputObject = res = {
-  data: NUMBER
-  }
-}
-*/
-
-app.get('/usercount', function(req,res){
-	serverLogic.countUsers(req, res);
-})
-
-/* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
-Retrieve the IBM Watson Speech-to-text (STT) token for use
-Process =>
-1. Creates a watson constructor using 'new watson.AuthorizationV1({})'
-2. Acesses the watson constructor's token value and returns it to client-side
-
--------------------
-
-NO INPUT OBJECT
-
-outputObject = res = {
-  data: UNKNOWN // Token identifier
-  }
-}
-*/
-app.get('/token', function(req,res){
-	serverLogic.getWatsonToken(req, res)
-})
 
 
 //----------------------------------------------------------------------------//
