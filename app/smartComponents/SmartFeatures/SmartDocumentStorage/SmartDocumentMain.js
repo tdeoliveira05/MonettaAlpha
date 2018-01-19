@@ -1,8 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
-import TextField from 'material-ui/TextField'
 
 
 // Importing Material-UI Components
@@ -185,55 +183,7 @@ export default class SmartDocumentMain extends React.Component {
 
   render () {
 
-    /* Thiago's Additions
-    //---------------------------CONDITIONS-------------------------------------  // Dont forget to add these comment indicators otherwise your render() function can get real messy
-                                                                                  // Whenever i start a new smart component I just copy the boilet plate code in '../../BOILERPLATES' folder and rename the class_name variable
 
-    //----------------------------RETURN----------------------------------------
-    return(
-      <div style = {{width: '100%'}}>
-        <h2>Main Content</h2>
-
-
-        <RaisedButton                                     // random stuff but this is just showing how you would make use of the getAllMeetingDocs() function
-          label = 'get files'                             // alternatively, instead of using a function you could of course place the function in a Lifecycle Function of this component so that its always updating
-          onClick = {() => this.getAllMeetingDocs()}      // Keep in mind though that can slow down the component A LOT if you keep running axios over and over again. A good work around is simply to call the getAllMeetingDocs()
-                                                          // in the Lifecyle Function called componentWillMount() since you can set your initial state before the component mounts for the first time.
-                                                          // for more info on Lifecycle Functions (highly suggest you research them) https://alligator.io/react/lifecycle-functions/
-                                                          // Lifecycle functions can be your best friend if you know them well due to their versatility. If you don't know them well though, they are the biggest nightmare to use since they are very fidgety...
-        />
-
-        {this.state.docArray.map((item, index) => {       // random .map() function to display the titles of each meeting returned after you click the <RaisedButton />
-                                                          // .map() functions are super helpful to front-end devs since it lets you manipulate arrays easily. if you are not familiar with .map(), research it, its an awesome function
-
-          return (
-            <div key = {index} style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-              <Paper style = {{display: 'flex', alignItems: 'center',justifyContent: 'space-around', width: '400px', padding: '10px'}}>
-                <p> {item.title} </p>
-                <RaisedButton
-                  label = 'x'
-                  onClick = {() => this.deleteThisMeetingDocArrayEntry(index)}
-                />
-              </Paper>
-              <Paper style = {{display: 'flex', flexDirection: 'column', alignItems: 'center',justifyContent: 'center', width: '400px', padding: '10px'}}>
-
-              <TextField
-                value = {this.state.temp}                                       // NOTE NOTE NOTE this field here is going to cause every text field to be filled with the same value you type. This is just a quick way for me to show you how the update route works, you would implement
-                                                                                // a better way to do this of course if you were focusing on creating the actual front end for use, rahter than for testing
-                name = 'temp'                                                   // exact key of a temporary storage property in this.state that I will use
-                hintText = 'add words to the title'                             // this text field will let us fill in this.state.temp and when the user clicks 'update title' in <RaisedButton /> below, we will update the title of the target meeting document
-                onChange = {this.handleTempChange}                              // after we update it locally using this.updateThisMeetingDocArrayEntry(), we will update it remotely too by passing the new meeting document to this.updateThisMeetingDoc() to send a command to the server
-              />
-              <RaisedButton
-                label = 'update title'
-                onClick = {() => this.updateThisMeetingDocArrayEntry(index)}    // the prompt button to initiate the update chain
-              />
-
-              </Paper>
-            </div>
-          )
-        })}
-      */
 
 
     // MeetingNames example to populate cards
@@ -284,6 +234,49 @@ export default class SmartDocumentMain extends React.Component {
     return (
       <div className="DocumentStorageCardsWrapper" >
         {meetingCards}
+        <div style = {{width: '100%', paddingBottom: '100px'}}>
+          <h2>Main Content</h2>
+
+
+          <RaisedButton                                     // random stuff but this is just showing how you would make use of the getAllMeetingDocs() function
+            label = 'get files'                             // alternatively, instead of using a function you could of course place the function in a Lifecycle Function of this component so that its always updating
+            onClick = {() => this.getAllMeetingDocs()}      // Keep in mind though that can slow down the component A LOT if you keep running axios over and over again. A good work around is simply to call the getAllMeetingDocs()
+                                                            // in the Lifecyle Function called componentWillMount() since you can set your initial state before the component mounts for the first time.
+                                                            // for more info on Lifecycle Functions (highly suggest you research them) https://alligator.io/react/lifecycle-functions/
+                                                            // Lifecycle functions can be your best friend if you know them well due to their versatility. If you don't know them well though, they are the biggest nightmare to use since they are very fidgety...
+          />
+
+          {this.state.docArray.map((item, index) => {       // random .map() function to display the titles of each meeting returned after you click the <RaisedButton />
+                                                            // .map() functions are super helpful to front-end devs since it lets you manipulate arrays easily. if you are not familiar with .map(), research it, its an awesome function
+
+            return (
+              <div key = {index} style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                <Paper style = {{display: 'flex', alignItems: 'center',justifyContent: 'space-around', width: '400px', padding: '10px'}}>
+                  <p> {item.title} </p>
+                  <RaisedButton
+                    label = 'x'
+                    onClick = {() => this.deleteThisMeetingDocArrayEntry(index)}
+                  />
+                </Paper>
+                <Paper style = {{display: 'flex', flexDirection: 'column', alignItems: 'center',justifyContent: 'center', width: '400px', padding: '10px'}}>
+
+                <TextField
+                  value = {this.state.temp}                                       // NOTE NOTE NOTE this field here is going to cause every text field to be filled with the same value you type. This is just a quick way for me to show you how the update route works, you would implement
+                                                                                  // a better way to do this of course if you were focusing on creating the actual front end for use, rahter than for testing
+                  name = 'temp'                                                   // exact key of a temporary storage property in this.state that I will use
+                  hintText = 'add words to the title'                             // this text field will let us fill in this.state.temp and when the user clicks 'update title' in <RaisedButton /> below, we will update the title of the target meeting document
+                  onChange = {this.handleTempChange}                              // after we update it locally using this.updateThisMeetingDocArrayEntry(), we will update it remotely too by passing the new meeting document to this.updateThisMeetingDoc() to send a command to the server
+                />
+                <RaisedButton
+                  label = 'update title'
+                  onClick = {() => this.updateThisMeetingDocArrayEntry(index)}    // the prompt button to initiate the update chain
+                />
+
+                </Paper>
+              </div>
+            )
+          })}
+        </div>
       </div>
     );
   }
@@ -291,13 +284,3 @@ export default class SmartDocumentMain extends React.Component {
 
 // SmartDocumentMain.proptypes = {
 // };
-
-/*
-<RadioButton
-        value="ludicrous"
-        label="Custom icon"
-        checkedIcon={<ActionFavorite style={{color: '#F44336'}} />}
-        uncheckedIcon={<ActionFavoriteBorder />}
-        style={styles.radioButton}
-      />
-*/
