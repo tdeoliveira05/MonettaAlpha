@@ -12,6 +12,6 @@ module.exports = function (feedbackData, res) {
   	res.send(JSON.stringify('Feedback saved'))
   })
   .catch((error) => {
-    console.log('[enterNewFeeback.js]' + error)
+    console.log('[enterNewFeeback.js]' + error) 
   })
 }
