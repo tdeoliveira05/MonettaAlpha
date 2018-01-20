@@ -1,44 +1,32 @@
-import React                  from 'react';
-import DumbDocumentToolbar    from '../../../dumbComponents/DocumentStorage/DumbDocumentToolbar.js';
-import DumbDocumentSearchbar  from '../../../dumbComponents/DocumentStorage/DumbDocumentSearchbar.js';
+import React        from 'react';
+import PropTypes    from 'prop-types';
 
+import DumbDocumentToolbar    from '../../../dumbComponents/DocumentStorage/DumbDocumentToolbar.js';
 
 export default class SmartDocumentHeader extends React.Component {
   constructor (props) {
     super(props);
-    this.state = {
-      displayedMeetingFolder: 'All Meetings',
-      meetingNames : [
-        'Code Review',
-        'Milestones',
-        'Product Design Session',
-        'Pre-release checklist',
-        'Crash analysis' ],
-    };
-    this.handleMeetingFolderDisplayChange = this.handleMeetingFolderDisplayChange.bind(this)
+    // See propTypes at the bottom of the code for expected props
   }
 
-  handleMeetingFolderDisplayChange(event, value){
-    this.setState({displayedMeetingFolder: value});
-    console.log(this.state.displayedMeetingFolder);
-  }
 
   render() {
   //---------------------------CONDITIONS-------------------------------------
 
-
   //----------------------------RETURN----------------------------------------
     return(
       <div className='DocumentStorageHeader'>
-
         <DumbDocumentToolbar
-          displayedMeetingFolder={this.state.displayedMeetingFolder}
-          onMeetingFolderDisplayChange={this.handleMeetingFolderDisplayChange} />
-
-        <DumbDocumentSearchbar
-          meetingNames={this.state.meetingNames} />
+          currentFolder={this.props.currentFolder}
+          onCurrentFolderChange={this.props.handleCurrentFolderChange} />
 
       </div>
     );
   }
 }
+//--------------------------EXPECTED PROP TYPES--------------------------------
+SmartDocumentHeader.propTypes = {
+  handleCurrentFolderChange:    PropTypes.func.isRequired,
+  currentFolder:                PropTypes.string.isRequired,
+  meetingNames:                 PropTypes.array,
+};
