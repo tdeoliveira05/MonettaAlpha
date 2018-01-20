@@ -1,4 +1,5 @@
-import React from 'react'
+import React        from 'react'
+// import PropTypes    from 'prop-types';
 
 export default class CLASS_NAME extends React.Component {
   constructor(props) {
@@ -9,7 +10,7 @@ export default class CLASS_NAME extends React.Component {
   render () {
     //---------------------------CONDITIONS-------------------------------------
 
-    //----------------------------RETURN----------------------------------------
+    //---------------------------RETURN-----------------------------------------
     return(
       <div>
 
@@ -17,3 +18,9 @@ export default class CLASS_NAME extends React.Component {
     )
   }
 }
+
+//-------------------------------EXPECTED PROP TYPES----------------------------
+// CLASS_NAME.propTypes = {
+//   propName: PropTypes.type,
+  //Example: currentFolder: PropTypes.string.isRequired,
+// };
