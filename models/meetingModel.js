@@ -28,7 +28,6 @@ const MeetingSchema = new Schema({
       {
         text: String,
         itemType: String,
-        color: String,
         timeStamp: Number,
         formattedTimeStamp: String
       }
@@ -37,7 +36,6 @@ const MeetingSchema = new Schema({
       {
         text: String,
         itemType: String,
-        color: String,
         timeStamp: Number,
         formattedTimeStamp: String
       }
@@ -46,7 +44,6 @@ const MeetingSchema = new Schema({
       {
         text: String,
         itemType: String,
-        color: String,
         timeStamp: Number,
         formattedTimeStamp: String
       }
@@ -55,7 +52,6 @@ const MeetingSchema = new Schema({
       {
         text: String,
         itemType: String,
-        color: String,
         timeStamp: Number,
         formattedTimeStamp: String
       }
@@ -63,7 +59,7 @@ const MeetingSchema = new Schema({
   },
   metaData: {
     starred: Boolean,
-    category: String
+    category: {type: String, default: 'None'}
   },
   meetingStats: {
     timeElapsed: {
