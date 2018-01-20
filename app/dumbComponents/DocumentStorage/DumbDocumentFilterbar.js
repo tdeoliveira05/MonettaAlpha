@@ -7,10 +7,6 @@ import Checkbox           from 'material-ui/Checkbox';
 import IconButton         from 'material-ui/IconButton';
 import IconMenu           from 'material-ui/IconMenu';
 import MenuItem           from 'material-ui/MenuItem';
-import {Toolbar}          from 'material-ui/Toolbar';
-import {ToolbarGroup}     from 'material-ui/Toolbar';
-import {ToolbarSeparator} from 'material-ui/Toolbar';
-import {ToolbarTitle}     from 'material-ui/Toolbar';
 import Divider            from 'material-ui/Divider';
 
 
@@ -22,7 +18,7 @@ import CheckboxToggleON   from 'material-ui/svg-icons/toggle/check-box';
 import CheckboxToggleOFF  from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 
 
-const DumbDocumentFilterbar = (props) => (
+const DumbDocumentFilterbar = () => (
 
     <div className="DSFilterbarWrapper">
       <div className="DSFilterbarLeft" >
@@ -70,7 +66,6 @@ const DumbDocumentFilterbar = (props) => (
       </div>
       {/*<Divider />*/}
     </div>
-
 )
 
 //-------------------------------EXPECTED PROP TYPES----------------------------
