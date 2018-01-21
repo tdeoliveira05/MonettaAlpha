@@ -33,49 +33,9 @@ const MeetingSchema = new Schema({
       metaData: Object
     }
   ],
-<<<<<<< HEAD
-  notes: {
-    general: [
-      {
-        text: String,
-        itemType: String,
-        timeStamp: Number,
-        formattedTimeStamp: String
-      }
-    ],
-    action: [
-      {
-        text: String,
-        itemType: String,
-        timeStamp: Number,
-        formattedTimeStamp: String
-      }
-    ],
-    decision: [
-      {
-        text: String,
-        itemType: String,
-        timeStamp: Number,
-        formattedTimeStamp: String
-      }
-    ],
-    timeSorted: [
-      {
-        text: String,
-        itemType: String,
-        timeStamp: Number,
-        formattedTimeStamp: String
-      }
-    ]
-  },
-  metaData: {
-    starred: Boolean,
-    category: {type: String, default: 'None'}
-=======
   metaData: {
     starred: {type: Boolean, default: false},
     folder: {type: String, default: 'none'}
->>>>>>> 096c9d055c72b14d5d2edf1dbcadbc8cdb0fbce0
   },
   meetingStats: {
     timeElapsed: {
