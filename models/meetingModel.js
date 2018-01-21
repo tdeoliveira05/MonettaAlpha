@@ -14,15 +14,26 @@ const MeetingSchema = new Schema({
     guest: Boolean
     }
   ],
-  date: {type: String, default: Date.now()},
+  date: Date,
   location: String,
   goals: [
     {
       text: String,
       completed: Boolean,
-      completionTimeStamp: Number
+      completionTimeStamp: Number,
+      metaData: Object
     }
   ],
+  notes: [
+    {
+      text: String,
+      category: String,
+      timeStamp: Number,
+      formattedTimeStamp: String,
+      metaData: Object
+    }
+  ],
+<<<<<<< HEAD
   notes: {
     general: [
       {
@@ -60,6 +71,11 @@ const MeetingSchema = new Schema({
   metaData: {
     starred: Boolean,
     category: {type: String, default: 'None'}
+=======
+  metaData: {
+    starred: {type: Boolean, default: false},
+    folder: {type: String, default: 'none'}
+>>>>>>> 096c9d055c72b14d5d2edf1dbcadbc8cdb0fbce0
   },
   meetingStats: {
     timeElapsed: {

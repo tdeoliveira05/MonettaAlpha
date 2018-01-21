@@ -132,6 +132,17 @@ const DumbPrepareMeeting = ({
           </Paper>
           <div className = 'PrepareMeetingDivList'>
             {participantsList.map((item, index) => {
+              var button
+              if (index === 0) {
+                button = <div></div>
+              } else {
+                button = (
+                  <button
+                    onClick   = {() => removeParticipantListItem({index})}
+                    className = 'PrepareMeetingDivItemButton'
+                  > X </button>
+                )
+              }
               return (
                 <Paper key = {index} className = 'PrepareMeetingDivItem' >
                   <TextField
@@ -142,10 +153,7 @@ const DumbPrepareMeeting = ({
                     multiLine     = {true}
                     rowsMax       = {3}
                   />
-                  <button
-                    onClick   = {() => removeParticipantListItem({index})}
-                    className = 'PrepareMeetingDivItemButton'
-                    > X </button>
+                  {button}
                 </Paper>
               )
             })}

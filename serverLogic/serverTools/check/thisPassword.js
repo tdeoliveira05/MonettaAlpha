@@ -4,14 +4,8 @@ const bcrypt = require('bcrypt')
 
 module.exports = function (userDoc, possiblePassword) {
   return new Promise (function(resolve, reject) {
-
-    bcrypt.compare(possiblePassword, userDoc.password)
-    .then(() => {
-      resolve(userDoc)
-      console.log('Sucessful password match')
-    })
-    .catch(() => {
-      reject("ERROR(checkThisPassword.js): Password does not match")
+    bcrypt.compare(possiblePassword, userDoc.password, function(err, res) {
+      res ? resolve(userDoc) : reject('check.thisPassword')
     })
   })
 };

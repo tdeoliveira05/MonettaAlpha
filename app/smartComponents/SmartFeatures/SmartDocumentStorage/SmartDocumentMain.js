@@ -342,6 +342,7 @@ export default class SmartDocumentMain extends React.Component {
 
 
   render () {
+<<<<<<< HEAD
     //---------------------------CONDITIONS-------------------------------------
     //--------------------------------------------------------------------------
 
@@ -360,6 +361,29 @@ export default class SmartDocumentMain extends React.Component {
     const meetingCards = this.state.docArray.map((meeting, index) => {
       		return (
             <div className="MeetingPreviewCardWrapper" key={index} >
+=======
+
+
+
+
+    // MeetingNames example to populate cards
+    const meetingNames = [
+      'Code Review',
+      'Milestones',
+      'Product Design Session',
+      'Pre-release checklist',
+      'Crash analysis',
+      'Code Review',
+      'Milestones',
+      'Product Design Session',
+      'Pre-release checklist',
+      'Crash analysis'
+    ];
+
+    const meetingCards = meetingNames.map((meetingName, index) => {
+      		return (
+            <div className="MeetingPreviewCardWrapper" key = {index}>
+>>>>>>> 096c9d055c72b14d5d2edf1dbcadbc8cdb0fbce0
               <Card style={styles.block} className="MeetingPreviewCard">
                 <CardActions>
                   <Checkbox

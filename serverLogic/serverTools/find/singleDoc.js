@@ -4,10 +4,10 @@ module.exports = function (Schema, paramObjs) {
 
     Schema.findOne(paramObjs)
     .then((userDoc) => {
-      userDoc ? resolve(userDoc) : reject('userDoc object is empty ')
+      userDoc ? resolve(userDoc) : reject('find.singleDoc')
     })
     .catch((error) => {
-      reject('ERROR (find.singleDoc.js) -b: ' + error)
+      reject('find catch block: ' + error)
     })
   })
 };

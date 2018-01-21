@@ -55,62 +55,32 @@ export default class SmartReviewMinutes extends React.Component {
     this.props.submitMeetingData(dataObj)
   }
 
-  handleNoteItemChange (event) {
-    //Preparing for information extraction
-    var targetString = event.target.name //designating variable containing TextField information
-    var indexToSplit = targetString.indexOf('[') //designating a flag to split in relation to
-
-    // information extraction
-    var targetName   = targetString.substr(0, indexToSplit) // extracting type of note item
-    var targetIndex  = targetString.substr(indexToSplit + 1, 1) // extracting index of target note item
-
-    //immutability helpers
+  handleNoteItemChange (event, index) {
     var newNoteList = this.state.notes
-
-    newNoteList[targetName][targetIndex].text = event.target.value
-    this.setState(newNoteList)
+    newNoteList[index].text = event.target.value
+    this.setState({notes: newNoteList})
   }
 
-  handleNoteItemDelete (targetString) {
-    //Preparing for information extraction
-    var indexToSplit = targetString.indexOf('[') //designating a flag to split in relation to
-
-    // information extraction
-    var targetName   = targetString.substr(0, indexToSplit) // extracting type of note item
-    var targetIndex  = targetString.substr(indexToSplit + 1, 1) // extracting index of target note item
-
-    //immutability helpers
+  handleNoteItemDelete (targetIndex) {
+    console.log(targetIndex)
     var newNoteList = this.state.notes
-    newNoteList[targetName].splice(targetIndex, 1)
-
-    this.setState(newNoteList)
+    newNoteList.splice(targetIndex, 1)
+    this.setState({notes: newNoteList})
   }
 
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
-    var generalNotesList = []
-    if (this.state.notes.general) generalNotesList = this.state.notes.general
-
-    var actionItemsList = []
-    if (this.state.notes.action) actionItemsList = this.state.notes.action
-
-    var teamDecisionsList = []
-    if (this.state.notes.decision) teamDecisionsList = this.state.notes.decision
     //----------------------------RETURN----------------------------------------
     return(
       <div>
         <DumbReviewMeeting
-          handleIndexChange    = {this.props.handleIndexChange}
-          meetingData          = {this.props.meetingData}
-          generalNotesList     = {generalNotesList}
-          actionItemsList      = {actionItemsList}
-          teamDecisionsList    = {teamDecisionsList}
+          noteList             = {this.state.notes}
           handleNoteItemChange = {this.handleNoteItemChange}
           handleNoteItemDelete = {this.handleNoteItemDelete}
           finishMeeting        = {this.finishMeeting}
           previousStep         = {this.previousStep}
-          typeList             = {this.props.typeList}
+          categoryList         = {this.props.categoryList}
           />
       </div>
     )

@@ -6,8 +6,8 @@ module.exports = function (dataParam) {
 
     Code.findOne({code: dataParam.body.codeUsed})
     .then((codeDoc) => {
-      if (!codeDoc) reject('ERROR(check.codeDoc.js): code does not exist')
-      if (codeDoc.used) reject('ERROR(check.codeDoc.js): code has already been used')
+      if (!codeDoc) reject('check.codeDoc[noExist]')
+      if (codeDoc.used) reject('check.codeDoc[alreadyUsed]')
       return codeDoc
     })
     .then((codeDoc) => {

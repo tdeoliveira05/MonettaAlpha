@@ -7,35 +7,36 @@ export default class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      appLocation: 'app',
+      appLocation: 'home',
 
-      userTokenObj: {
-        id: '5a61409107c40326400fcc17',       //the actual id of my user doc
-        username: 'thiago1@gmail.com',        //the actual username of my user doc
-        fullName: 'Thiago De Oliveira',       // put whatever here, im still working on it
-        token: 'sdgerhaet'                    // put whatever here, this will only be important when we actually deploy
-      }
+      userTokenObj: {}
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
 
     this.submitUserTokenObj = this.submitUserTokenObj.bind(this)
+    this.changeAppLocation  = this.changeAppLocation.bind(this)
 	}
 
-  submitUserTokenObj (userTokenObj) {
-    this.setState(userTokenObj)
-    this.setState({appLocation: 'app'})
+  submitUserTokenObj (userTokenObjVal) {
+    this.setState({userTokenObj: userTokenObjVal, appLocation: 'app'})
+  }
+
+  changeAppLocation (direction) {
+    this.setState({appLocation: direction})
   }
 
   render() {
+    console.log(this.props)
     //---------------------------CONDITIONS-------------------------------------
 
-
+    console.log(this.state)
     //----------------------------RETURN----------------------------------------
     switch(this.state.appLocation) {
       case 'home':
       return (
         <SmartHome
-          submitUserTokenObj = {this.submitUserTokenObj}
+          submitUserTokenObj   = {this.submitUserTokenObj}
+          changeAppLocation    = {this.changeAppLocation}
         />
       )
 
@@ -43,7 +44,8 @@ export default class App extends React.Component {
       return (
         <div>
           <SmartMain
-            userTokenObj     = {this.state.userTokenObj}
+            userTokenObj       = {this.state.userTokenObj}
+            changeAppLocation  = {this.changeAppLocation}
           />
         </div>
       )

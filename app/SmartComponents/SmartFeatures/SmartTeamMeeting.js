@@ -10,71 +10,25 @@ import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
 import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
 import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'
 
+const defaultSettings = require('../../clientConfig/defaults.json')
+const defaultCategoryList = defaultSettings.defaultCategoryList
+
 
 export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 1,
-      typeList: [
-        { text: 'General Note',
-          type: 'general',
-          activated: true,
-          style: { // first value is for inactive, second is for active selection of that chip
-            primaryColor: ['gray', 'white'], // color for borders and font
-            secondaryColor: ['white', 'gray'] // color for chip background
-          }
-        },
-        { text: 'Action Item',
-          type: 'action',
-          activated: false,
-          style: { // first value is for inactive, second is for active selection of that chip
-            primaryColor: ['rgb(255,172,77)', 'white'], // color for borders and font
-            secondaryColor: ['white', 'rgb(255,172,77)'] // color for chip background
-          }
-        },
-        { text: 'Team Decision',
-          type: 'decision',
-          activated: false,
-          style: { // first value is for inactive, second is for active selection of that chip
-            primaryColor: ['rgb(70,153,255)', 'white'], // color for borders and font
-            secondaryColor: ['white', 'rgb(70,153,255)'] // color for chip background
-          }
-        }
-      ],
-      meetingData: {
-        title: '',
-        host: {
-          fullName: this.props.userTokenObj.fullName,
-          username: this.props.userTokenObj.username
-        },
-        participants: [],
-        date: Date.now(),
-        location: '',
-        goals: [],
-        notes: {
-          general: [],
-          action: [],
-          decision: [],
-          timeSorted: []
-        },
-        metaData: {},
-        meetingStats: {
-          timeElapsed: {
-            actualDuration: 0,
-            formattedActualDuration: '00:00',
-            expectedDuration: 0,
-            formattedExpectedDuration: '00 mins'
-          }
-        }
-      },
-      userData: this.props.userTokenObj
+      meetingIndex: 2,
+      categoryList: defaultCategoryList,
+      meetingData: this.props.defaultMeetingData,
+      userTokenObj: this.props.userTokenObj
     }
 
     this.handleIndexChange        = this.handleIndexChange.bind(this)
     this.handleFinishedMeeting    = this.handleFinishedMeeting.bind(this)
     this.getMeetingData           = this.getMeetingData.bind(this)
     this.submitMeetingData        = this.submitMeetingData.bind(this)
+    this.resetTeamMeeting         = this.resetTeamMeeting.bind(this)
   }
 
   getMeetingData () {
@@ -82,8 +36,8 @@ export default class SmartTeamMeeting extends React.Component {
 
   }
 
-  submitMeetingData (meetingData) {
-    this.setState(meetingData)
+  submitMeetingData (meetingDataVal) {
+    this.setState({meetingData: meetingDataVal})
   }
 
   handleIndexChange(direction) {
@@ -99,6 +53,7 @@ export default class SmartTeamMeeting extends React.Component {
         break
 
       case 'finished':
+        this.resetTeamMeeting()
         this.handleFinishedMeeting()
         break
     }
@@ -118,7 +73,17 @@ export default class SmartTeamMeeting extends React.Component {
 
   }
 
+  resetTeamMeeting () {
+    var defaultMeetingData = this.props.defaultMeetingData
+    this.setState({meetingData: defaultMeetingData, meetingIndex: 0})
+    console.log('reset')
+    console.log(this.state)
+  }
+
   render () {
+    console.log('team meeting state--')
+    console.log(this.state)
+    console.log('--------------------')
     //---------------------------VARIABLE CREATION------------------------------
     //---------------------------CONDITIONS-------------------------------------
 
@@ -160,7 +125,7 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
-            typeList                = {this.state.typeList}
+            categoryList                = {this.state.categoryList}
             userTokenObj            = {this.props.userTokenObj}
             />
         )
@@ -179,7 +144,7 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
-            typeList                = {this.state.typeList}
+            categoryList            = {this.state.categoryList}
             userTokenObj            = {this.props.userTokenObj}
             />
         )
@@ -266,5 +231,5 @@ notes: {
 for redux include:
 
 user token
-this.state.meetingData.typeList
+this.state.meetingData.categoryList
 */

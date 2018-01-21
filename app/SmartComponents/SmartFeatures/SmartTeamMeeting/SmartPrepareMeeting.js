@@ -96,7 +96,7 @@ export default class SmartPrepareMeeting extends React.Component {
       var dataObj          = this.props.getMeetingData()
       dataObj.title        = this.state.title
       dataObj.goals        = this.state.goals
-      dataObj.date         = Date.now()
+      dataObj.date         = new Date
       dataObj.participants = this.state.participants
       dataObj.location     = this.state.location
 
@@ -116,20 +116,24 @@ export default class SmartPrepareMeeting extends React.Component {
   }
 
   checkErrors () {
+    // maybe we dont have errors and let the user do what they want and simply observe their behaviour
     var errorText = this.state.errorText
 
     if (this.state.goals.length === 0) {
-      errorText.goalInput = (<p> Your meeting should have at least one goal. Click the *Add a New Goal* button to prepare the meeting! </p>)
-      this.setState(errorText)
-      return true
+      //errorText.goalInput = (<p> Your meeting should have at least one goal. Click the *Add a New Goal* button to prepare the meeting! </p>)
+      //this.setState(errorText)
+      //return true
+      return false
     } else if (this.state.title === ''){
-      errorText.meetingTitle = (<p> You forgot to add a title to the meeting at the top! </p>)
-      this.setState(errorText)
-      return true
+      //errorText.meetingTitle = (<p> You forgot to add a title to the meeting at the top! </p>)
+      //this.setState(errorText)
+      //return true
+      return false
     } else if (this.state.participants.length === 0) {
-      errorText.participantInput = (<p> You forgot to add participants to the meeting! </p>)
-      this.setState(errorText)
-      return true
+      //errorText.participantInput = (<p> You forgot to add participants to the meeting! </p>)
+      //this.setState(errorText)
+      //return true
+      return false
     } else {
       return false
     }
@@ -154,7 +158,12 @@ export default class SmartPrepareMeeting extends React.Component {
 
   addGoalListItem () {
     var tempGoalList = this.state.goals
-    tempGoalList.push({text: this.state.tempGoal, completed: false, completionTimeStamp: 0})
+    tempGoalList.push({
+      text: this.state.tempGoal,
+      completed: false,
+      completionTimeStamp: 0,
+      meta: {}
+    })
 
     this.setState({goals: tempGoalList, tempGoal: '', errorText: {goalInput: ''}})
   }
@@ -172,7 +181,7 @@ export default class SmartPrepareMeeting extends React.Component {
 
   removeParticipantListItem (mapObj) {
     var participantList = this.state.participants
-    participantList.splice(mapObj.index, 1)
+    participantList.splice(mapObj.index -1, 1)
 
     this.setState({participants: participantList, errorText: {goalInput: ''}})
   }
