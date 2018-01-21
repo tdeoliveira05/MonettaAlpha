@@ -11,8 +11,8 @@ const DumbHomeHeader = ({handleSetDialogCall}) => (
 
         <img src={nameLogo}/>
         <div className='HeaderButtons'>
-          <FlatButton primary={true} label='Login' onClick={() => handleSetDialogCall('alpha', true)}/>
-          <RaisedButton secondary={true} style={{marginLeft:"1vw"}} labelColor='rgb(92, 167, 255)' label='Sign Up' onClick={() => handleSetDialogCall('alpha', true)}/>
+          <FlatButton primary={true} label='Login' onClick={() => handleSetDialogCall('login', true)}/>
+          <RaisedButton secondary={true} style={{marginLeft:"1vw"}} labelColor='rgb(92, 167, 255)' label='Sign Up' onClick={() => handleSetDialogCall('signup', true)}/>
         </div>
       </div>
     </div>

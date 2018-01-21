@@ -10,6 +10,7 @@ import Avatar from 'material-ui/Avatar'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
+import DropDownMenu from 'material-ui/DropDownMenu'
 
 
 const DumbConductMeeting = ({
@@ -25,7 +26,7 @@ const DumbConductMeeting = ({
   goalList,
   formattedDuration,
   noteList,
-  typeList,
+  categoryList,
   tempItemText,
   hasNotes,
   tempItemType,
@@ -34,7 +35,10 @@ const DumbConductMeeting = ({
   selectorGeneral,
   selectedIndex,
   minutesElapsed,
-  secondsElapsed
+  secondsElapsed,
+  changeItemType,
+  tempItemColor,
+  tempItemCategory
 }) => (
   <div className = 'ConductMeetingWrapper'>
     <div className = 'ConductMeetingContent'>
@@ -45,11 +49,11 @@ const DumbConductMeeting = ({
       <div className = 'ConductMeetingPaper'>
         <Paper className = 'ConductMeetingGoalDisplay'>
           <h3> Meeting Goals </h3>
-          {goalList.map((item, index) => {
+          {goalList.map((goalItem, index) => {
             return (
             <div key = {index} >
               <div className = 'ConductMeetingGoalItem'>
-                <h2> {item} </h2>
+                <h2> {goalItem} </h2>
                 <Checkbox
                   style = {{width: '0px'}}
                   iconStyle = {{margin: '0', padding: '0'}}
@@ -65,23 +69,48 @@ const DumbConductMeeting = ({
           <h3> Notes </h3>
           <div className = 'ConductMeetingTextNotesWrapper'>
             <div className = 'ConductMeetingTextNotes' ref = {setRef}>
-              {noteList.map((item, index) => {
-                  var name = item.itemType + '[' + index + ']'
+              {noteList.map((noteItem, index) => {
                   return (
                     <div key = {index} className = 'ConductMeetingTextItem' >
                       <Paper
-                        style = {{backgroundColor: item.color}}
+                        style = {{backgroundColor: categoryList[noteItem.category].color}}
                         className = 'ConductMeetingTextItemPaper'
                       >
                         <div className = 'ConductMeetingTextItemHeading'>
-                          <h3 style = {{margin: '0', padding: '0'}}> ({item.formattedTimeStamp}) - {item.itemType.toUpperCase()} </h3>
+                          <div className = 'ConductMeetingTextItemHeadingInfo'>
+                            <h3 style = {{color: 'white'}}> {'(' + noteItem.formattedTimeStamp + ')'} </h3>
+                            <DropDownMenu
+                              value = {noteItem.category}
+                              onChange = {(event, key, value) => changeItemType(event, key, value, index, noteItem)}
+                              labelStyle = {{paddingLeft: '5px', paddingRight: '0', fontSize: '0.9em', fontWeight: 'bold', color: 'white'}}
+                              underlineStyle = {{border: 'none'}}
+                              iconStyle = {{padding: '0px 0px 0px 45px'}}
+                              style = {{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', width: '100px', height: '100%'}}
+                            >
+                              {Object.values(categoryList).map((categoryItem, index) => {
+                                var menuItem // this if loop will cause the note item's type to be disabled such that the user cant click it to avoid confusion
+                                if (categoryItem.category === noteItem.category) {
+                                  menuItem = <MenuItem key = {index} disabled = {true} label = {categoryItem.category.toUpperCase()} value = {categoryItem.category} primaryText = {categoryItem.text} />
+                                } else {
+                                  menuItem = <MenuItem key = {index} label = {categoryItem.category.toUpperCase()} value = {categoryItem.category} primaryText = {categoryItem.text} />
+                                }
+                                return menuItem
+                              })}
+                            </DropDownMenu>
+                          </div>
+
                           <FlatButton
                             label = 'x'
                             labelStyle = {{color: 'white'}}
-                            onClick = {() => deleteNoteItem(name)}
+                            onClick = {() => deleteNoteItem(index)}
                           />
                         </div>
-                        <p style = {{color: 'white', padding: '0', margin: '0', fontWeight: 'bold'}}> {item.text} </p>
+
+                        <div className = 'ConductMeetingTextItemText'>
+                          <p style = {{color: 'white', padding: '10px', margin: '0', fontWeight: 'bold'}}> {noteItem.text} </p>
+                        </div>
+
+
                       </Paper>
                     </div>
                   )
@@ -98,31 +127,32 @@ const DumbConductMeeting = ({
       </div>
 
       <div className = 'ConductMeetingSelect'>
-        {typeList.map((item, index) => {
-
-          if (item.activated) {
-            var colorIndex = 1
-            var selectionRight = (<FontIcon className = 'material-icons' color = {item.style.secondaryColor[colorIndex]} style = {{margin: '0', padding: '0'}}>keyboard_arrow_right</FontIcon>)
-            var selectionLeft = (<FontIcon className = 'material-icons' color = {item.style.secondaryColor[colorIndex]} style = {{margin: '0', padding: '0'}}>keyboard_arrow_left</FontIcon>)
+        {Object.values(categoryList).map((categoryItem, index) => {
+          if (categoryItem.category === tempItemCategory) {
+            var primaryColor = categoryItem.color
+            var secondaryColor = 'white'
+            var selectionRight = (<FontIcon className = 'material-icons' color = {categoryItem.color} style = {{margin: '0', padding: '0'}}>keyboard_arrow_right</FontIcon>)
+            var selectionLeft = (<FontIcon className = 'material-icons' color = {categoryItem.color} style = {{margin: '0', padding: '0'}}>keyboard_arrow_left</FontIcon>)
           } else {
+            var primaryColor = 'white'
+            var secondaryColor = categoryItem.color
             var selectionRight = ''
             var selectionLeft = ''
-            var colorIndex = 0
           }
 
           return (
             <div key = {index} className = 'ConductMeetingSelectColumn'>
               {selectionRight}
               <Chip
-                onClick = {() => handleTypeClick(index)}
+                onClick = {() => handleTypeClick(categoryItem.category)}
                 style = {{
-                  backgroundColor: item.style.secondaryColor[colorIndex],
-                  border: '1px solid ' + item.style.primaryColor[colorIndex],
+                  backgroundColor: primaryColor,
+                  border: '1px solid ' + secondaryColor,
                   cursor: 'pointer'
                 }}
-                labelStyle = {{color: item.style.primaryColor[colorIndex]}}
+                labelStyle = {{color: secondaryColor}}
               >
-              {item.text}
+              {categoryItem.text}
               </Chip>
               {selectionLeft}
             </div>

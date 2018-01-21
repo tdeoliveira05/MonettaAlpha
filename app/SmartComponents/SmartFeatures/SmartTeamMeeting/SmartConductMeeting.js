@@ -29,7 +29,7 @@ export default class SmartConductMeeting extends React.Component {
       timeElapsed: this.props.meetingData.meetingStats.timeElapsed,
       goals: this.props.meetingData.goals,
       tempItemText: '',
-      tempItemType: 'general',
+      tempItemCategory: 'general',
       tempItemColor: 'gray',
       selectedIndex: 0,
       hasNotes: false,
@@ -39,28 +39,26 @@ export default class SmartConductMeeting extends React.Component {
       errorText: { inputText: ''}
     }
 
-    this.handleChange         = this.handleChange.bind(this)
-    this.submitTempItem       = this.submitTempItem.bind(this)
-    this.handleTypeClick      = this.handleTypeClick.bind(this)
-    this.deleteNoteItem       = this.deleteNoteItem.bind(this)
-    this.nextStep             = this.nextStep.bind(this)
-    this.previousStep         = this.previousStep.bind(this)
-    this.getAndUpdateDuration = this.getAndUpdateDuration.bind(this)
-    this.formatDuration       = this.formatDuration.bind(this)
-    this.createNoteList       = this.createNoteList.bind(this)
-    this.setRef               = this.setRef.bind(this)
-    this.updateMeetingData    = this.updateMeetingData.bind(this)
+    this.handleChange           = this.handleChange.bind(this)
+    this.submitTempItem         = this.submitTempItem.bind(this)
+    this.handleTypeClick        = this.handleTypeClick.bind(this)
+    this.deleteNoteItem         = this.deleteNoteItem.bind(this)
+    this.nextStep               = this.nextStep.bind(this)
+    this.previousStep           = this.previousStep.bind(this)
+    this.getAndUpdateDuration   = this.getAndUpdateDuration.bind(this)
+    this.formatDuration         = this.formatDuration.bind(this)
+    this.setRef                 = this.setRef.bind(this)
+    this.updateMeetingData      = this.updateMeetingData.bind(this)
+    this.changeItemType         = this.changeItemType.bind(this)
   }
 
   componentWillMount () {
-    var newNoteList = this.state.notes
-    newNoteList.timeSorted = this.createNoteList()
-    this.setState(newNoteList)
+
   }
 
   componentDidMount () {
     this.interval = setInterval(this.getAndUpdateDuration, 1000)
-    if (Object.keys(this.props.meetingData.notes).length > 0) this.setState({hasNotes: true})
+    if (this.props.meetingData.notes.length > 0) this.setState({hasNotes: true})
   }
 
   componentWillUnmount () {
@@ -98,14 +96,13 @@ export default class SmartConductMeeting extends React.Component {
   updateMeetingData () {
     var dataObj                       = this.props.getMeetingData()
     dataObj.notes                     = this.state.notes
-    dataObj.notes.timeSorted          = this.createNoteList()
     dataObj.meetingStats.timeElapsed  = this.state.timeElapsed
     this.props.submitMeetingData(dataObj)
   }
 
   getAndUpdateDuration () {
 
-    if (this.state.updateTime) {
+    if (this.props.meetingData.meetingStats.timeElapsed.actualDuration > 0 && this.state.updateTime === true) {
       var durationVal = this.props.meetingData.meetingStats.timeElapsed.actualDuration + Date.now() - this.state.startDate //props added to carry on from when they left the conduct meeting tab
       this.setState({updateTime: false})
     } else {
@@ -132,19 +129,10 @@ export default class SmartConductMeeting extends React.Component {
     this.setState({[event.target.name]: event.target.value})
   }
 
-  deleteNoteItem (targetString) {
-    //Preparing for information extraction
-    var indexToSplit = targetString.indexOf('[') //designating a flag to split in relation to
-
-    // information extraction
-    var targetName   = targetString.substr(0, indexToSplit) // extracting type of note item
-    var targetIndex  = targetString.substr(indexToSplit + 1, 1) // extracting index of target note item
-
-    //immutability helpers
+  deleteNoteItem (targetIndex) {
     var newNoteList = this.state.notes
-    newNoteList[targetName].splice(targetIndex, 1)
-
-    this.setState(newNoteList)
+    newNoteList.splice(targetIndex, 1)
+    this.setState({notes: newNoteList})
   }
 
   submitTempItem () {
@@ -155,118 +143,83 @@ export default class SmartConductMeeting extends React.Component {
     } else {
       this.setState({errorText: {inputText: ''}})
     }
-    var itemType    = this.state.tempItemType
-    var newNoteList = this.state.notes
-    var newNoteItem = {
-                      text: this.state.tempItemText,
-                      itemType: this.state.tempItemType,
-                      color: this.state.tempItemColor,
-                      timeStamp: this.state.timeElapsed.actualDuration,
-                      formattedTimeStamp: this.state.timeElapsed.formattedActualDuration
-                      }
+
+
+    var newNoteList     = this.state.notes
+    var newNoteItem     = {
+                          text: this.state.tempItemText,
+                          category: this.state.tempItemCategory,
+                          timeStamp: this.state.timeElapsed.actualDuration,
+                          formattedTimeStamp: this.state.timeElapsed.formattedActualDuration,
+                          meta: {}
+                          }
 
     //submits the tempItem to the list and overwrites the state to update it
-    newNoteList[itemType].push(newNoteItem)
+    newNoteList.push(newNoteItem)
     this.setState({tempItemText: '', notes: newNoteList, hasNotes: true, scrollToBottom: true})
-    console.log(newNoteList)
   }
 
-  handleTypeClick (index) {
-    var tempTypeList = this.props.typeList
+  handleTypeClick (targetCategory) {
+    var tempCategoryList = this.props.categoryList
+    var newItemColor = tempCategoryList[targetCategory].color
+    var newItemText  = tempCategoryList[targetCategory].text
 
-    // reset all activated booleans
-    tempTypeList[0].activated = false
-    tempTypeList[1].activated = false
-    tempTypeList[2].activated = false
-
-    // update activation
-    tempTypeList[index].activated = true
-    this.setState(tempTypeList)
-
-    // update type
-    var newItemType = {tempItemType: tempTypeList[index].type}
-    this.setState(newItemType)
-
-    // update color
-    var newItemColor = {tempItemColor: tempTypeList[index].style.secondaryColor[1]}
-    this.setState(newItemColor)
-  }
-
-  createNoteList () {
-    //This function will likely be stored in a separate file since it can be used many times
-    var generalNotesList  = this.state.notes.general
-    var actionItemsList   = this.state.notes.action
-    var teamDecisionsList = this.state.notes.decision
-
-    // Adding arrays together to form an unsorted array
-    var list = []
-    var list = list.concat(generalNotesList, actionItemsList, teamDecisionsList)
-
-    //Selection Sorting algorithm
-    var lengthVal = list.length
-    var minIndex, temp
-    for (var i = 0; i < lengthVal; i++) {
-      minIndex = i
-      for (var j = i + 1; j < lengthVal; j++) {
-        if (list[j].timeStamp < list[minIndex].timeStamp) {
-          minIndex = j
-        }
-      }
-
-      temp = list[i]
-      list[i] = list[minIndex]
-      list[minIndex] = temp
-    }
-
-    return list
-
+    this.setState({tempItemColor: newItemColor, tempItemCategory: targetCategory})
   }
 
   createGoalList () {
-    var tempList = this.state.goals
+    var tempGoalList = this.state.goals
     var goalList = []
 
-    tempList.map((item) => {
-      goalList.push(item.text)
+    tempGoalList.map((goalItem) => {
+      goalList.push(goalItem.text)
     })
     return goalList
   }
 
+  changeItemType (event, key, value, index, noteItem) {
+    console.log(value)
+    console.log(noteItem)
+
+    var newNoteList = this.state.notes
+    newNoteList[index].category = value
+    this.setState({notes: newNoteList})
+  }
+
   render () {
     //---------------------------CONDITIONS-------------------------------------
-    var noteList = []
-    if (this.state.hasNotes) noteList = this.createNoteList() // if there are notes, will create a sorted list for display
-
     var goalList = this.createGoalList()
 
     var meetingInfoHeading = (
       <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0', padding: '0'}}>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.userTokenObj.fullName + this.props.meetingData.participants.map((item) => (', '+ item.fullName))} </p>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.userTokenObj.fullName + this.props.meetingData.participants.map((participantsItem) => (', '+ participantsItem.fullName))} </p>
         <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.location} </p>
-
       </div>
-
     )
+
+
     //----------------------------RETURN----------------------------------------
     return(
       <div>
         <DumbConductMeeting
-          noteList            = {noteList}
-          meetingInfoHeading  = {meetingInfoHeading}
-          setRef              = {this.setRef}
-          goalList            = {goalList}
-          typeList            = {this.props.typeList}
-          selectedIndex       = {this.state.selectedIndex}
-          tempItemText        = {this.state.tempItemText}
-          tempItemType        = {this.state.tempItemType}
-          handleChange        = {this.handleChange}
-          submitTempItem      = {this.submitTempItem}
-          handleTypeClick     = {this.handleTypeClick}
-          deleteNoteItem      = {this.deleteNoteItem}
-          nextStep            = {this.nextStep}
-          previousStep        = {this.previousStep}
-          errorText           = {this.state.errorText}
-          formattedDuration   = {this.state.timeElapsed.formattedActualDuration}
+          noteList               = {this.state.notes}
+          meetingInfoHeading     = {meetingInfoHeading}
+          setRef                 = {this.setRef}
+          goalList               = {goalList}
+          categoryList           = {this.props.categoryList} /**************************************NEEDS FIX*****/
+          selectedIndex          = {this.state.selectedIndex}
+          tempItemText           = {this.state.tempItemText}
+          tempItemCategory       = {this.state.tempItemCategory}
+          tempitemColor          = {this.state.tempItemColor}
+          handleChange           = {this.handleChange}
+          submitTempItem         = {this.submitTempItem}
+          handleTypeClick        = {this.handleTypeClick}  /**************************************NEEDS FIX*****/
+          deleteNoteItem         = {this.deleteNoteItem}
+          nextStep               = {this.nextStep}
+          previousStep           = {this.previousStep}
+          errorText              = {this.state.errorText}
+          formattedDuration      = {this.state.timeElapsed.formattedActualDuration}
+          changeItemType         = {this.changeItemType}
           />
       </div>
     )

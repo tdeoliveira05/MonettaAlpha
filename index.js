@@ -92,18 +92,26 @@ username: STRING,
 password: STRING
 }
 
-outputObject = res = {
-data: TOKEN_OBJ // JSON WEB TOKEN (JWT) for local storage
+Success:
+
+outputObject = res.data = {
+  token: String,         //User token
+  fullName: String,
+  email: String
 }
 
-TOKEN_OBJ = {
-  id: STRING,
-  username: STRING,
-  token: UNKNOWN // this is the JWT
+Failure:
+
+outputObject = res.data = {
+  errors: true
+  usernameError: STRING,
+  passwordError: STRING
 }
+
 */
 
 app.post('/request/login',function(req, res){
+  console.log('requested login')
 	serverLogic.requestLogin(req, res)
 })
 
@@ -121,21 +129,28 @@ Process =>
 inputObject = req.body = {
 username: STRING,
 password: STRING,
-code: STRING
+codeUsed: STRING
 }
 
-outputObject = res = {
-data: TOKEN_OBJ // JSON WEB TOKEN (JWT) for local storage
+Success:
+
+outputObject = res.data = {
+  token: String,         //User token
+  fullName: String,
+  email: String
 }
 
-TOKEN_OBJ = {
-  id: STRING,
-  username: STRING,
-  token: UNKNOWN // this is the JWT
+Failure:
+
+outputObject = res.data = {
+  errors: true
+  usernameError: String,
+  passwordError: String
 }
 */
 
 app.post('/request/signup', function(req, res) {
+  console.log('requested signup')
   serverLogic.requestSignup(req, res)
 })
 
@@ -199,16 +214,26 @@ Process =>
 inputObject = req.body = {
   title: String,
   host: { fullName: String, email: String},
-  participants: [{fullName: String, email: String, guest: Boolean}],
+  participants: [{
+    fullName: String,
+    email: String,
+    guest: Boolean
+  }],
   date: {type: String, default: Date.now()},
   location: String,
-  goals: [{text: String, completed: Boolean, completionTimeStamp: Number}],
-  notes: {
-    general: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
-    action: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
-    decision: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
-    timeSorted: [{text: String, type: String, color: String, timeStamp: Number, formattedTimeStamp: String}],
-  },
+  goals: [{
+    text: String,
+    completed: Boolean,
+    completionTimeStamp: Number,
+    metaData: Object
+  }],
+  notes: [{
+      text: String,
+      category: String,
+      timeStamp: Number,
+      formattedTimeStamp: String,
+      metaData: Object
+  }],
   metaData: {starred: Boolean, category: String},
   meetingStats: {
     timeElapsed: {

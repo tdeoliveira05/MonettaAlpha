@@ -200,9 +200,9 @@ export default class SmartDocumentMain extends React.Component {
       'Crash analysis'
     ];
 
-    const meetingCards = meetingNames.map(meetingName => {
+    const meetingCards = meetingNames.map((meetingName, index) => {
       		return (
-            <div className="MeetingPreviewCardWrapper" >
+            <div className="MeetingPreviewCardWrapper" key = {index}>
               <Card style={styles.block} className="MeetingPreviewCard">
                 <CardActions>
                   <Checkbox

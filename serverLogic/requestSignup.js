@@ -22,10 +22,17 @@ module.exports = function (signupData, res) {
     console.log('Current session user token: ' + token)
     res.status(200).send({
       token: token,
-      userDoc: userDoc
+      fullName: userDoc.firstName + ' ' + userDoc.lastName,
+      email: userDoc.username
     })
   })
   .catch((error) => {
-    console.log(error)
+    console.log('ERROR(requestSignup) :' + error)
+    var errorObj = {}
+    if (error.includes('noExist')) errorObj.codeError = 'This code is invalid'
+    if (error.includes('alreadyUsed')) errorObj.codeError = 'This code has already been used'
+    if (error.includes('ValidationError')) errorObj.usernameError = 'This username already exists'
+    errorObj.errors = true
+    res.send(errorObj)
   });
 }

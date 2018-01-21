@@ -12,10 +12,8 @@ const DumbReviewMeeting = ({
   finishMeeting,
   previousStep,
   handleNoteItemDelete,
-  generalNotesList,
-  typeList,
-  actionItemsList,
-  teamDecisionsList
+  categoryList,
+  noteList
 }) => (
   <div className = 'ReviewMeetingWrapper'>
     <div className = 'ReviewMeetingContent'>
@@ -23,26 +21,26 @@ const DumbReviewMeeting = ({
       <div className = 'ReviewMeetingNotes'>
 
         <div className = 'ReviewMeetingNotesUnit'>
-          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: typeList[0].style.primaryColor[0], color: 'white'}}>
+          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: categoryList.general.color, color: 'white'}}>
             <h2> General Notes </h2>
           </Paper>
-          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[0].style.primaryColor[0]}}>
-            {generalNotesList.map((item, index) => {
-              var targetString = 'general[' + index + ']'
+          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: categoryList.general.color}}>
+            {noteList.map((noteItem, index) => {
+              if (noteItem.category !== 'general') return
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
                   <TextField
                     underlineShow = {false}
                     multiLine = {true}
-                    value = {item.text}
-                    name = {targetString}
-                    inputStyle = {{color: item.color, margin: '0', padding: '0'}}
+                    value = {noteItem.text}
+                    name = {JSON.stringify(index)}
+                    inputStyle = {{color: categoryList[noteItem.category].color, margin: '0', padding: '0'}}
                     style = {{width: '100%'}}
-                    onChange = {handleNoteItemChange}
+                    onChange = {(event) => handleNoteItemChange(event, index)}
                   />
                   <button
                     className = 'ReviewMeetingNotesUnitItemButton'
-                    onClick = {() => handleNoteItemDelete(targetString)}
+                    onClick = {() => handleNoteItemDelete(index)}
                   >
                     x
                   </button>
@@ -53,26 +51,26 @@ const DumbReviewMeeting = ({
         </div>
 
         <div className = 'ReviewMeetingNotesUnit'>
-          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: typeList[1].style.primaryColor[0], color: 'white'}}>
+          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: categoryList.action.color, color: 'white'}}>
             <h2> Action Items </h2>
           </Paper>
-          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[1].style.primaryColor[0]}}>
-            {actionItemsList.map((item, index) => {
-              var targetString = 'action[' + index + ']'
+          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: categoryList.action.color}}>
+            {noteList.map((noteItem, index) => {
+              if (noteItem.category !== 'action') return
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
                   <TextField
                     underlineShow = {false}
                     multiLine = {true}
-                    value = {item.text}
-                    name = {targetString}
-                    inputStyle = {{color: item.color, margin: '0', padding: '0'}}
+                    value = {noteItem.text}
+                    name = {JSON.stringify(index)}
+                    inputStyle = {{color: categoryList[noteItem.category].color, margin: '0', padding: '0'}}
                     style = {{width: '100%'}}
-                    onChange = {handleNoteItemChange}
+                    onChange = {(event) => handleNoteItemChange(event, index)}
                   />
                   <button
                     className = 'ReviewMeetingNotesUnitItemButton'
-                    onClick = {() => handleNoteItemDelete(targetString)}
+                    onClick = {() => handleNoteItemDelete(index)}
                   >
                     x
                   </button>
@@ -83,26 +81,26 @@ const DumbReviewMeeting = ({
         </div>
 
         <div className = 'ReviewMeetingNotesUnit'>
-          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: typeList[2].style.primaryColor[0], color: 'white'}}>
+          <Paper className = 'ReviewMeetingNotesUnitHeading' style = {{ backgroundColor: categoryList.decision.color, color: 'white'}}>
             <h2> Team Decisions </h2>
           </Paper>
-          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: typeList[2].style.primaryColor[0]}}>
-            {teamDecisionsList.map((item, index) => {
-              var targetString = 'decision[' + index + ']'
+          <Paper className = 'ReviewMeetingNotesUnitItems' style = {{ backgroundColor: 'white', color: categoryList.decision.color}}>
+            {noteList.map((noteItem, index) => {
+              if (noteItem.category !== 'decision') return
               return (
                 <div className = 'ReviewMeetingNotesUnitItemDiv' key = {index}>
                   <TextField
                     underlineShow = {false}
                     multiLine = {true}
-                    value = {item.text}
-                    name = {targetString}
-                    inputStyle = {{color: item.color, margin: '0', padding: '0'}}
+                    value = {noteItem.text}
+                    name = {JSON.stringify(index)}
+                    inputStyle = {{color: categoryList[noteItem.category].color, margin: '0', padding: '0'}}
                     style = {{width: '100%'}}
-                    onChange = {handleNoteItemChange}
+                    onChange = {(event) => handleNoteItemChange(event, index)}
                   />
                   <button
                     className = 'ReviewMeetingNotesUnitItemButton'
-                    onClick = {() => handleNoteItemDelete(targetString)}
+                    onClick = {() => handleNoteItemDelete(index)}
                   >
                     x
                   </button>

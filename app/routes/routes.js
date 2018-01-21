@@ -28,7 +28,7 @@ var routes = (
 		<Router>
 			<div>
 				<Route exact path="/" component={App}/>
-	    </div>
+      </div>
 		</Router>
 	</MuiThemeProvider>
 );

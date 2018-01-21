@@ -16,10 +16,12 @@ module.exports = function (req, res) {
     console.log('Current session user token: ' + token)
     res.status(200).send({
       token: token,
-      userDoc: userDoc
+      fullName: userDoc.firstName + ' ' + userDoc.lastName,
+      email: userDoc.username
     })
   })
   .catch((error) => {
-    console.log('[requestLogin.js]' + error)
+    if (error === 'find.singleDoc') res.send({errors: true, usernameError: 'User not found', passwordError: ''})
+    if (error === 'check.thisPassword') res.send({errors: true, usernameError: '', passwordError: 'Incorrect password'})
   })
 }

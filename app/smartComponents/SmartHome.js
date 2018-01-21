@@ -20,6 +20,7 @@ export default class SmartHome extends React.Component {
       temp: {
         username: '',
         password: '',
+        confirmPassword: '',
         codeUsed: '',
         firstName: '',
         lastName: '',
@@ -27,16 +28,9 @@ export default class SmartHome extends React.Component {
         organization: '',
         referenceNotes: ''
       },
-      errorText: {
-        username: '',
-        password: '',
-        codeUsed: '',
-        firstName: '',
-        lastName: '',
-        jobPosition: '',
-        organization: '',
-        referenceNotes: ''
-      },
+      alphaErrors: {},
+      signupErrors: {},
+      loginErrors: {},
       dialogToggle: false,
       dialogComponentType: 'alpha'
     }
@@ -50,34 +44,34 @@ export default class SmartHome extends React.Component {
     this.handleLoginRequest   = this.handleLoginRequest.bind(this)
     this.handleSignupRequest  = this.handleSignupRequest.bind(this)
     this.handleAlphaRequest   = this.handleAlphaRequest.bind(this)
+
+    this.checkAlphaErrors     = this.checkAlphaErrors.bind(this)
   }
 
   handleLoginRequest (loginData) {
-    console.log('dev restrictions')
-    /*
+    console.log('login')
     const self = this
-    axios.post('http://localhost:3000/request/login', loginData)
+    axios.post('http://localhost:8080/request/login', loginData)
     .then((tokenResponse) => {
+      if (tokenResponse.data.errors) this.setState({loginErrors: {email: tokenResponse.data.usernameError, password: tokenResponse.data.passwordError}})
       tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
     })
     .catch((error) => {
-      console.log('[App.js] - handleLoginRequest() ' + error)
+      console.log(error)
     })
-    */
   }
 
   handleSignupRequest (signupData) {
-    console.log('dev restrictions')
-    /*
+    console.log('signup')
     const self = this
-    axios.post('http://localhost:3000/request/signup', signupData)
+    axios.post('http://localhost:8080/request/signup', signupData)
     .then((tokenResponse) => {
+      if (tokenResponse.data.errors) this.setState({signupErrors: {email: tokenResponse.data.usernameError, password: tokenResponse.data.passwordError, code: tokenResponse.data.codeError}})
       tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
     })
     .catch((error) => {
       console.log('[SmartHome.js]  - handleSignupRequest() ' + error)
     })
-    */
   }
 
   handleAlphaRequest (alphaData) {
@@ -85,8 +79,7 @@ export default class SmartHome extends React.Component {
     const self = this
     axios.post('http://localhost:8080/request/alpha', alphaData)
     .then((response) => {
-      console.log('server responded')
-      console.log(response)
+      this.dialogToggleFunction()
       alert('We sent you an email!')
     })
     .catch((error) => {
@@ -96,7 +89,71 @@ export default class SmartHome extends React.Component {
     })
   }
 
+  checkAlphaErrors () {
+    var alphaErrors = {}
+
+    // First name errors
+    if (this.state.temp.firstName === '') alphaErrors.firstName = 'required'
+
+    // Last name errors
+    if (this.state.temp.lastName === '') alphaErrors.lastName = 'required'
+
+    // Email (username) errors
+    if (this.state.temp === '' || !this.state.temp.username.includes('@') || !this.state.temp.username.includes('.')) alphaErrors.email = 'A valid email is required'
+
+    // Job position errors
+    if (this.state.temp.jobPosition === '') alphaErrors.jobPosition = 'required'
+
+    // Organization errors
+    if (this.state.temp.organization === '') alphaErrors.organization = 'required'
+
+    // If no client errors found submit
+    if (Object.keys(alphaErrors).length === 0) {
+      this.handleAlphaRequest(this.state.temp)
+    } else {
+      this.setState({alphaErrors: alphaErrors})
+    }
+  }
+
+  checkSignupErrors () {
+    var signupErrors = {}
+
+    // Email (username) errors
+    if (this.state.temp.username === '' || !this.state.temp.username.includes('@') || !this.state.temp.username.includes('.')) signupErrors.email = 'A valid email is required'
+
+    // Password does not match confirm password
+    if (this.state.temp.password !== this.state.temp.confirmPassword) signupErrors.password = 'Passwords do not match'
+
+    // A code is present
+    if (this.state.temp.codeUsed === '') signupErrors.code = 'A code is needed to signup'
+
+    // If no client errors found submit
+    if (Object.keys(signupErrors).length === 0) {
+      this.handleSignupRequest(this.state.temp)
+    } else {
+      this.setState({signupErrors: signupErrors})
+    }
+  }
+
+  checkLoginErrors () {
+    var loginErrors = {}
+    // no username present
+    if (this.state.temp.username === '' || !this.state.temp.username.includes('@') || !this.state.temp.username.includes('.')) loginErrors.email = 'A valid email is required'
+
+    // no password present
+    if (this.state.temp.password === '') loginErrors.password = 'A password is required'
+
+    // If no client errors found submit
+    if (Object.keys(loginErrors).length === 0) {
+      this.handleLoginRequest(this.state.temp)
+    } else {
+      this.setState({loginErrors: loginErrors})
+    }
+  }
+
+
   dialogToggleFunction () {
+    if (this.state.dialogToggle) this.resetTemp()                               // if dialog is closing, reset the temp fields
     this.setState({dialogToggle: !this.state.dialogToggle})
   }
 
@@ -115,38 +172,23 @@ export default class SmartHome extends React.Component {
     })
   }
 
-  checkForErrors () {
-    var errorText = this.state.errorText
-
-    if (temp.username === '') {
-    }
-  }
-
   handleSetDialogCall (target, activate) {
     this.setState({dialogComponentType: target})
     if (activate) this.dialogToggleFunction()
   }
 
   handleSubmit (submitType) {
-    var data = this.state.temp
-
-
     switch(this.state.dialogComponentType) {
       case 'login':
-        //this.handleLoginRequest(data)
+        this.checkLoginErrors()
         break
 
       case 'signup':
-        //this.handleSignupRequest(data)
+        this.checkSignupErrors()
         break
 
       case 'alpha':
-        this.handleAlphaRequest(data)
-        this.resetTemp()
-        break
-
-      case 'soon':
-        console.log('coming soon!')
+        this.checkAlphaErrors()
         break
     }
   }
@@ -169,6 +211,7 @@ export default class SmartHome extends React.Component {
             handleOnTempChange  = {this.handleOnTempChange}
             handleSubmit        = {this.handleSubmit}
             handleSetDialogCall = {this.handleSetDialogCall}
+            loginErrors         = {this.state.loginErrors}
             />
         )
         break
@@ -182,6 +225,8 @@ export default class SmartHome extends React.Component {
             handleSubmit        = {this.handleSubmit}
             handleOnTempChange  = {this.handleOnTempChange}
             handleSetDialogCall = {this.handleSetDialogCall}
+            confirmPassword     = {this.state.temp.confirmPassword}
+            signupErrors        = {this.state.signupErrors}
             />
         )
         break
@@ -197,6 +242,7 @@ export default class SmartHome extends React.Component {
             referenceNotes      = {this.state.temp.referenceNotes}
             handleOnTempChange  = {this.handleOnTempChange}
             handleSubmit        = {this.handleSubmit}
+            alphaErrors         = {this.state.alphaErrors}
             />
         )
          break
