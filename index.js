@@ -204,6 +204,35 @@ app.use(function(req, res, next) {
 */
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
+Updates user document with additional information
+Process =>
+1. finds the user document in database
+2. updates relevant fields
+
+-------------------
+
+inputObject = req.body = {
+  userTokenObj: OBJECT,
+  updateObj: {      // any field inside this object must have the same names as the user model, the route will loop through and update depending on this object's keys
+    firstName: ...
+    lastName: ...
+    ETC
+  }
+}
+
+outputObject = req.body = {
+  userTokenObj: OBJECT
+  sucess: BOOLEAN,
+  errorText: STRING
+}
+
+}*/
+
+app.post('/userDocument/update', function(req,res) {
+  console.log('reached update route')
+	serverLogic.updateUserDoc(req, res)
+})
+/* -----------------------------------------------------------------------------
 Enters a new meeting into the database
 Process =>
 1. Creates a new meeting document using the meeting schema

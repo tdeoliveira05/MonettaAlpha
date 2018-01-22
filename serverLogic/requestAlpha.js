@@ -32,15 +32,3 @@ module.exports = function (applicantData, res) {
   })
 
 }
-
-/*
-var newApplicantDoc = new Applicant({
-  username: applicantData.body.username,
-  firstName: applicantData.body.firstName,
-  lastName: applicantData.body.lastName,
-  jobPosition: applicantData.body.jobPosition,
-  organization: applicantData.body.organization,
-  referenceNotes: applicantData.body.referenceNotes,
-  activatedProfile: false
-});
-*/

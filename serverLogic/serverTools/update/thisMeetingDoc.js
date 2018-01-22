@@ -1,4 +1,4 @@
-// This function will
+// This function will update a meeting document
 const Meeting = require('../../../models/meetingModel')
 
 module.exports = function (meetingDoc) {

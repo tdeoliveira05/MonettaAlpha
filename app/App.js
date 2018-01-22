@@ -8,7 +8,6 @@ export default class App extends React.Component {
 		super(props);
 		this.state = {
       appLocation: 'home',
-
       userTokenObj: {}
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
@@ -26,10 +25,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    console.log(this.props)
     //---------------------------CONDITIONS-------------------------------------
 
-    console.log(this.state)
     //----------------------------RETURN----------------------------------------
     switch(this.state.appLocation) {
       case 'home':
@@ -45,6 +42,7 @@ export default class App extends React.Component {
         <div>
           <SmartMain
             userTokenObj       = {this.state.userTokenObj}
+            submitUserTokenObj = {this.submitUserTokenObj}
             changeAppLocation  = {this.changeAppLocation}
           />
         </div>

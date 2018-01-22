@@ -23,7 +23,7 @@ module.exports = function (signupData, res) {
     res.status(200).send({
       token: token,
       fullName: userDoc.firstName + ' ' + userDoc.lastName,
-      email: userDoc.username
+      username: userDoc.username
     })
   })
   .catch((error) => {
