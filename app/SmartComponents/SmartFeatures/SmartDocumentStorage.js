@@ -38,8 +38,8 @@ export default class SmartDocumentStorage extends React.Component {
           currentFolder={this.state.currentFolder}
         />
         <SmartDocumentMain
-          // Propagate the userTokenObj down the chain
-          userTokenObj = {this.props.userTokenObj}
+          userTokenObj  = {this.props.userTokenObj}
+          currentFolder = {this.state.currentFolder}
           />
       </div>
     );

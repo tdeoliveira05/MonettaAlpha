@@ -1,5 +1,6 @@
-import React from 'react';
-import axios from 'axios';
+import React      from 'react';
+import axios      from 'axios';
+import PropTypes  from 'prop-types';
 
 
 import DumbDocumentSearchbar  from '../../../dumbComponents/DocumentStorage/DumbDocumentSearchbar.js';
@@ -62,81 +63,53 @@ export default class SmartDocumentMain extends React.Component {
     super(props)
 
     this.state = {
-      // initialize the docArray property of this.state to be clear what you are
-      // expecting it to contain -> an array of things
       docArray: [
         // {
-        //   _id: 'String',
-        //   title: 'String',
-        //   date: 'Unformatted String',
-        //   goals: [
-        //     {
-        //       completed: 'Boolean',
-        //       completionTimeStamp: 'Number' ,
-        //       text: 'String',
-        //       _id: 'String'
-        //     }
-        //   ],
-        //   host: [
-        //     fullName: 'String',
-        //     username: 'String',
-        //   ],
-        //   location: 'String',
-        //   meetingStats: [
-        //     timeElapsed: [
-        //       actualDuration: 'Number',
-        //       expectedDuration: 'Number',
-        //       formattedActualDuration: 'String',
-        //       formattedExpectedDuration: 'String'
-        //     ],
-        //   ],
-        //   notes: [
-        //     action: [
-        //       {
-        //         text: 'String',
-        //         itemType: 'String',
-        //         timeStamp: 'Number',
-        //         formattedTimeStamp: 'String'
-        //       }
-        //     ],
-        //     decision: [
-        //       {
-        //         text: 'String',
-        //         itemType: 'String',
-        //         timeStamp: 'Number',
-        //         formattedTimeStamp: 'String'
-        //       }
-        //     ],
-        //     general: [
-        //       {
-        //         text: 'String',
-        //         itemType: 'String',
-        //         timeStamp: 'Number',
-        //         formattedTimeStamp: 'String'
-        //       }
-        //     ],
-        //     timeSorted: [
-        //       {
-        //         text: 'String',
-        //         itemType: 'String',
-        //         timeStamp: 'Number',
-        //         formattedTimeStamp: 'String'
-        //       }
-        //     ],
-        //   ],
+        //   _id: String,
+        //   title: String,
+        //   host: {
+        //     fullName: String,
+        //     username: String
+        //   },
         //   participants: [
         //     {
-        //     fullName: 'String',
-        //     email: 'String',
-        //     guest: 'Boolean',
-        //     _id: 'String'
+        //     fullName: String,
+        //     email: String,
+        //     guest: Boolean
         //     }
         //   ],
-        //   metaData: [
-        //     starred: 'Boolean',
-        //     category: "String - default: 'None' "
+        //   date: Date,
+        //   location: String,
+        //   goals: [
+        //     {
+        //       text: String,
+        //       completed: Boolean,
+        //       completionTimeStamp: Number,
+        //       metaData: Object
+        //     }
         //   ],
-        //}
+        //   notes: [
+        //     {
+        //       text: String,
+        //       category: String,
+        //       timeStamp: Number,
+        //       formattedTimeStamp: String,
+        //       metaData: Object
+        //     }
+        //   ],
+        //   metaData: {
+        //     starred: {type: Boolean, default: false},
+        //     folder: {type: String, default: 'none'}
+        //   },
+        //   meetingStats: {
+        //     timeElapsed: {
+        //       actualDuration: Number,
+        //       formattedActualDuration: String,
+        //       expectedDuration: Number,
+        //       formattedExpectedDuration: String
+        //     }
+        //   }
+        // }
       ],
       // an array to manage all of the different documents displayed, the index
       // corresponds to docArray's index as well
@@ -144,16 +117,12 @@ export default class SmartDocumentMain extends React.Component {
       // ignore this, this is just to show an error I talk about in comments in
       // the .map() function inside render() {..}
       temp: '',
-      displayedMeetingFolder: 'All Meetings',
-      meetingNames : [
-        'Code Review',
-        'Milestones',
-        'Product Design Session',
-        'Pre-release checklist',
-        'Crash analysis' ],
+      searchText: '',
     }
 
     this.handleTempChange = this.handleTempChange.bind(this)
+
+    this.handleSearchTextChange = this.handleSearchTextChange.bind(this)
 
     // bind getAllMeetingDocs() to be used by the render() function through <RaisedButton/>
     this.getAllMeetingDocs    = this.getAllMeetingDocs.bind(this)
@@ -166,9 +135,12 @@ export default class SmartDocumentMain extends React.Component {
   }
 
   componentWillMount() {
-    this.getAllMeetingDocs()
+    this.getAllMeetingDocs();
   }
 
+  handleSearchTextChange(inputValue) {
+    this.setState({searchText: inputValue.toLowerCase()});
+  }
 
   handleTempChange (event) {
     console.log(event.target.name + ' -----> ' + event.target.value)
@@ -203,11 +175,17 @@ export default class SmartDocumentMain extends React.Component {
 
       // have a look at your console after you run this axios route to understand
       // what the outputObject structure looks like. the actual content is again in the ".data" property
-      console.log(docArrayResponse)
+      // console.log(docArrayResponse)
 
       // sets the state to the outputObject.data, this overwrites any previous
       // values in the docArray property in this.state, it ensures that everytime
       // you run this axios.get route you will get a fresh array and lose the old one
+
+      // Reordered the meetings to display most recent first
+      docArrayVal.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date)
+      })
+
       this.setState({docArray: docArrayVal})
 
     })
@@ -357,82 +335,109 @@ export default class SmartDocumentMain extends React.Component {
     // });
     // console.log(meetingCardsTrial)
 
-    const meetingCards = this.state.docArray.map((meeting, index) => {
-      		return (
-            <div className="MeetingPreviewCardWrapper" key={index} >
-              <Card style={styles.block} className="MeetingPreviewCard">
-                <CardActions>
-                  <Checkbox
-                    style={styles.cardIcon}
-                    checkedIcon={<StarToggleON />}
-                    uncheckedIcon={<StarToggleOFF />}
-                  />
-                  {/*<IconButton><MoreVertIcon/></IconButton>*/}
-                </CardActions>
-                <CardHeader
-                  style={styles.cardHeader}
-                  title={meeting.title}
-                  subtitle= {meeting.date}
-                  actAsExpander={true}
-                  showExpandableButton={true}
-                />
-                <CardText expandable={true}>
-                  <h2> General </h2>
-                  {meeting.notes.general[0].text}
-                  <h2> Actions </h2>
-                  {meeting.notes.action[0].text}
-                  <h2> Decisions </h2>
-                  {meeting.notes.decision[0].text}
-                </CardText>
-              </Card>
-            </div>
-      		)
-    	});
+    // NOTE Applying filters to the meeting array
+    let filteredDocArray = this.state.docArray.filter((meeting) => {
+      let searchCondition = meeting.title.toLowerCase().indexOf(this.state.searchText) !== -1;
+      let folderCondition = (this.props.currentFolder == 'All Meetings' || (this.props.currentFolder == meeting.metaData.folder))
+      let starredCondition = (this.props.currentFolder == 'Starred Meetings' && meeting.metaData.starred)
 
-      const meetingPaperStyle = this.state.docArray.map((item, index) => {
-        return(
-          <div key={index} style={{
-            width: '100%',
+      return searchCondition && (folderCondition || starredCondition);
+    })
+
+    // TODO NOTE sorting meeting array
+
+
+    // NOTE Meeting names to populate searchbar autocomplete
+    let filteredMeetingNames = filteredDocArray.map((meeting) => {
+      return meeting.title
+    })
+
+    const meetingCards = filteredDocArray.map((meeting, index) => {
+      return (
+        <div className="MeetingPreviewCardWrapper" key={index} >
+          <Card style={styles.block} className="MeetingPreviewCard">
+            <CardActions>
+              <Checkbox
+                style={styles.cardIcon}
+                checked={meeting.metaData.starred}
+                checkedIcon={<StarToggleON />}
+                uncheckedIcon={<StarToggleOFF />}
+              />
+              {/*<IconButton><MoreVertIcon/></IconButton>*/}
+            </CardActions>
+            <CardHeader
+              style={styles.cardHeader}
+              title={meeting.title}
+              subtitle= {meeting.date}
+              actAsExpander={true}
+              showExpandableButton={true}
+            />
+            <CardText expandable={true}>
+              <h2> General </h2>
+              {meeting.notes.map((note, noteindex) => {
+                if (note.category !== 'general') return
+                return(<p key={noteindex} >{note.text}</p>)
+              })}
+              <h2> Actions </h2>
+              {meeting.notes.map((note, noteindex) => {
+                if (note.category !== 'action') return
+                return(<p key={noteindex} >{note.text}</p>)
+              })}
+              <h2> Decisions </h2>
+              {meeting.notes.map((note, noteindex) => {
+                if (note.category !== 'decision') return
+                return(<p key={noteindex} >{note.text}</p>)
+              })}
+            </CardText>
+          </Card>
+        </div>
+      )
+    });
+
+    const meetingPaperStyle = this.state.docArray.map((item, index) => {
+      return(
+        <div key={index} style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'}}>
+          <Paper style = {{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            width: '400px',
+            padding: '10px'}}>
+
+            <p> {item.title} </p>
+            <RaisedButton
+              label = 'x'
+              onClick = {() => this.deleteThisMeetingDocArrayEntry(index)}
+            />
+          </Paper>
+          <Paper style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center'}}>
-            <Paper style = {{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-              width: '400px',
-              padding: '10px'}}>
+            justifyContent: 'center',
+            width: '400px',
+            padding: '10px'}}>
 
-              <p> {item.title} </p>
-              <RaisedButton
-                label = 'x'
-                onClick = {() => this.deleteThisMeetingDocArrayEntry(index)}
-              />
-            </Paper>
-            <Paper style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '400px',
-              padding: '10px'}}>
+          <TextField
+            value = {this.state.temp}
+            name = 'temp'
+            hintText = 'add words to the title'
+            onChange = {this.handleTempChange}
+          />
+          <RaisedButton
+            label = 'update title'
+            onClick = {() => this.updateThisMeetingDocArrayEntry(index)}
+          />
 
-            <TextField
-              value = {this.state.temp}
-              name = 'temp'
-              hintText = 'add words to the title'
-              onChange = {this.handleTempChange}
-            />
-            <RaisedButton
-              label = 'update title'
-              onClick = {() => this.updateThisMeetingDocArrayEntry(index)}
-            />
-
-            </Paper>
-          </div>
-        );
-      });
+          </Paper>
+        </div>
+      );
+    });
 
     //---------------------------RETURN-----------------------------------------
     //--------------------------------------------------------------------------
@@ -440,11 +445,19 @@ export default class SmartDocumentMain extends React.Component {
       <div className="DocumentStorageMain">
 
         <DumbDocumentSearchbar
-          meetingNames={this.state.meetingNames}
+          onSearchTextChange={this.handleSearchTextChange}
+          meetingNames={filteredMeetingNames}
         />
         <DumbDocumentFilterbar />
         <div className="DocumentStorageCardsWrapper" >
           {meetingCards}
+        </div>
+
+        <div>
+          <RaisedButton
+            label = 'Get All Docs'
+            onClick = {() => this.getAllMeetingDocs()}
+          />
         </div>
 
         <div style = {{width: '100%', paddingBottom: '100px'}}>
@@ -456,8 +469,9 @@ export default class SmartDocumentMain extends React.Component {
   }
 }
 
-// SmartDocumentMain.proptypes = {
-// };
+SmartDocumentMain.propTypes = {
+  currentFolder:  PropTypes.string.isRequired,
+};
 
 //Raised Button Comments
 
@@ -505,3 +519,4 @@ below, we will update the title of the target meeting document*/}
 we will update it remotely too by passing the new meeting
 document to this.updateThisMeetingDoc() to send a command to the server*/}
  {/*the prompt button to initiate the update chain*/}
+// TODO, FIXME, CHANGED, XXX, IDEA, HACK, NOTE, REVIEW, NB, BUG, QUESTION, COMBAK, TEMP, DEBUG, OPTIMIZE

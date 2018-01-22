@@ -7,9 +7,13 @@ export default class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      appLocation: 'home',
+      appLocation: 'app',
 
-      userTokenObj: {}
+      userTokenObj: {
+        username: 'sunny.p.panchal@gmail.com',
+        fullName: 'Sunny Panchal',
+        token:    'sdfas9d8fsa9df8'
+      }
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
 
