@@ -19,6 +19,7 @@ const DumbDocumentSearchbar = (props) => {
         filter={AutoComplete.fuzzyFilter}
         dataSource={meetingNames}
         fullWidth={true}
+        maxSearchResults={3}
         onUpdateInput={(inputValue) => onSearchTextChange(inputValue)}
       />
     </div>

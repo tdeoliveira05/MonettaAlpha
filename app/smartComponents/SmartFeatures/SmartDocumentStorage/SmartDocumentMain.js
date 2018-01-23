@@ -1,6 +1,7 @@
 import React      from 'react';
 import axios      from 'axios';
 import PropTypes  from 'prop-types';
+import moment     from 'moment';
 
 
 import DumbDocumentSearchbar  from '../../../dumbComponents/DocumentStorage/DumbDocumentSearchbar.js';
@@ -9,8 +10,6 @@ import DumbDocumentFilterbar  from '../../../dumbComponents/DocumentStorage/Dumb
 
 
 // Importing Material-UI Components
-import AppBar       from 'material-ui/AppBar';
-import AutoComplete from 'material-ui/AutoComplete';
 import IconButton   from 'material-ui/IconButton';
 import IconMenu     from 'material-ui/IconMenu';
 import FontIcon     from 'material-ui/FontIcon';
@@ -19,14 +18,10 @@ import FlatButton   from 'material-ui/FlatButton';
 import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import MenuItem     from 'material-ui/MenuItem';
 import TextField    from 'material-ui/TextField';
-import {Toolbar,
-        ToolbarGroup,
-        ToolbarSeparator,
-  ToolbarTitle}     from 'material-ui/Toolbar';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
-import Checkbox from 'material-ui/Checkbox';
-import Paper from 'material-ui/Paper';
+import Checkbox     from 'material-ui/Checkbox';
+import Paper        from 'material-ui/Paper';
 
 // Importing Material-UI SVG-Icons
 import MoreVertIcon   from 'material-ui/svg-icons/navigation/more-vert';
@@ -99,7 +94,8 @@ export default class SmartDocumentMain extends React.Component {
         //   ],
         //   metaData: {
         //     starred: {type: Boolean, default: false},
-        //     folder: {type: String, default: 'none'}
+        //     folder: {type: String, default: 'none'},
+        //     trash: {type: Boolean, default: false}
         //   },
         //   meetingStats: {
         //     timeElapsed: {
@@ -118,11 +114,27 @@ export default class SmartDocumentMain extends React.Component {
       // the .map() function inside render() {..}
       temp: '',
       searchText: '',
+      filterMenu: 'hide',
+      filters: {
+        location: 'Display All',
+        participants:  [''],
+        dateFrom: null,
+        dateTo:   new Date()
+      },
+      allLocations: [],
+      allParticipants: [],
+      participentsPerMeeting: [],
     }
 
     this.handleTempChange = this.handleTempChange.bind(this)
 
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this)
+    this.handleFilterButtonClick = this.handleFilterButtonClick.bind(this)
+    this.handleLocationFilterChange = this.handleLocationFilterChange.bind(this)
+    this.handleParticipantFilterChange = this.handleParticipantFilterChange.bind(this)
+    this.handleDateFromFilterChange = this.handleDateFromFilterChange.bind(this)
+    this.handleDateToFilterChange = this.handleDateToFilterChange.bind(this)
+    this.handleClickClearFiltersButton = this.handleClickClearFiltersButton.bind(this)
 
     // bind getAllMeetingDocs() to be used by the render() function through <RaisedButton/>
     this.getAllMeetingDocs    = this.getAllMeetingDocs.bind(this)
@@ -140,6 +152,70 @@ export default class SmartDocumentMain extends React.Component {
 
   handleSearchTextChange(inputValue) {
     this.setState({searchText: inputValue.toLowerCase()});
+  }
+
+  handleStarredChange (meetingID) {
+    // Can't use index to identify target meeting because .filter() restarts index
+    // console.log(meetingID);
+
+    var newDocArray = this.state.docArray;
+    var targetMeeting = newDocArray.filter((meeting) => {
+      return meeting._id === meetingID
+    })
+
+    targetMeeting[0].metaData.starred = (targetMeeting[0].metaData.starred ? false : true) ;
+    // NOTE changing the starred value in targetMeeting also changes it in
+    // newDocArray so:
+
+    this.setState({newDocArray});
+    this.updateThisMeetingDoc(targetMeeting[0]);
+  }
+
+  handleFilterButtonClick() {
+    this.setState({filterMenu: (this.state.filterMenu === 'hide' ? 'display' : 'hide')})
+  }
+
+  handleLocationFilterChange(event, target, value) {
+    let filters = Object.assign({}, this.state.filters);
+    filters.location = value;
+    this.setState({filters});
+  }
+
+  handleParticipantFilterChange(event, target, value) {
+    console.log(value)
+
+    if(value.indexOf('Display All') > -1) {
+      let filters = Object.assign({}, this.state.filters);
+      filters.participants = [''];
+      this.setState({filters});
+    } else {
+        let filters = Object.assign({}, this.state.filters);
+        filters.participants = value;
+        this.setState({filters});
+      }
+    console.log(this.state.filters.participants)
+  }
+
+  handleDateFromFilterChange(x, value) {
+    // only the second attribute contains the date
+    let filters = Object.assign({}, this.state.filters);
+    filters.dateFrom = value;
+    this.setState({filters});
+  }
+
+  handleDateToFilterChange(x, value) {
+    let filters = Object.assign({}, this.state.filters);
+    filters.dateTo = value;
+    this.setState({filters});
+  }
+
+  handleClickClearFiltersButton() {
+    let filters = Object.assign({}, this.state.filters);
+    filters.location = 'Display All';
+    filters.participants = [''];
+    filters.dateFrom = null;
+    filters.dateTo = new Date();
+    this.setState({filters});
   }
 
   handleTempChange (event) {
@@ -186,7 +262,39 @@ export default class SmartDocumentMain extends React.Component {
         return new Date(b.date) - new Date(a.date)
       })
 
-      this.setState({docArray: docArrayVal})
+      let allPossibleLocations = [...new Set(docArrayVal.map((meeting) =>{
+        return meeting.location;
+      }))]
+
+      // OPTIMIZE FROM HERE
+      let possibleParticipants = docArrayVal.map((meeting) => {
+        return meeting.participants.map((participant) => {
+          return participant.fullName
+        })
+      })
+
+      // Adding the hosts name to participants list
+      for (var i = 0; i < possibleParticipants.length; i++) {
+        possibleParticipants[i].push(docArrayVal[i].host.fullName)
+      }
+
+      let newArr = [];
+      for(var i = 0; i < possibleParticipants.length; i++) {
+          newArr = newArr.concat(possibleParticipants[i]);
+      }
+
+      let uniqueParticipants = []
+      newArr.map((participant) => {
+        if (uniqueParticipants.includes(participant) === false) {
+          uniqueParticipants.push(participant)
+        }
+      })
+      // OPTIMIZE TO HERE
+
+      this.setState({allLocations:    allPossibleLocations})
+      this.setState({allParticipants: uniqueParticipants})
+      this.setState({participentsPerMeeting: possibleParticipants})
+      this.setState({docArray:        docArrayVal})
 
     })
     // The final piece of a promise chain is a .catch block that will trigger if
@@ -284,6 +392,7 @@ export default class SmartDocumentMain extends React.Component {
 
     // retrieve the ENTIRE target document to send to axios for it to update in the database
     var targetDocument = newDocArray[index]
+    console.log(targetDocument);
 
     // BECAREFUL
     // the premise behind the update route is to pass it the ENTIRE document,
@@ -336,13 +445,35 @@ export default class SmartDocumentMain extends React.Component {
     // console.log(meetingCardsTrial)
 
     // NOTE Applying filters to the meeting array
-    let filteredDocArray = this.state.docArray.filter((meeting) => {
-      let searchCondition = meeting.title.toLowerCase().indexOf(this.state.searchText) !== -1;
-      let folderCondition = (this.props.currentFolder == 'All Meetings' || (this.props.currentFolder == meeting.metaData.folder))
-      let starredCondition = (this.props.currentFolder == 'Starred Meetings' && meeting.metaData.starred)
+    let filteredDocArray = this.state.docArray.filter((meeting, index) => {
 
-      return searchCondition && (folderCondition || starredCondition);
-    })
+      let searchCondition = meeting.title.toLowerCase().indexOf(this.state.searchText) !== -1;
+
+      let folderCondition = (this.props.currentFolder == 'All Meetings' || (this.props.currentFolder == meeting.metaData.folder));
+
+      let starredCondition = (this.props.currentFolder == 'Starred Meetings' && meeting.metaData.starred);
+
+      let locationFilter = ((this.state.filters.location === meeting.location) || this.state.filters.location === 'Display All');
+
+      let allParticipantsInMeeting = true;
+      for (let i=1; i < this.state.filters.participants.length; i++) {
+        if (this.state.participentsPerMeeting[index].indexOf(this.state.filters.participants[i]) === -1) {
+          allParticipantsInMeeting = false
+          return allParticipantsInMeeting;
+        }
+      }
+
+      let participantFilter = allParticipantsInMeeting || (this.state.filters.participants[0] === '');
+
+      let dateFromFilter = (moment(meeting.date).isSameOrAfter(this.state.filters.dateFrom) || (this.state.filters.dateFrom === null));
+
+      // Add a day to make it inclusive
+      let dateToFilter = (moment(meeting.date).isSameOrBefore(moment(this.state.filters.dateTo).add(1, 'day')));
+
+      let dateFilter = (dateToFilter && dateFromFilter);
+
+      return searchCondition && (folderCondition || starredCondition) && locationFilter && participantFilter && dateFilter;
+    });
 
     // TODO NOTE sorting meeting array
 
@@ -352,6 +483,12 @@ export default class SmartDocumentMain extends React.Component {
       return meeting.title
     })
 
+    // let allLocations = this.state.docArray.map((meeting) => {
+    //   return meeting.location;
+    // })
+
+    // console.log(allLocations);
+
     const meetingCards = filteredDocArray.map((meeting, index) => {
       return (
         <div className="MeetingPreviewCardWrapper" key={index} >
@@ -360,6 +497,7 @@ export default class SmartDocumentMain extends React.Component {
               <Checkbox
                 style={styles.cardIcon}
                 checked={meeting.metaData.starred}
+                onCheck={() => this.handleStarredChange(meeting._id, index)}
                 checkedIcon={<StarToggleON />}
                 uncheckedIcon={<StarToggleOFF />}
               />
@@ -368,7 +506,8 @@ export default class SmartDocumentMain extends React.Component {
             <CardHeader
               style={styles.cardHeader}
               title={meeting.title}
-              subtitle= {meeting.date}
+              subtitle= {new Date(meeting.date).toString('MMMM dS, yyyy')
+                .slice(0, 21)}
               actAsExpander={true}
               showExpandableButton={true}
             />
@@ -448,9 +587,22 @@ export default class SmartDocumentMain extends React.Component {
           onSearchTextChange={this.handleSearchTextChange}
           meetingNames={filteredMeetingNames}
         />
-        <DumbDocumentFilterbar />
+
+        <DumbDocumentFilterbar
+          onFilterButtonClick       = {this.handleFilterButtonClick}
+          filterMenuStatus          = {this.state.filterMenu}
+          filters                   = {this.state.filters}
+          allLocations              = {this.state.allLocations}
+          onLocationFilterChange    = {this.handleLocationFilterChange}
+          allParticipants           = {this.state.allParticipants}
+          onParticipantFilterChange = {this.handleParticipantFilterChange}
+          onDateToFilterChange      = {this.handleDateToFilterChange}
+          onDateFromFilterChange    = {this.handleDateFromFilterChange}
+          onClickClearFiltersButton         = {this.handleClickClearFiltersButton}
+        />
+
         <div className="DocumentStorageCardsWrapper" >
-          {meetingCards}
+          {filteredDocArray.length > 0 ? meetingCards : <h1>No Results</h1>}
         </div>
 
         <div>
@@ -469,8 +621,10 @@ export default class SmartDocumentMain extends React.Component {
   }
 }
 
+//-------------------------------PROP TYPES-------------------------------------
 SmartDocumentMain.propTypes = {
   currentFolder:  PropTypes.string.isRequired,
+  userTokenObj:   PropTypes.object.isRequired,
 };
 
 //Raised Button Comments

@@ -55,7 +55,7 @@ const DumbDocumentToolbar = (props) => {
   );
 };
 
-//--------------------------EXPECTED PROP TYPES--------------------------------
+//--------------------------EXPECTED PROP TYPES---------------------------------
 
 DumbDocumentToolbar.propTypes = {
   currentFolder:          PropTypes.string.isRequired,
