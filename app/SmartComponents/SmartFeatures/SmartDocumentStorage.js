@@ -45,3 +45,9 @@ export default class SmartDocumentStorage extends React.Component {
     );
   }
 }
+
+//-----------------------------PROP TYPES---------------------------------------
+
+SmartDocumentStorage.propTypes = {
+  userTokenObj: PropTypes.object.isRequired,
+};
