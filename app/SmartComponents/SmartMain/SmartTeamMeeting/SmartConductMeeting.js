@@ -192,7 +192,7 @@ export default class SmartConductMeeting extends React.Component {
 
     var meetingInfoHeading = (
       <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0', padding: '0'}}>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.userTokenObj.fullName + this.props.meetingData.participants.map((participantsItem) => (', '+ participantsItem.fullName))} </p>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {localStorage.fullName + this.props.meetingData.participants.map((participantsItem) => (', '+ participantsItem.fullName))} </p>
         <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.location} </p>
       </div>
     )

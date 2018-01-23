@@ -20,8 +20,7 @@ export default class SmartTeamMeeting extends React.Component {
     this.state = {
       meetingIndex: 1,
       categoryList: defaultCategoryList,
-      meetingData: this.props.defaultMeetingData,
-      userTokenObj: this.props.userTokenObj
+      meetingData: this.props.defaultMeetingData
     }
 
     this.handleIndexChange        = this.handleIndexChange.bind(this)
@@ -91,7 +90,6 @@ export default class SmartTeamMeeting extends React.Component {
         var MeetingComponent  = (
           <SmartChooseMeeting
             handleIndexChange = {this.handleIndexChange}
-            userTokenObj      = {this.props.userTokenObj}
             />
         )
         break
@@ -103,7 +101,6 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
-            userTokenObj            = {this.props.userTokenObj}
             />
         )
         break
@@ -116,7 +113,6 @@ export default class SmartTeamMeeting extends React.Component {
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
             categoryList            = {this.state.categoryList}
-            userTokenObj            = {this.props.userTokenObj}
             />
         )
         break
@@ -129,7 +125,6 @@ export default class SmartTeamMeeting extends React.Component {
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
             categoryList            = {this.state.categoryList}
-            userTokenObj            = {this.props.userTokenObj}
             />
         )
         break

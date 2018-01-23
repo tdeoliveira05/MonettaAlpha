@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const FeedbackSchema = new Schema({
   username: String,
+  fullName: String,
   creationDate: Date,
   feedback: {
     message: String,

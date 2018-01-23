@@ -187,7 +187,7 @@ export default class SmartPrepareMeeting extends React.Component {
   }
 
   createParticipantList () {
-    var participantsList    = [this.props.userTokenObj.fullName]
+    var participantsList    = [localStorage.fullName]
     var currentParticipants = this.state.participants
 
     currentParticipants.map((item) => {

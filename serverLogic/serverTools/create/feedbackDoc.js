@@ -6,6 +6,7 @@ module.exports = function (feedbackReq, userInfo) {
 
     var newFeedbackDoc = new Feedback({
       username: userInfo.username,
+      fullName: userInfo.fullName,
   		creationDate: new Date,
   		feedback: {
         message: feedbackReq.body.feedback.message,

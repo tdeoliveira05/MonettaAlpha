@@ -82,9 +82,9 @@ export default class SmartDocumentMain extends React.Component {
     const self = this  // this tells axios that when you refer to any variables or functions, you are referring to this component as you function scope
 
 
-    axios.post('http://localhost:8080/meetingDocument/findByUser', this.props.userTokenObj) // initialize a post request and pass a user token so the server can validate the user and use the username to get all the relevant meetings. Remember that this is a "promise"
+    axios.post('http://localhost:8080/meetingDocument/findByUser') // initialize a post request for the server to authenticate and use the username to get all the relevant meetings. Remember that this is a "promise"
                                                                                     //  and has a specific structure of implementation (primarily the .then & .catch chain that follows it)
-                                                                                    // visit App.js to change the seed data of the token obj or, better yet, create an account in your local database and just copy over the token values so that you dont have to re-login everytime the page refreshes
+                                                                                  
 
     .then((docArrayResponse) => {  // always remember to add the outputObject in the arrow function (outputObject) => {...}. index.js will tell you exactly what output object to expect for that route /get/allMeetingDocs
 
@@ -108,8 +108,7 @@ export default class SmartDocumentMain extends React.Component {
   deleteThisMeetingDoc (targetDocumentIdVal) {
     const self = this
     axios.post('http://localhost:8080/meetingDocument/deleteById', {  // Initialize the axios post route
-      targetDocumentId: targetDocumentIdVal,                          // include the target document's id
-      userTokenObj: this.props.userTokenObj                           // always remember to include the user token object when making a server request in order to let the server authenticate the user
+      targetDocumentId: targetDocumentIdVal                           // include the target document's id
     })
     .then((successObject) => {
       console.log(successObject)                                     // if the axios route isnt trying to retrieve an actual piece of data and just sending a command, the server will return a successObject = { success: Boolean, errorText: String}
@@ -168,8 +167,8 @@ export default class SmartDocumentMain extends React.Component {
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
     axios.post('http://localhost:8080/meetingDocument/updateThisDocument', {
-      targetDocument: targetDocumentVal,                               // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document with the update
-      userTokenObj: this.props.userTokenObj                             // as always, send the token with the request
+      targetDocument: targetDocumentVal                               // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document with the update
+
     })                                                                // double check before deployment
     .then((successObject) => {
       console.log(successObject.data)                                         // axios.post() routes that do not return a piece of data, will once again return a successObject for checking

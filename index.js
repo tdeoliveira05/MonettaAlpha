@@ -402,6 +402,7 @@ Process =>
 */
 
 app.post('/feedbackDocument/submit', function(req,res) {
+  console.log('here')
 	serverLogic.submitNewFeedback(req, res)
 })
 

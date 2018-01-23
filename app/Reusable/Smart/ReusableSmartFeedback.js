@@ -3,27 +3,23 @@ import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
-import SnackBar from 'material-ui/SnackBar'
 
 export default class ReusableSmartFeedback extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       feedbackVal: '',
-      snackOpen: false,
       errorText: ''
     }
 
     this.submitFeedback     = this.submitFeedback.bind(this)
     this.handleChange       = this.handleChange.bind(this)
-    this.snackRequestClose  = this.snackRequestClose.bind(this)
     this.checkForError      = this.checkForError.bind(this)
   }
 
   submitFeedback () {
     const self = this
     axios.post('http://localhost:8080/feedbackDocument/submit', {
-      userTokenObj: this.props.userTokenObj,
       feedback: {
         message: this.state.feedbackVal,
         location: this.props.location
@@ -32,14 +28,11 @@ export default class ReusableSmartFeedback extends React.Component {
     .then((successObj) => {
       console.log(successObj)
       successObj.data.success ? this.setState({snackOpen: true}) : console.log(successObj.data.errorText)
+      if (this.props.successFunction) this.props.successFunction()
     })
     .catch((error) => {
       console.log(error)
     })
-  }
-
-  snackRequestClose () {
-      this.setState({snackOpen: false})
   }
 
   checkForError () {
@@ -47,6 +40,7 @@ export default class ReusableSmartFeedback extends React.Component {
       this.setState({errorText: 'Type your feedback into this text field!'})
     } else {
       console.log('submitting feedback')
+      this.submitFeedback()
     }
   }
 
@@ -57,7 +51,6 @@ export default class ReusableSmartFeedback extends React.Component {
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
-
     //----------------------------RETURN----------------------------------------
     return(
       <div>
@@ -83,12 +76,6 @@ export default class ReusableSmartFeedback extends React.Component {
             />
           </div>
         </Paper>
-        <SnackBar
-          open = {this.state.snackOpen}
-          message = 'Feedback sent straight to our Slack channel!'
-          autoHideDuration = {4000}
-          onRequestClose = {this.snackRequestClose}
-        />
       </div>
 
     )

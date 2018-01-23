@@ -6,7 +6,6 @@ export default class SmartWelcomePage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      userTokenObj: this.props.userTokenObj,
       updateObj : {
         firstName: '',
         lastName: '',

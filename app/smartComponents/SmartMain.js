@@ -4,6 +4,7 @@ import {Tabs, Tab} from 'material-ui/Tabs'
 import FontIcon from 'material-ui/FontIcon'
 import FlatButton from 'material-ui/FlatButton'
 import axios from 'axios'
+import Snackbar from 'material-ui/Snackbar'
 
 import SmartTeamMeeting from './SmartMain/SmartTeamMeeting.js'
 import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
@@ -24,8 +25,8 @@ export default class SmartMain extends React.Component {
       defaultMeetingData: {
         title: '',
         host: {
-          fullName: this.props.userTokenObj.fullName,
-          username: this.props.userTokenObj.username
+          fullName: localStorage.fullName,
+          username: localStorage.username
         },
         participants: [],
         date: new Date,
@@ -42,13 +43,16 @@ export default class SmartMain extends React.Component {
           }
         }
       },
-      openFeedback: false
+      openFeedback: false,
+      snackbarOpen: false
     }
 
-    this.handleChangeTabValue = this.handleChangeTabValue.bind(this)
-    this.updateUserDocument   = this.updateUserDocument.bind(this)
-    this.updateMainLocation   = this.updateMainLocation.bind(this)
-    this.openFeedbackDialog   = this.openFeedbackDialog.bind(this)
+    this.handleChangeTabValue     = this.handleChangeTabValue.bind(this)
+    this.updateUserDocument       = this.updateUserDocument.bind(this)
+    this.updateMainLocation       = this.updateMainLocation.bind(this)
+    this.openFeedbackDialog       = this.openFeedbackDialog.bind(this)
+    this.feedbackSuccessFunction  = this.feedbackSuccessFunction.bind(this)
+    this.openSnackbar             = this.openSnackbar.bind(this)
   }
 
   componentDidMount () {
@@ -91,6 +95,15 @@ export default class SmartMain extends React.Component {
     this.setState({openFeedback: !this.state.openFeedback})
   }
 
+  feedbackSuccessFunction () {
+    this.openFeedbackDialog()
+    this.openSnackbar()
+  }
+
+  openSnackbar () {
+    this.setState({snackbarOpen: !this.state.snackbarOpen})
+  }
+
 
 
   render () {
@@ -98,8 +111,8 @@ export default class SmartMain extends React.Component {
     //---------------------------CONDITIONS-------------------------------------
     var feedbackComponent = (
         <ReusableSmartFeedback
-          userTokenObj = {this.props.userTokenObj}
-          location = {'General(SmartMain.js), Tab value: ' + this.state.tabValue}
+          location              = {'General(SmartMain.js), Tab value: ' + this.state.tabValue}
+          successFunction       = {this.feedbackSuccessFunction}
         />
       )
 
@@ -107,7 +120,6 @@ export default class SmartMain extends React.Component {
     if (this.state.mainLocation === 'welcome') {
       return (
         <SmartWelcomePage
-          userTokenObj        = {this.props.userTokenObj}
           updateUserDocument  = {this.updateUserDocument}
         />
       )
@@ -125,7 +137,6 @@ export default class SmartMain extends React.Component {
               <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
                 <SmartTeamMeeting
                   handleChangeTabValue = {this.handleChangeTabValue}
-                  userTokenObj         = {this.props.userTokenObj}
                   defaultMeetingData   = {this.state.defaultMeetingData}
                 />
               </Tab>
@@ -154,6 +165,12 @@ export default class SmartMain extends React.Component {
               dialogComponent       = {feedbackComponent}
             />
           </div>
+          <Snackbar
+            open              = {this.state.snackbarOpen}
+            message           = 'Your feedback was sent straight to our Slack channel!'
+            autoHideDuration  = {4000}
+            onRequestClose    = {this.openSnackbar}
+          />
         </div>
       )
     }
