@@ -187,23 +187,21 @@ const DumbConductMeeting = ({
         </div>
 
       </div>
-
-      <div className = 'ConductMeetingStepper'>
-        <h2> Proceed? </h2>
-        <div className = 'ConductMeetingStepperButtons'>
-          <FlatButton
-            label = 'Back'
-            primary = {true}
-            onClick = {() => previousStep()}
-            />
-          <RaisedButton
-            label = 'Next'
-            secondary = {true}
-            onClick = {() => nextStep()}
-            />
-        </div>
+    </div>
+    <div className = 'ConductMeetingStepper'>
+      <h2> Proceed? </h2>
+      <div className = 'ConductMeetingStepperButtons'>
+        <FlatButton
+          label = 'Back'
+          primary = {true}
+          onClick = {() => previousStep()}
+          />
+        <RaisedButton
+          label = 'Next'
+          secondary = {true}
+          onClick = {() => nextStep()}
+          />
       </div>
-
     </div>
   </div>
 )

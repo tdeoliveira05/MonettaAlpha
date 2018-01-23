@@ -6,7 +6,7 @@ import Paper from 'material-ui/Paper'
 import Chip from 'material-ui/Chip'
 import TextField from 'material-ui/TextField'
 
-import DumbPrepareMeeting from '../../../DumbComponents/TeamMeeting/DumbPrepareMeeting.js'
+import DumbPrepareMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbPrepareMeeting.js'
 
 export default class SmartPrepareMeeting extends React.Component {
   constructor(props) {

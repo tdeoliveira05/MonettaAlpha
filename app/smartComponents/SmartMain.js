@@ -10,7 +10,10 @@ import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
 import SmartProductivityData from './SmartMain/SmartProductivityData.js'
 import SmartUserSettings from './SmartMain/SmartUserSettings.js'
 
-import HybridWelcomePage from './SmartMain/HybridWelcomePage.js'
+import SmartWelcomePage from './SmartMain/SmartWelcomePage.js'
+
+import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
+import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
 export default class SmartMain extends React.Component {
   constructor(props) {
@@ -39,11 +42,13 @@ export default class SmartMain extends React.Component {
           }
         }
       },
+      openFeedback: false
     }
 
     this.handleChangeTabValue = this.handleChangeTabValue.bind(this)
     this.updateUserDocument   = this.updateUserDocument.bind(this)
     this.updateMainLocation   = this.updateMainLocation.bind(this)
+    this.openFeedbackDialog   = this.openFeedbackDialog.bind(this)
   }
 
   componentDidMount () {
@@ -80,13 +85,23 @@ export default class SmartMain extends React.Component {
     this.setState({tabValue: value})
   }
 
+  openFeedbackDialog () {
+    this.setState({openFeedback: !this.state.openFeedback})
+  }
+
   render () {
     //---------------------------CONDITIONS-------------------------------------
+    var feedbackComponent = (
+        <ReusableSmartFeedback
+          userTokenObj = {this.props.userTokenObj}
+          location = {'General(SmartMain.js), Tab value: ' + this.state.tabValue}
+        />
+      )
 
     //----------------------------RETURN----------------------------------------
     if (this.state.mainLocation === 'welcome') {
       return (
-        <HybridWelcomePage
+        <SmartWelcomePage
           userTokenObj        = {this.props.userTokenObj}
           updateUserDocument  = {this.updateUserDocument}
         />
@@ -94,34 +109,48 @@ export default class SmartMain extends React.Component {
 
     } else {
       return (
-        <div>
-          <FlatButton
-            label = 'Sign out'
-            style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center'}}
-            onClick = {() => this.props.changeAppLocation('home')}
-          />
-          <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue}>
-            <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
-              <SmartTeamMeeting
-                handleChangeTabValue = {this.handleChangeTabValue}
-                userTokenObj         = {this.props.userTokenObj}
-                defaultMeetingData   = {this.state.defaultMeetingData}
-              />
-            </Tab>
-            <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>
-              <SmartDocumentStorage
-                userTokenObj         = {this.props.userTokenObj}
-              />
-            </Tab>
-            <Tab label='Productivity Data' value='Data' icon={<FontIcon className='material-icons'>trending_up</FontIcon>}>
-              <SmartProductivityData
-              />
-            </Tab>
-            <Tab label='User Settings' value='Settings' icon={<FontIcon className='material-icons'>settings_applications</FontIcon>}>
-              <SmartUserSettings
-              />
-            </Tab>
-          </Tabs>
+        <div style = {{display: 'flex', height: '100vh', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'space-between'}}>
+          <div>
+            <FlatButton
+              label = 'Sign out'
+              style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center'}}
+              onClick = {() => this.props.changeAppLocation('home')}
+            />
+            <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue} >
+              <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
+                <SmartTeamMeeting
+                  handleChangeTabValue = {this.handleChangeTabValue}
+                  userTokenObj         = {this.props.userTokenObj}
+                  defaultMeetingData   = {this.state.defaultMeetingData}
+                />
+              </Tab>
+              <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>
+                <SmartDocumentStorage
+                  userTokenObj         = {this.props.userTokenObj}
+                />
+              </Tab>
+              <Tab label='Productivity Data' value='Data' icon={<FontIcon className='material-icons'>trending_up</FontIcon>}>
+                <SmartProductivityData
+                />
+              </Tab>
+              <Tab label='User Settings' value='Settings' icon={<FontIcon className='material-icons'>settings_applications</FontIcon>}>
+                <SmartUserSettings
+                />
+              </Tab>
+            </Tabs>
+          </div>
+          <div>
+            <FlatButton
+              label     = 'Send Feedback'
+              style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center'}}
+              onClick   = {() => this.openFeedbackDialog()}
+            />
+            <ReusableDumbDialog
+              dialogToggle          = {this.state.openFeedback}
+              dialogToggleFunction  = {this.openFeedbackDialog}
+              dialogComponent       = {feedbackComponent}
+            />
+          </div>
         </div>
       )
     }

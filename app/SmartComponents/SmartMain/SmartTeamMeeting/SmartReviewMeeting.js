@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DumbReviewMeeting from '../../../DumbComponents/TeamMeeting/DumbReviewMeeting.js'
+import DumbReviewMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbReviewMeeting.js'
 
 export default class SmartReviewMinutes extends React.Component {
   constructor(props) {

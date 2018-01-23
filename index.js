@@ -286,7 +286,6 @@ app.post('/meetingDocument/submit', function(req,res) {
 })
 
 /* -----------------------------------------------------------------------------
-NOT CURRENTLY USED
 Finds and returns ALL meeting documents belonging to a host
 Process =>
 1. search DB for all meeting documents matching the host user
@@ -354,6 +353,22 @@ outputObject = res.data = sucessObject = {
 
 app.post('/meetingDocument/updateThisDocument', function(req,res){
 	serverLogic.updateThisMeetingDoc(req, res)
+})
+
+/* -----------------------------------------------------------------------------
+Enters a new meeting into the database
+Process =>
+1. Creates a new feedback document using the feedback schema
+2. Saves the resultant feedback document to database
+3. Sends message to Slack channel
+
+-------------------
+
+
+*/
+
+app.post('/feedbackDocument/submit', function(req,res) {
+	serverLogic.submitNewFeedback(req, res)
 })
 
 

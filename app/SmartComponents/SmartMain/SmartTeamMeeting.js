@@ -5,7 +5,7 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
 
-import DumbChooseMeeting from '../../DumbComponents/TeamMeeting/DumbChooseMeeting.js'
+import SmartChooseMeeting from './SmartTeamMeeting/SmartChooseMeeting.js'
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
 import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
 import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'
@@ -18,7 +18,7 @@ export default class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 0,
+      meetingIndex: 1,
       categoryList: defaultCategoryList,
       meetingData: this.props.defaultMeetingData,
       userTokenObj: this.props.userTokenObj
@@ -81,18 +81,18 @@ export default class SmartTeamMeeting extends React.Component {
   }
 
   render () {
-    console.log('team meeting state--')
-    console.log(this.state)
-    console.log('--------------------')
     //---------------------------VARIABLE CREATION------------------------------
+
+
     //---------------------------CONDITIONS-------------------------------------
 
     switch (this.state.meetingIndex) {
       case 0:
         var MeetingHeader     = ''
         var MeetingComponent  = (
-          <DumbChooseMeeting
+          <SmartChooseMeeting
             handleIndexChange = {this.handleIndexChange}
+            userTokenObj      = {this.props.userTokenObj}
             />
         )
         break
@@ -125,7 +125,7 @@ export default class SmartTeamMeeting extends React.Component {
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
-            categoryList                = {this.state.categoryList}
+            categoryList            = {this.state.categoryList}
             userTokenObj            = {this.props.userTokenObj}
             />
         )
@@ -158,77 +158,3 @@ export default class SmartTeamMeeting extends React.Component {
     )
   }
 }
-
-/* default for testing
-
-notes: {
-  general: [
-    {
-      text: 'temporary text 1',
-      type: 'general',
-      color: 'gray',
-      timeStamp: '270000',
-      formattedTimeStamp: '4:30'
-    },
-    {
-      text: 'temporary text 3',
-      type: 'general',
-      color: 'gray',
-      timeStamp: '500000',
-      formattedTimeStamp: '8:20'
-    },
-    {
-      text: 'temporary text 7',
-      type: 'general',
-      color: 'gray',
-      timeStamp: '1740000',
-      formattedTimeStamp: '29:00'
-    }
-  ],
-    action: [
-    {
-      text: 'temporary text 2',
-      type: 'action',
-      color: 'rgb(70,153,255)',
-      timeStamp: '390000',
-      formattedTimeStamp: '6:30'
-    },
-    {
-      text: 'temporary text 4',
-      type: 'action',
-      color: 'rgb(70,153,255)',
-      timeStamp: '660000',
-      formattedTimeStamp: '11:00'
-    },
-    {
-      text: 'temporary text 8',
-      type: 'action',
-      color: 'rgb(70,153,255)',
-      timeStamp: '2100000',
-      formattedTimeStamp: '35:00'
-    }
-  ],
-    decision: [
-    {
-      text: 'temporary text 5',
-      type: 'decision',
-      color: 'rgb(70,153,255)',
-      timeStamp: '1160000',
-      formattedTimeStamp: '19:20'
-    },
-    {
-      text: 'temporary text 6',
-      color: 'rgb(70,153,255)',
-      type: 'decision',
-      timeStamp: '1620000',
-      formattedTimeStamp: '27:00'
-    }
-  ]
-},
-
--------------------------------------------------------------------------------
-for redux include:
-
-user token
-this.state.meetingData.categoryList
-*/

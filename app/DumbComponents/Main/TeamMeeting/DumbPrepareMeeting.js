@@ -42,7 +42,7 @@ const DumbPrepareMeeting = ({
         hintStyle     = {{textAlign: 'center', fontSize: '1.7em'}}
         inputStyle    = {{textAlign: 'center', fontSize: '1.5em', fontWeight: 'bold'}}
         style         = {{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px'}}
-        />
+      />
       <Divider style = {{width: '100%'}}/>
       <TextField
         underlineShow = {false}
@@ -53,7 +53,7 @@ const DumbPrepareMeeting = ({
         hintStyle     = {{textAlign: 'center'}}
         inputStyle    = {{textAlign: 'center'}}
         style         = {{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px'}}
-        />
+      />
       <Divider style = {{width: '25%', marginBottom: '40px'}}/>
 
       <div className = 'PrepareMeetingDurationDiv'>
@@ -217,22 +217,21 @@ const DumbPrepareMeeting = ({
         {participantError}
         {titleError}
       </div>
-      <div className = 'PrepareMeetingStepper'>
-        <h2> Proceed? </h2>
-        <div className = 'PrepareMeetingStepperButtons'>
-          <FlatButton
-            label     = 'Back'
-            primary   = {true}
-            onClick   = {() => previousStep()}
-          />
-          <RaisedButton
-            label     = 'Next'
-            secondary = {true}
-            onClick   = {() => nextStep()}
-          />
-        </div>
+    </div>
+    <div className = 'PrepareMeetingStepper'>
+      <h2> Proceed? </h2>
+      <div className = 'PrepareMeetingStepperButtons'>
+        <FlatButton
+          label     = 'Back'
+          primary   = {true}
+          onClick   = {() => previousStep()}
+        />
+        <RaisedButton
+          label     = 'Next'
+          secondary = {true}
+          onClick   = {() => nextStep()}
+        />
       </div>
-
     </div>
   </div>
 )

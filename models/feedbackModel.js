@@ -3,10 +3,11 @@ const Schema = mongoose.Schema;
 
 const FeedbackSchema = new Schema({
   username: String,
-  date: String,
-  issue: String,
-  suggestion: String,
-  likes: String
+  creationDate: Date,
+  feedback: {
+    message: String,
+    location: String
+  }
 });
 
 const Feedback = mongoose.model('feedback', FeedbackSchema);
