@@ -35,7 +35,8 @@ const MeetingSchema = new Schema({
   ],
   metaData: {
     starred: {type: Boolean, default: false},
-    folder: {type: String, default: 'none'}
+    folder: {type: String, default: 'none'},
+    trash: {type: Boolean, default: false}
   },
   meetingStats: {
     timeElapsed: {
