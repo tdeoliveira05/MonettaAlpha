@@ -56,7 +56,7 @@ export default class SmartMain extends React.Component {
   }
 
   updateMainLocation () {
-    if (this.props.userTokenObj.fullName.includes('undefined')) {
+    if (localStorage.fullName.includes('undefined') || localStorage.fullName === '') {
       this.setState({mainLocation: 'welcome'})
       console.log('updateMainLocation(): mainLocation set to welcome')
     }
@@ -65,12 +65,14 @@ export default class SmartMain extends React.Component {
   updateUserDocument(updateObjVal) {
     const self = this
     axios.post('http://localhost:8080/userDocument/update', {
-      userTokenObj: this.props.userTokenObj,
       updateObj: updateObjVal
     })
     .then((successObj) => {
+      console.log(successObj)
+
       if (successObj.data.success) {
-        this.props.submitUserTokenObj(successObj.data.userTokenObj)
+        localStorage.username = successObj.data.username
+        localStorage.fullName = successObj.data.fullName
         this.setState({mainLocation: 'internal'})
       } else {
         console.log(successObj.data.errorText)
@@ -89,7 +91,10 @@ export default class SmartMain extends React.Component {
     this.setState({openFeedback: !this.state.openFeedback})
   }
 
+
+
   render () {
+
     //---------------------------CONDITIONS-------------------------------------
     var feedbackComponent = (
         <ReusableSmartFeedback
@@ -109,14 +114,14 @@ export default class SmartMain extends React.Component {
 
     } else {
       return (
-        <div style = {{display: 'flex', height: '100vh', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'space-between'}}>
-          <div>
+        <div style = {{display: 'flex', height: '100vh', flexDirection: 'column', justifyContent: 'space-between'}}>
+          <div style = {{height: '100%'}}>
             <FlatButton
               label = 'Sign out'
-              style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center'}}
-              onClick = {() => this.props.changeAppLocation('home')}
+              style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
+              onClick = {() => this.props.signOut()}
             />
-            <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue} >
+            <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue} style = {{height: '90%'}}>
               <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
                 <SmartTeamMeeting
                   handleChangeTabValue = {this.handleChangeTabValue}
@@ -138,11 +143,9 @@ export default class SmartMain extends React.Component {
                 />
               </Tab>
             </Tabs>
-          </div>
-          <div>
             <FlatButton
               label     = 'Send Feedback'
-              style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center'}}
+              style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
               onClick   = {() => this.openFeedbackDialog()}
             />
             <ReusableDumbDialog

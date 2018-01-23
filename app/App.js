@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 
 import SmartHome from './SmartComponents/SmartHome.js'
 import SmartMain from './SmartComponents/SmartMain.js'
@@ -7,26 +8,77 @@ export default class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      appLocation: 'app',
+      appLocation: 'home',
       userTokenObj: {
-        username: 'test1@gmail.com',
-        fullName: 'Thiago De Oliveira',
-        token: 'FWER7Y3T87GF93GFGB9WUGBNSDJKGNE.WEIGBWGWUGBIWUE9838HTUB03TY56MTR.RHUG3IBDSFSDF'
-      }
+        username: localStorage.username,
+        fullName: localStorage.fullName,
+        token: localStorage.token
+      },
+      isLoggedIn: false
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
 
     this.submitUserTokenObj = this.submitUserTokenObj.bind(this)
     this.changeAppLocation  = this.changeAppLocation.bind(this)
+    this.authenticateMe     = this.authenticateMe.bind(this)
+    this.signOut            = this.signOut.bind(this)
 	}
 
+  componentWillMount () {
+    if (localStorage.authentication && this.state.isLoggedIn === false) {
+      console.log('authenticating...')
+      this.authenticateMe(localStorage.authentication)
+      axios.defaults.headers.common['authorization'] = localStorage.authentication
+    } else if (!localStorage.authentication) {
+      localStorage.removeItem('username')
+      localStorage.removeItem('fullName')
+    }
+  }
+
+  authenticateMe (tokenVal) {
+    axios.post('http://localhost:8080/authenticateMe', {
+      token: tokenVal
+    })
+    .then((successObj) => {
+      if (!successObj.data.success) {
+        console.log(successObj.data.errorText)
+        this.setState({isLoggedIn: false})
+      } else {
+        localStorage.username = successObj.data.username
+        localStorage.fullName = successObj.data.fullName
+        this.setState({isLoggedIn: true})
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+
+    return this.state.isLoggedIn
+  }
+
   submitUserTokenObj (userTokenObjVal) {
-    this.setState({userTokenObj: userTokenObjVal, appLocation: 'app'})
+    localStorage.authentication  = 'bearer ' + userTokenObjVal.token
+    localStorage.username        = userTokenObjVal.username
+    localStorage.fullName        = userTokenObjVal.fullName
+
+
+    axios.defaults.headers.common['authorization'] = localStorage.authentication
+    this.setState({appLocation: 'app'})
   }
 
   changeAppLocation (direction) {
     this.setState({appLocation: direction})
   }
+
+  signOut () {
+    console.log('Signing out...')
+    localStorage.removeItem('authentication')
+    localStorage.removeItem('username')
+    localStorage.removeItem('fullName')
+    this.setState({appLocation: 'home', isLoggedIn: false})
+  }
+
+
 
   render() {
     //---------------------------CONDITIONS-------------------------------------
@@ -38,6 +90,7 @@ export default class App extends React.Component {
         <SmartHome
           submitUserTokenObj   = {this.submitUserTokenObj}
           changeAppLocation    = {this.changeAppLocation}
+          isLoggedIn           = {this.state.isLoggedIn}
         />
       )
 
@@ -48,6 +101,7 @@ export default class App extends React.Component {
             userTokenObj       = {this.state.userTokenObj}
             submitUserTokenObj = {this.submitUserTokenObj}
             changeAppLocation  = {this.changeAppLocation}
+            signOut            = {this.signOut}
           />
         </div>
       )
@@ -56,7 +110,6 @@ export default class App extends React.Component {
 }
 
 /*
-
 
 
 */

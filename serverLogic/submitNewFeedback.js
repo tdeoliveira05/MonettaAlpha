@@ -3,8 +3,11 @@ const requireDir = require('require-dir')
 const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
 
 module.exports = function (feedbackReq, res) {
-  console.log(feedbackReq.body)
-  serverTools.create.feedbackDoc(feedbackReq)
+
+  serverTools.authenticate.transformJWT(feedbackReq)
+  .then((userInfo) => {
+    return serverTools.create.feedbackDoc(feedbackReq, userInfo)
+  })
   .then((newDoc) => {
     return serverTools.save.thisDoc(newDoc)
   })

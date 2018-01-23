@@ -220,6 +220,7 @@ export default class SmartConductMeeting extends React.Component {
           errorText              = {this.state.errorText}
           formattedDuration      = {this.state.timeElapsed.formattedActualDuration}
           changeItemType         = {this.changeItemType}
+          meetingData            = {this.props.meetingData}
           />
       </div>
     )

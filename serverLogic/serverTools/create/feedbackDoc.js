@@ -1,11 +1,11 @@
 // This function will create a new feedback document
 const Feedback = require('../../../models/feedbackModel')
 
-module.exports = function (feedbackReq) {
+module.exports = function (feedbackReq, userInfo) {
   return new Promise (function(resolve, reject) {
 
     var newFeedbackDoc = new Feedback({
-      username: feedbackReq.body.userTokenObj.username,
+      username: userInfo.username,
   		creationDate: new Date,
   		feedback: {
         message: feedbackReq.body.feedback.message,

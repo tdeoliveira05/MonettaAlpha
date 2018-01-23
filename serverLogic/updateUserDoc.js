@@ -4,29 +4,21 @@ const serverTools = requireDir('./serverTools', {recurse: true}) // special node
 const User = require('../models/userModel.js')
 
 module.exports = function (userUpdateReq, res) {
-  var updateParamVal = userUpdateReq.body.updateObj
-  var usernameVal = userUpdateReq.body.userTokenObj.username
 
-  console.log('current variables: ')
-  console.log(updateParamVal)
-  console.log(usernameVal)
-
-  serverTools.update.thisUserDoc({username: usernameVal, updateParam: updateParamVal})
-  .then(() => {
-    return serverTools.find.singleDoc(User, {username: usernameVal})
+  serverTools.authenticate.transformJWT(userUpdateReq)
+  .then((userInfo) => {
+    console.log(userInfo)
+    return serverTools.update.thisUserDoc({username: userInfo.username, updateParam: userUpdateReq.body.updateObj})
   })
-  .then((userDoc) => {
-    return serverTools.authenticate.generateJWT(userDoc)
+  .then((oldUserDoc) => {
+    return serverTools.find.singleDoc(User, {username: oldUserDoc.username})
   })
-  .then(({token, userDoc}) => {
-    var userTokenObjVal = {
-      token: token,
-      fullName: userDoc.firstName + ' ' + userDoc.lastName,
-      username: userDoc.username
-    }
-
+  .then((newUserDoc) => {
+    console.log('done')
+    console.log(newUserDoc)
     res.status(200).send({
-      userTokenObj: userTokenObjVal,
+      fullName: newUserDoc.firstName + ' ' + newUserDoc.lastName,
+      username: newUserDoc.username,
       success: true,
       errorText: ''
     })
@@ -34,10 +26,7 @@ module.exports = function (userUpdateReq, res) {
   })
   .catch((error) => {
     console.log(error)
-    res.send({
-      success: false,
-      errorText: error
-    })
+    res.send({ success: false, errorText: error})
   })
 
 }

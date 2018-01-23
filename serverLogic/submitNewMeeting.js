@@ -6,7 +6,7 @@ module.exports = function (meetingData, res) {
 
   serverTools.create.meetingDoc(meetingData)
   .then((newDoc) => {
-    return serverTools.save.thisDoc(newDoc)
+    return serverTools.save.thisDoc(newDoc) 
   })
   .then((newDoc) => {
     console.log('successfully saved meeting document')

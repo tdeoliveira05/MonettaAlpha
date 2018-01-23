@@ -61,7 +61,7 @@ export default class ReusableSmartFeedback extends React.Component {
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <Paper style = {{width: '100%', minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px 20px 10px'}}>
+        <Paper style = {{width: '100%', minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px 20px 10px', textAlign: 'center'}}>
           <h2> We are eager to know what you think of Monetta! </h2>
           <div>
             <TextField

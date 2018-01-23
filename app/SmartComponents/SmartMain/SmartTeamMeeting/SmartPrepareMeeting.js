@@ -239,30 +239,33 @@ export default class SmartPrepareMeeting extends React.Component {
 
     //----------------------------RETURN----------------------------------------
     return(
-      <DumbPrepareMeeting
-        nextStep                    = {this.nextStep}
-        tempGoal                    = {this.state.tempGoal}
-        previousStep                = {this.previousStep}
-        handleChange                = {this.handleChange}
-        addParticipantListItem      = {this.addParticipantListItem}
-        removeParticipantListItem   = {this.removeParticipantListItem}
-        tempParticipant             = {this.state.tempParticipant}
-        participantsList            = {participantsList}
-        changeParticipantListItem   = {this.changeParticipantListItem}
-        meetingTitle                = {this.state.title}
-        meetingLocation             = {this.state.location}
-        goalError                   = {this.state.errorText.goalInput}
-        titleError                  = {this.state.errorText.meetingTitle}
-        participantError            = {this.state.errorText.participantInput}
-        goalList                    = {this.state.goals}
-        changeGoalListItem          = {this.changeGoalListItem}
-        removeGoalListItem          = {this.removeGoalListItem}
-        addGoalListItem             = {this.addGoalListItem}
-        tempExpectedDuration        = {this.state.tempExpectedDuration}
-        changeDuration              = {this.changeDuration}
-        maxDuration                 = {this.state.maxDuration}
-        setDuration                 = {this.setDuration}
-        />
+      <div style = {{height: '100%'}}>
+        <DumbPrepareMeeting
+          nextStep                    = {this.nextStep}
+          tempGoal                    = {this.state.tempGoal}
+          previousStep                = {this.previousStep}
+          handleChange                = {this.handleChange}
+          addParticipantListItem      = {this.addParticipantListItem}
+          removeParticipantListItem   = {this.removeParticipantListItem}
+          tempParticipant             = {this.state.tempParticipant}
+          participantsList            = {participantsList}
+          changeParticipantListItem   = {this.changeParticipantListItem}
+          meetingTitle                = {this.state.title}
+          meetingLocation             = {this.state.location}
+          goalError                   = {this.state.errorText.goalInput}
+          titleError                  = {this.state.errorText.meetingTitle}
+          participantError            = {this.state.errorText.participantInput}
+          goalList                    = {this.state.goals}
+          changeGoalListItem          = {this.changeGoalListItem}
+          removeGoalListItem          = {this.removeGoalListItem}
+          addGoalListItem             = {this.addGoalListItem}
+          tempExpectedDuration        = {this.state.tempExpectedDuration}
+          changeDuration              = {this.changeDuration}
+          maxDuration                 = {this.state.maxDuration}
+          setDuration                 = {this.setDuration}
+          meetingData                 = {this.props.meetingData}
+          />
+      </div>
     )
   }
 }

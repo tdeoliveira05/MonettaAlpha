@@ -88,7 +88,6 @@ export default class SmartTeamMeeting extends React.Component {
 
     switch (this.state.meetingIndex) {
       case 0:
-        var MeetingHeader     = ''
         var MeetingComponent  = (
           <SmartChooseMeeting
             handleIndexChange = {this.handleIndexChange}
@@ -98,10 +97,6 @@ export default class SmartTeamMeeting extends React.Component {
         break
 
       case 1:
-        var MeetingHeader     = (
-          <div>
-          </div>
-        )
         var MeetingComponent  = (
           <SmartPrepareMeeting
             handleIndexChange       = {this.handleIndexChange}
@@ -114,11 +109,6 @@ export default class SmartTeamMeeting extends React.Component {
         break
 
       case 2:
-        var MeetingHeader     = (
-          <div>
-            <Paper className  = 'MeetingHeader'> <h1>{this.state.meetingData.title + ' (' + this.state.meetingData.meetingStats.timeElapsed.formattedExpectedDuration + ')'}</h1> </Paper>
-          </div>
-        )
         var MeetingComponent  = (
           <SmartConductMeeting
             handleIndexChange       = {this.handleIndexChange}
@@ -132,11 +122,6 @@ export default class SmartTeamMeeting extends React.Component {
         break
 
       case 3:
-        var MeetingHeader     = (
-          <div>
-            <Paper className  = 'MeetingHeader'> <h1>{this.state.meetingData.title}</h1> </Paper>
-          </div>
-        )
         var MeetingComponent  = (
           <SmartReviewMinutes
             handleIndexChange       = {this.handleIndexChange}
@@ -151,8 +136,7 @@ export default class SmartTeamMeeting extends React.Component {
     }
     //----------------------------RETURN----------------------------------------
     return (
-      <div>
-        {MeetingHeader}
+      <div style = {{height: '100%'}}>
         {MeetingComponent}
       </div>
     )

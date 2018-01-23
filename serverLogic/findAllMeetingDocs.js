@@ -4,10 +4,15 @@ const serverTools = requireDir('./serverTools', {recurse: true}) // special node
 const Meeting = require('../models/meetingModel.js')
 
 
-module.exports = function (userTokenObjReq, res) {
-  console.log('finding docs for: ' + userTokenObjReq.body.username)
 
-  serverTools.find.multipleDocs(Meeting, {'host.username': userTokenObjReq.body.username})
+module.exports = function (userReq, res) {
+
+  // retrieve the userInfo from the token header
+  serverTools.authenticate.transformJWT(userReq)
+  .then((userInfo) => {
+    // find all meetings that match {host: {username: userInfo.username}}
+    return serverTools.find.multipleDocs(Meeting, {'host.username': userInfo.username})
+  })
   .then((docArray) => {
     //console.log('returning docArray')
     //console.log(docArray)

@@ -17,16 +17,6 @@ export default class SmartChooseMeeting extends React.Component {
         <DumbChooseMeeting
           handleIndexChange = {this.props.handleIndexChange}
         />
-        <div style = {{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: '50px',
-          marginBottom: '20px'
-        }}>
-        </div>
       </div>
     )
   }

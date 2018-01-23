@@ -80,6 +80,7 @@ export default class SmartReviewMinutes extends React.Component {
           finishMeeting        = {this.finishMeeting}
           previousStep         = {this.previousStep}
           categoryList         = {this.props.categoryList}
+          meetingData          = {this.props.meetingData}
           />
       </div>
     )

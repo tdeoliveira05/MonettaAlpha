@@ -29,8 +29,10 @@ const DumbPrepareMeeting = ({
   changeDuration,
   meetingLocation,
   setDuration,
-  maxDuration
+  maxDuration,
+  meetingData
 }) => (
+
   <div className = 'PrepareMeetingWrapper'>
     <div className = 'PrepareMeetingContent'>
       <TextField

@@ -11,10 +11,11 @@ const watson = require('watson-developer-cloud')
 const config = require('config')
 const yes = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
-const User = require('./models/userModel.js')
-const Meeting = require('./models/meetingModel.js')
-const Feedback = require('./models/feedbackModel.js')
-const Code = require('./models/codeModel.js')
+const Users = require('./models/userModel.js')
+const Meetings = require('./models/meetingModel.js')
+const Feedbacks = require('./models/feedbackModel.js')
+const Codes = require('./models/codeModel.js')
+const jwt = require('jsonwebtoken')
 
 //Amazon requirements
 const AWS = require('aws-sdk')
@@ -112,6 +113,7 @@ outputObject = res.data = {
 
 app.post('/request/login',function(req, res){
   console.log('requested login')
+  console.log(req.headers)
 	serverLogic.requestLogin(req, res)
 })
 
@@ -189,19 +191,56 @@ app.post('/request/alpha', function(req, res) {
 // that follows underneath using the protectRoute router
 // token always needs to be sent with the request if the client-side is making
 // a request
-/*
-app.use(function(req, res, next) {
-  console.log('Running authentication middleware.')
-  var token = req.body.token || req.headers['token'];
-  if (token) {
-    jwt.verify(token, config.get('Presets.secret'), function(error, decode) {
-      error ? res.status(500).send("Invalid token") : next();
-    })
-  } else {
-    res.send('no token received')
-  }
+
+app.post('/authenticateMe',  function(req, res) {
+  var tokenArray = req.body.token.split(' ')
+  var token = tokenArray[1]
+  console.log('authenticating: ' + token)
+  console.log('--')
+
+  jwt.verify(token, secret, (error, authData) => {
+    if (error) {
+      console.log('could not authenticate user - ' + error)
+      res.send({success: false, errorText: error})
+    } else {
+      console.log(authData)
+      Users.findOne({_id: authData.id})
+      .then((userDoc) => {
+        console.log(userDoc)
+        res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
+      })
+    }
+
+  })
 })
-*/
+
+// this must be after the request routes. those three routes do not need a jwt to user
+// all of the routes below NEED a jwt so we are going to authenticate that jwt before it reaches the route
+// if it is wrong we are blocking it, if it is correct we are letting it through
+
+app.use(function (req, res, next) {
+  console.log('running authentication middleware --------------------------------------------')
+  const bearerHeader = req.headers.authorization
+  const bearer       = bearerHeader.split(' ')
+  const token        = bearer[1]
+  console.log('current localStorage bearer token: ' + token)
+
+    jwt.verify(token, secret, (error, authData) => {
+      if (error) {
+        console.log('error was found: ' + error)
+        console.log('------------> redirecting')
+        res.redirect('/')
+      } else {
+        console.log('no error found')
+        console.log('------------> allowing route')
+        next()
+      }
+    })
+  console.log('------------------------------------------------------------------------------')
+})
+
+
+
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
 Updates user document with additional information
@@ -212,7 +251,6 @@ Process =>
 -------------------
 
 inputObject = req.body = {
-  userTokenObj: OBJECT,
   updateObj: {      // any field inside this object must have the same names as the user model, the route will loop through and update depending on this object's keys
     firstName: ...
     lastName: ...
@@ -221,7 +259,6 @@ inputObject = req.body = {
 }
 
 outputObject = req.body = {
-  userTokenObj: OBJECT
   sucess: BOOLEAN,
   errorText: STRING
 }
@@ -229,7 +266,6 @@ outputObject = req.body = {
 }*/
 
 app.post('/userDocument/update', function(req,res) {
-  console.log('reached update route')
 	serverLogic.updateUserDoc(req, res)
 })
 /* -----------------------------------------------------------------------------
@@ -321,7 +357,6 @@ SECURITY RISK - the user is requesting PERMANENT deletion of the chosen document
 
 inputObject = req.body = {
 	targetDocumentId: String,        // id to delete
-  userTokenObj: Object
 }
 
 NO OUTPUT OBJECT
@@ -342,7 +377,6 @@ SECURITY RISK - the user is requesting PERMANENT update of the chosen document
 
 inputObject = req.body = {
 	targetDocument: Object,  // this is the ENTIRE target document, not just the updated piece
-  userTokenObj: Object
 }
 
 outputObject = res.data = sucessObject = {
@@ -384,7 +418,6 @@ if (false) {
 }
 serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111', 'qwerty')
 */
-
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 //------------------------------SERVER PORT-----------------------------------//

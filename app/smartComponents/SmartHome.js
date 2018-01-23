@@ -174,7 +174,12 @@ export default class SmartHome extends React.Component {
 
   handleSetDialogCall (target, activate) {
     this.setState({dialogComponentType: target})
-    if (activate) this.dialogToggleFunction()
+    if (activate && target === 'login' && this.props.isLoggedIn === true) {
+      console.log('user is already logged in')
+      this.props.changeAppLocation('app')
+    } else if (activate) {
+      this.dialogToggleFunction()
+    }
   }
 
   handleSubmit (submitType) {
