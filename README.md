@@ -3,20 +3,10 @@ CHECK BELOW
 
 Pre-Deployment Checklist :
 
-* App.js - this.state({
-  page: 'Home',
-  tabValue: 'a'
-})
+* SmartPrepareMeeting.js - uncomment checkErrors() to enable error tracking
 
-* Meeting.js - this.state({
-  pane: 'Info'
-})
-
-* Heading.js - this.state({
-  logoClick: 'Notif'
-})
 
 * All server calls -
-http://localhost:3000 -> https://monettatech.com
+http://localhost:8080 -> https://monettatech.com
 
 * `npm run build`
