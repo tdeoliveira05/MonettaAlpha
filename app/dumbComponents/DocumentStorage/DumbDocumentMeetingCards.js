@@ -82,7 +82,7 @@ const DumbDocumentMeetingCards = (props) => {
         top: '-20px'
     },
     noteTextField: {
-      width: '50%',
+      width: '60%',
     },
     cardText: {
       position: 'relative',
