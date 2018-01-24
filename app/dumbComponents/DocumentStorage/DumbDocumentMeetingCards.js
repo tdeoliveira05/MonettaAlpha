@@ -40,8 +40,10 @@ const DumbDocumentMeetingCards = (props) => {
   let styles = {
     chip: {
       margin:   '4px',
-      display:  'inline-block',
+      display:  'inline-flex',
       left:     '-10px',
+      height:   '35px',
+
     },
     chipWrapper: {
       display: 'flex',
@@ -96,6 +98,10 @@ const DumbDocumentMeetingCards = (props) => {
     }
   }
 
+  let handleRequestDelete = () => {
+    console.log('Why me?????')
+  }
+
   let meetingCards = filteredDocArray.map((meeting, index) => {
     return (
       <div className="MeetingPreviewCardWrapper" key={index} >
@@ -139,22 +145,51 @@ const DumbDocumentMeetingCards = (props) => {
                 value = {meeting.location}
                 />
               <div style={styles.chipWrapper}>
-                <Chip
-                key={0}
-                style={styles.chip}
-                >
-                {meeting.host.fullName}
-                </Chip>
-                {meeting.participants.map((participant, participantIndex) => {
-                  return(
-                    <Chip
-                    key={participantIndex + 1}
-                    style={styles.chip}
-                    >
-                      {participant.fullName}
-                    </Chip>
-                  );
-                })}
+                {{
+                  true: (
+                    <div>
+                      <Chip
+                      key={0}
+                      style={styles.chip}
+                      onRequestDelete = {handleRequestDelete}
+                      >
+                      {meeting.host.fullName}
+                      </Chip>
+                      {meeting.participants.map((participant, participantIndex) => {
+                        return(
+                          <Chip
+                          key={participantIndex + 1}
+                          style={styles.chip}
+                          onRequestDelete = {handleRequestDelete}
+                          >
+                            {participant.fullName}
+                          </Chip>
+                        );
+                      })}
+                    </div>
+                  ),
+                  false: (
+                    <div>
+                      <Chip
+                      key={0}
+                      style={styles.chip}
+                      >
+                      {meeting.host.fullName}
+                      </Chip>
+                      {meeting.participants.map((participant, participantIndex) => {
+                        return(
+                          <Chip
+                          key={participantIndex + 1}
+                          style={styles.chip}
+                          >
+                            {participant.fullName}
+                          </Chip>
+                        );
+                      })}
+                    </div>
+                  )
+                }[meetingCardEditEnabled[meeting._id]]}
+
               </div>
             </div>
           </CardHeader>
