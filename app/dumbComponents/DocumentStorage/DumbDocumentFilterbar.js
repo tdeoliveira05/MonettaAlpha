@@ -180,18 +180,14 @@ const DumbDocumentFilterbar = (props) => {
 
   return(
     <div className="DSFilterbarWrapper">
-      <div className="DSFilterbarLeft" >
-        {/*<Checkbox
-          checkedIcon={<CheckboxToggleON />}
-          uncheckedIcon={<CheckboxToggleOFF />}
-        />*/}
+      {/*<div className="DSFilterbarLeft" >
         <FlatButton
           label         ="Select All"
           labelPosition ='after'
           primary       ={false}
           icon          ={<CheckboxToggleOFF />}
         />
-      </div>
+      </div>*/}
       <div className="DSFilterbarRight" >
         <FlatButton
           label         ="Filter"
@@ -208,7 +204,7 @@ const DumbDocumentFilterbar = (props) => {
           icon          = {<SortIcon />}
         />
       </div>
-      <div className="DSFilterbarMenuIcon" >
+      {/*<div className="DSFilterbarMenuIcon" >
         <IconMenu
           iconButtonElement={
             <IconButton>
@@ -224,7 +220,7 @@ const DumbDocumentFilterbar = (props) => {
           <MenuItem   primaryText="Settings"          />
           <MenuItem   primaryText="Help & Feedback"   />
         </IconMenu>
-      </div>
+      </div>*/}
       {filterMenu()}
       {sortMenu()}
     </div>

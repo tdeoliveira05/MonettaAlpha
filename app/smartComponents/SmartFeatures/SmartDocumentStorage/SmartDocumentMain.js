@@ -20,7 +20,6 @@ import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-mo
 import MenuItem     from 'material-ui/MenuItem';
 import TextField    from 'material-ui/TextField';
 import DropDownMenu from 'material-ui/DropDownMenu';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import Checkbox     from 'material-ui/Checkbox';
 import Paper        from 'material-ui/Paper';
 import Chip         from 'material-ui/Chip';
@@ -42,7 +41,6 @@ export default class SmartDocumentMain extends React.Component {
 
     this.state = {
       docArray: [], // Refer to models/meetingModel
-      tempArray: [],
       temp: '',
       searchText: '',
       showFilterMenu: false,
@@ -80,6 +78,7 @@ export default class SmartDocumentMain extends React.Component {
 
     this.handleTempChange               = this.handleTempChange.bind(this)
 
+    this.intializeStateVariables        = this.intializeStateVariables.bind(this)
     this.handleSearchTextChange         = this.handleSearchTextChange.bind(this)
     this.handleFilterButtonClick        = this.handleFilterButtonClick.bind(this)
     this.handleLocationFilterChange     = this.handleLocationFilterChange.bind(this)
@@ -93,7 +92,8 @@ export default class SmartDocumentMain extends React.Component {
     this.handleStarredChange            = this.handleStarredChange.bind(this)
     this.handleEditButtonClick          = this.handleEditButtonClick.bind(this)
     this.handleSaveButtonClick          = this.handleSaveButtonClick.bind(this)
-    this.handleCancelEditButtonClick    = this.handleCancelEditButtonClick.bind(this)
+    // this.handleCancelEditButtonClick    = this.handleCancelEditButtonClick.bind(this)
+    this.handleMoveToTrashButtonClick   = this.handleMoveToTrashButtonClick.bind(this)
 
     //Axios Route Functions
     this.getAllMeetingDocs              = this.getAllMeetingDocs.bind(this)
@@ -141,6 +141,42 @@ export default class SmartDocumentMain extends React.Component {
 
   handleSortByChange(event, value) {
     this.setState({sortBy: value})
+    let newDocArray = this.state.docArray;
+    // SORTING DISPLAYED MEETINGS ----------------------------------------------
+    switch(value) {
+      case 'DateDesc':
+        newDocArray.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date)
+        })
+        break
+      case 'DateAsc':
+        newDocArray.sort((a, b) => {
+          return new Date(a.date) - new Date(b.date)
+        })
+        break
+      case 'MeetingDesc':
+        newDocArray.sort((a, b) => {
+          return b.title.toLowerCase() > a.title.toLowerCase()
+        })
+        break
+      case 'MeetingAsc':
+        newDocArray.sort((a, b) => {
+          return a.title.toLowerCase() > b.title.toLowerCase()
+        })
+        break
+      case 'LocDesc':
+        newDocArray.sort((a, b) => {
+          return b.location.toLowerCase() > a.location.toLowerCase()
+        })
+        break
+      case 'LocAsc':
+        newDocArray.sort((a, b) => {
+          return a.location.toLowerCase() > b.location.toLowerCase()
+        })
+        break
+    }
+
+    this.setState({docArray: newDocArray});
   }
 
   handleLocationFilterChange(event, target, value) {
@@ -201,19 +237,20 @@ export default class SmartDocumentMain extends React.Component {
     console.log(this.state.meetingCardEditEnabled)
   }
 
-  handleCancelEditButtonClick(event, targetMeetingID) {
-    let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
+  // handleCancelEditButtonClick(event, targetMeetingID, targetIndex) {
+  //   let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
+  //   let newDocArray = Object.assign({}, this.state.docArray)
+  //   let newTempDocArray = this.state.tempDocArray;
+  //   console.log(newTempDocArray[targetIndex])
+  //   console.log(newDocArray[targetIndex])
+  //   newTempDocArray[targetIndex] = newDocArray[targetIndex]
+  //   //reset the changes in the temp array
+  //   this.setState({tempDocArray: newTempDocArray})
+  //   meetingCardEditEnabled[targetMeetingID] = false;
+  //   this.setState({meetingCardEditEnabled})
+  //   console.log('You pressed the cancel button')
+  // }
 
-    meetingCardEditEnabled[targetMeetingID] = false;
-
-    this.setState({meetingCardEditEnabled})
-
-    console.log('You pressed the cancel button but nothing really happend')
-  }
-
-  handleSaveButtonClick(event, targetMeetingID) {
-    console.log('You pressed the save button but nothing got saved')
-  }
 
   // determineMeetingCardStyle(meetingTargetID) {
   //   let index = this.state.meetingPreviewCards.findIndex((meeting) => {
@@ -226,11 +263,119 @@ export default class SmartDocumentMain extends React.Component {
   //   }
   // }
 
+  handleMoveToTrashButtonClick(event, targetMeetingID) {
+    console.log(targetMeetingID)
+    console.log('You clicked the move to trash button!')
 
+    let confirmDelete = confirm("Are you sure you want to move this meeting to trash?")
+    if (confirmDelete) {
+      console.log('deletion confirmed')
+      var newDocArray = this.state.docArray;
+      var targetMeeting = newDocArray.filter((meeting) => {
+        return meeting._id === targetMeetingID
+      })
+      console.log(targetMeeting)
+      targetMeeting[0].metaData.trash = (targetMeeting[0].metaData.trash ? false : true) ;
 
-  handleTempChange (event) {
-    console.log(event.target.name + ' -----> ' + event.target.value)
-    this.setState({[event.target.name]: event.target.value})
+      this.setState({newDocArray});
+      this.updateThisMeetingDoc(targetMeeting[0]);
+
+      // Turns off edit mode so that the card isn't expanded in trash folder
+      let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
+      meetingCardEditEnabled[targetMeetingID] = false;
+      this.setState({meetingCardEditEnabled})
+    }
+  }
+
+  handleSaveButtonClick(event, targetMeetingID, targetMeetingIndex) {
+    let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
+    meetingCardEditEnabled[targetMeetingID] = false;
+
+    let newDocArray = this.state.docArray;
+
+    let targetDocument = newDocArray[targetMeetingIndex]
+
+    this.updateThisMeetingDoc(targetDocument)
+
+    this.setState({meetingCardEditEnabled})
+  }
+
+  handleTempChange (event, targetProperty, targetIndex, targetNoteIndex) {
+
+    let newDocArray = this.state.docArray;
+
+    switch(targetProperty){
+      case 'location':
+        newDocArray[targetIndex].location = event.target.value;
+        this.setState(newDocArray)
+        break;
+      case 'title':
+        newDocArray[targetIndex].title = event.target.value;
+        this.setState(newDocArray)
+        break;
+      case 'note':
+        newDocArray[targetIndex].notes[targetNoteIndex].text = event.target.value;
+        this.setState(newDocArray)
+        break;
+
+    }
+
+    // console.log(event.target.name + ' -----> ' + event.target.value)
+    // this.setState({[event.target.name]: event.target.value})
+  }
+
+  intializeStateVariables(docArrayVal) {
+    // Getting all unique locations for filter menu
+    let allPossibleLocations = [...new Set(docArrayVal.map((meeting) =>{
+      return meeting.location;
+    }))]
+
+    // OPTIMIZE FROM HERE
+    let possibleParticipants = docArrayVal.map((meeting) => {
+      return meeting.participants.map((participant) => {
+        return participant.fullName
+      })
+    })
+
+    // Adding the hosts name to participants list
+    for (var i = 0; i < possibleParticipants.length; i++) {
+      possibleParticipants[i].push(docArrayVal[i].host.fullName)
+    }
+
+    let newArr = [];
+    for(i = 0; i < possibleParticipants.length; i++) {
+        newArr = newArr.concat(possibleParticipants[i]);
+    }
+
+    let uniqueParticipants = []
+    newArr.map((participant) => {
+      if (uniqueParticipants.includes(participant) === false) {
+        uniqueParticipants.push(participant)
+      }
+    })
+    // OPTIMIZE TO HERE
+
+    let meetingCardExpanded = {};
+    docArrayVal.map((meeting) => {
+      meetingCardExpanded[meeting._id] = false
+    })
+
+    let meetingCardSelected = {};
+    docArrayVal.map((meeting) => {
+      meetingCardSelected[meeting._id] = false
+    })
+
+    let meetingCardEditEnabled = {};
+    docArrayVal.map((meeting) => {
+      meetingCardEditEnabled[meeting._id] = false
+    })
+
+    this.setState({meetingCardExpanded})
+    this.setState({meetingCardSelected})
+    this.setState({meetingCardEditEnabled})
+    this.setState({allLocations: allPossibleLocations})
+    this.setState({allParticipants: uniqueParticipants})
+    this.setState({participentsPerMeeting: possibleParticipants})
   }
 
   //-------------------------Axios Route Functions------------------------------
@@ -242,64 +387,14 @@ export default class SmartDocumentMain extends React.Component {
 
     .then((docArrayResponse) => {
 
-      var docArrayVal = docArrayResponse.data
-
+      var docArrayVal = docArrayResponse.data;
       // Reordered the meetings to display most recent first
       docArrayVal.sort((a, b) => {
         return new Date(b.date) - new Date(a.date)
-      })
-      // Getting all unique locations for filter menu
-      let allPossibleLocations = [...new Set(docArrayVal.map((meeting) =>{
-        return meeting.location;
-      }))]
+      });
 
-      // OPTIMIZE FROM HERE
-      let possibleParticipants = docArrayVal.map((meeting) => {
-        return meeting.participants.map((participant) => {
-          return participant.fullName
-        })
-      })
-
-      // Adding the hosts name to participants list
-      for (var i = 0; i < possibleParticipants.length; i++) {
-        possibleParticipants[i].push(docArrayVal[i].host.fullName)
-      }
-
-      let newArr = [];
-      for(var i = 0; i < possibleParticipants.length; i++) {
-          newArr = newArr.concat(possibleParticipants[i]);
-      }
-
-      let uniqueParticipants = []
-      newArr.map((participant) => {
-        if (uniqueParticipants.includes(participant) === false) {
-          uniqueParticipants.push(participant)
-        }
-      })
-      // OPTIMIZE TO HERE
-
-      let meetingCardExpanded = {};
-      docArrayVal.map((meeting) => {
-        meetingCardExpanded[meeting._id] = false
-      })
-
-      let meetingCardSelected = {};
-      docArrayVal.map((meeting) => {
-        meetingCardSelected[meeting._id] = false
-      })
-
-      let meetingCardEditEnabled = {};
-      docArrayVal.map((meeting) => {
-        meetingCardEditEnabled[meeting._id] = false
-      })
-
-      this.setState({meetingCardExpanded})
-      this.setState({meetingCardSelected})
-      this.setState({meetingCardEditEnabled})
-      this.setState({allLocations: allPossibleLocations})
-      this.setState({allParticipants: uniqueParticipants})
-      this.setState({participentsPerMeeting: possibleParticipants})
-      this.setState({docArray: docArrayVal})
+      this.intializeStateVariables(docArrayVal);
+      this.setState({docArray: docArrayVal});
 
     })
 
@@ -430,7 +525,7 @@ export default class SmartDocumentMain extends React.Component {
     // FILTERING DISPLAYED MEETINGS --------------------------------------------
     let filteredDocArray = this.state.docArray.filter((meeting, index) => {
       let searchCondition = meeting.title.toLowerCase().indexOf(this.state.searchText) !== -1;
-      let folderCondition = (this.props.currentFolder == 'All Meetings' || (this.props.currentFolder == meeting.metaData.folder));
+      let folderCondition = ((this.props.currentFolder == 'All Meetings' || (this.props.currentFolder == meeting.metaData.folder)) && !meeting.metaData.trash) || (meeting.metaData.trash && this.props.currentFolder === 'Trash');
       let starredCondition = (this.props.currentFolder == 'Starred Meetings' && meeting.metaData.starred);
       let locationFilter = ((this.state.filters.location === meeting.location) || this.state.filters.location === 'Display All');
       let allParticipantsInMeeting = true;
@@ -449,39 +544,6 @@ export default class SmartDocumentMain extends React.Component {
       return searchCondition && (folderCondition || starredCondition) && locationFilter && participantFilter && dateFilter;
     });
 
-    // SORTING DISPLAYED MEETINGS ----------------------------------------------
-    switch(this.state.sortBy) {
-      case 'DateDesc':
-        filteredDocArray.sort((a, b) => {
-          return new Date(b.date) - new Date(a.date)
-        })
-        break
-      case 'DateAsc':
-        filteredDocArray.sort((a, b) => {
-          return new Date(a.date) - new Date(b.date)
-        })
-        break
-      case 'MeetingDesc':
-        filteredDocArray.sort((a, b) => {
-          return b.title.toLowerCase() > a.title.toLowerCase()
-        })
-        break
-      case 'MeetingAsc':
-        filteredDocArray.sort((a, b) => {
-          return a.title.toLowerCase() > b.title.toLowerCase()
-        })
-        break
-      case 'LocDesc':
-        filteredDocArray.sort((a, b) => {
-          return b.location.toLowerCase() > a.location.toLowerCase()
-        })
-        break
-      case 'LocAsc':
-        filteredDocArray.sort((a, b) => {
-          return a.location.toLowerCase() > b.location.toLowerCase()
-        })
-        break
-    }
 
     // NOTE Meeting names to populate searchbar autocomplete
     let filteredMeetingNames = filteredDocArray.map((meeting) => {
@@ -564,28 +626,18 @@ export default class SmartDocumentMain extends React.Component {
         <div className="DocumentStorageCardsWrapper" >
           <DumbDocumentMeetingCards
             filteredDocArray            = {filteredDocArray}
+            docArray                    = {this.state.docArray}
             handleMeetingCardClick      = {this.handleMeetingCardClick}
             handleStarredChange         = {this.handleStarredChange}
             handleEditButtonClick       = {this.handleEditButtonClick}
-            handleCancelEditButtonClick = {this.handleCancelEditButtonClick}
             handleSaveButtonClick       = {this.handleSaveButtonClick}
             meetingCardExpanded         = {this.state.meetingCardExpanded}
             meetingCardEditEnabled      = {this.state.meetingCardEditEnabled}
             meetingCardSelected         = {this.state.meetingCardSelected}
+            handleMoveToTrashButtonClick= {this.handleMoveToTrashButtonClick}
+            handleTempChange            = {this.handleTempChange}
             />
         </div>
-
-        <div>
-          <RaisedButton
-            label = 'Get All Docs'
-            onClick = {() => this.getAllMeetingDocs()}
-          />
-        </div>
-
-        <div style = {{width: '100%', paddingBottom: '100px'}}>
-          {meetingPaperStyle}
-        </div>
-
       </div>
     );
   }
