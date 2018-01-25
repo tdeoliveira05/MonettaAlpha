@@ -1,10 +1,19 @@
 require('../styles/style.sass')
 import React from 'react';
 import {render} from 'react-dom';
-import {BrowserRouter as Router, Route} from 'react-router-dom';
-import App from '../App.js';
+import {BrowserRouter as Router, Route, IndexRoute} from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import axios from 'axios'
+
+
+import App from '../App.js';
+import SmartTeamMeeting from '../SmartComponents/SmartMain/SmartTeamMeeting.js'
+import SmartDocumentStorage from '../SmartComponents/SmartMain/SmartDocumentStorage.js'
+import SmartProductivityData from '../SmartComponents/SmartMain/SmartProductivityData.js'
+import SmartUserSettings from '../SmartComponents/SmartMain/SmartUserSettings.js'
+
+axios.defaults.headers.common['access_token'] = localStorage.access_token
 
 
 const muiTheme = getMuiTheme({
@@ -27,7 +36,7 @@ var routes = (
 	<MuiThemeProvider muiTheme={muiTheme}>
 		<Router>
 			<div>
-				<Route exact path="/" component={App}/>
+				<Route path="/" component={App}/>
       </div>
 		</Router>
 	</MuiThemeProvider>

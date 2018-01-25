@@ -8,7 +8,7 @@ export default class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      appLocation: 'home',
+      appLocation: 'app',
       userTokenObj: {
         username: localStorage.username,
         fullName: localStorage.fullName,
@@ -25,11 +25,10 @@ export default class App extends React.Component {
 	}
 
   componentWillMount () {
-    if (localStorage.authentication && this.state.isLoggedIn === false) {
+    if (localStorage.access_token && this.state.isLoggedIn === false) {
       console.log('authenticating...')
-      this.authenticateMe(localStorage.authentication)
-      axios.defaults.headers.common['authorization'] = localStorage.authentication
-    } else if (!localStorage.authentication) {
+      this.authenticateMe(localStorage.access_token)
+    } else if (!localStorage.access_token) {
       localStorage.removeItem('username')
       localStorage.removeItem('fullName')
     }
@@ -57,12 +56,12 @@ export default class App extends React.Component {
   }
 
   submitUserTokenObj (userTokenObjVal) {
-    localStorage.authentication  = 'bearer ' + userTokenObjVal.token
+    localStorage.access_token  = 'bearer ' + userTokenObjVal.token
     localStorage.username        = userTokenObjVal.username
     localStorage.fullName        = userTokenObjVal.fullName
 
 
-    axios.defaults.headers.common['authorization'] = localStorage.authentication
+    axios.defaults.headers.common['access_token'] = localStorage.access_token
     this.setState({appLocation: 'app'})
   }
 
@@ -72,7 +71,7 @@ export default class App extends React.Component {
 
   signOut () {
     console.log('Signing out...')
-    localStorage.removeItem('authentication')
+    localStorage.removeItem('access_token')
     localStorage.removeItem('username')
     localStorage.removeItem('fullName')
     this.setState({appLocation: 'home', isLoggedIn: false})

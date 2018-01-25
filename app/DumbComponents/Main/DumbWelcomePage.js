@@ -13,7 +13,7 @@ const DumbWelcomePage = ({
   jobPosition,
   jobPositionError,
   organization,
-  organizationError,
+  organizationError, 
   submitUserUpdate,
   handleChangeState
 }) => (

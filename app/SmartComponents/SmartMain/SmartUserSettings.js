@@ -1,4 +1,5 @@
 import React from 'react'
+import DumbUserSettings from '../../DumbComponents/Main/DumbUserSettings.js'
 
 export default class SmartUserSettings extends React.Component {
   constructor(props) {
@@ -12,8 +13,8 @@ export default class SmartUserSettings extends React.Component {
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <h1> Coming Soon to a Monetta near you. </h1>
-        <h1> SmartUserSettings </h1>
+        <DumbUserSettings
+        />
       </div>
     )
   }

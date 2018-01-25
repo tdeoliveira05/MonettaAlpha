@@ -5,13 +5,16 @@ import FontIcon from 'material-ui/FontIcon'
 import FlatButton from 'material-ui/FlatButton'
 import axios from 'axios'
 import Snackbar from 'material-ui/Snackbar'
+import {Link, Route, IndexRoute} from 'react-router-dom'
 
 import SmartTeamMeeting from './SmartMain/SmartTeamMeeting.js'
 import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
 import SmartProductivityData from './SmartMain/SmartProductivityData.js'
 import SmartUserSettings from './SmartMain/SmartUserSettings.js'
-
 import SmartWelcomePage from './SmartMain/SmartWelcomePage.js'
+import DumbNavigationBar from '../DumbComponents/Main/DumbNavigationBar'
+import SmartDashboard from './SmartMain/SmartDashboard.js'
+import SmartHelp from './SmartMain/SmartHelp.js'
 
 import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
@@ -21,7 +24,7 @@ export default class SmartMain extends React.Component {
     super(props)
     this.state={
       mainLocation: 'internal',
-      tabValue: 'Meeting',
+      path: 'teamMeeting',
       defaultMeetingData: {
         title: '',
         host: {
@@ -53,6 +56,7 @@ export default class SmartMain extends React.Component {
     this.openFeedbackDialog       = this.openFeedbackDialog.bind(this)
     this.feedbackSuccessFunction  = this.feedbackSuccessFunction.bind(this)
     this.openSnackbar             = this.openSnackbar.bind(this)
+    this.activatePath             = this.activatePath.bind(this)
   }
 
   componentDidMount () {
@@ -104,10 +108,15 @@ export default class SmartMain extends React.Component {
     this.setState({snackbarOpen: !this.state.snackbarOpen})
   }
 
+  activatePath (pathVal) {
+    this.setState({path: pathVal})
+  }
+
+
+
 
 
   render () {
-
     //---------------------------CONDITIONS-------------------------------------
     var feedbackComponent = (
         <ReusableSmartFeedback
@@ -126,37 +135,41 @@ export default class SmartMain extends React.Component {
 
     } else {
       return (
-        <div style = {{display: 'flex', height: '100vh', flexDirection: 'column', justifyContent: 'space-between'}}>
+        <div style = {{display: 'flex', minHeight: '100vh', height: '100%', flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
           <div style = {{height: '100%'}}>
-            <FlatButton
-              label = 'Sign out'
-              style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
-              onClick = {() => this.props.signOut()}
-            />
-            <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue} style = {{height: '90%'}}>
-              <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
-                <SmartTeamMeeting
-                  handleChangeTabValue = {this.handleChangeTabValue}
-                  defaultMeetingData   = {this.state.defaultMeetingData}
-                />
-              </Tab>
-              <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>
+            <DumbNavigationBar/>
+            <div style = {{height: '100%'}}>
+              <Route exact path = "/" render = {() =>
+                  <SmartDashboard
+                  />
+              }/>
+              <Route path = "/meeting" render = {() =>
+                  <SmartTeamMeeting
+                    defaultMeetingData = {this.state.defaultMeetingData}
+                  />
+              }/>
+              <Route path = "/storage" render = {() =>
                 <SmartDocumentStorage
-                  userTokenObj         = {this.props.userTokenObj}
                 />
-              </Tab>
-              <Tab label='Productivity Data' value='Data' icon={<FontIcon className='material-icons'>trending_up</FontIcon>}>
+              }/>
+              <Route path = "/data" render = {() =>
                 <SmartProductivityData
                 />
-              </Tab>
-              <Tab label='User Settings' value='Settings' icon={<FontIcon className='material-icons'>settings_applications</FontIcon>}>
+              }/>
+              <Route path = "/help" render = {() =>
+                <SmartHelp
+                />
+              }/>
+              <Route path = "/settings" render = {() =>
                 <SmartUserSettings
                 />
-              </Tab>
-            </Tabs>
+              }/>
+            </div>
+          </div>
+          <div>
             <FlatButton
               label     = 'Send Feedback'
-              style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
+              style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '50px'}}
               onClick   = {() => this.openFeedbackDialog()}
             />
             <ReusableDumbDialog
@@ -164,15 +177,65 @@ export default class SmartMain extends React.Component {
               dialogToggleFunction  = {this.openFeedbackDialog}
               dialogComponent       = {feedbackComponent}
             />
+            <Snackbar
+              open              = {this.state.snackbarOpen}
+              message           = 'Your feedback was sent straight to our Slack channel!'
+              autoHideDuration  = {4000}
+              onRequestClose    = {this.openSnackbar}
+            />
           </div>
-          <Snackbar
-            open              = {this.state.snackbarOpen}
-            message           = 'Your feedback was sent straight to our Slack channel!'
-            autoHideDuration  = {4000}
-            onRequestClose    = {this.openSnackbar}
-          />
         </div>
       )
     }
   }
 }
+
+/*
+<div style = {{display: 'flex', height: '100vh', flexDirection: 'column', justifyContent: 'space-between'}}>
+  <div style = {{height: '100%'}}>
+    <FlatButton
+      label = 'Sign out'
+      style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
+      onClick = {() => this.props.signOut()}
+    />
+    <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue} style = {{height: '90%'}}>
+      <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
+        <SmartTeamMeeting
+          handleChangeTabValue = {this.handleChangeTabValue}
+          defaultMeetingData   = {this.state.defaultMeetingData}
+        />
+      </Tab>
+      <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>
+        <SmartDocumentStorage
+        />
+      </Tab>
+      <Tab label='Productivity Data' value='Data' icon={<FontIcon className='material-icons'>trending_up</FontIcon>}>
+        <SmartProductivityData
+        />
+      </Tab>
+      <Tab label='User Settings' value='Settings' icon={<FontIcon className='material-icons'>settings_applications</FontIcon>}>
+        <SmartUserSettings
+        />
+      </Tab>
+    </Tabs>
+  </div>
+  <div>
+    <FlatButton
+      label     = 'Send Feedback'
+      style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
+      onClick   = {() => this.openFeedbackDialog()}
+    />
+    <ReusableDumbDialog
+      dialogToggle          = {this.state.openFeedback}
+      dialogToggleFunction  = {this.openFeedbackDialog}
+      dialogComponent       = {feedbackComponent}
+    />
+    <Snackbar
+      open              = {this.state.snackbarOpen}
+      message           = 'Your feedback was sent straight to our Slack channel!'
+      autoHideDuration  = {4000}
+      onRequestClose    = {this.openSnackbar}
+    />
+  </div>
+</div>
+*/

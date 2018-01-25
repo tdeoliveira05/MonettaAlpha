@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DumbWelcomePage from '../../DumbComponents/Main/DumbWelcomePage'
+import DumbWelcomePage from '../../DumbComponents/Main/DumbWelcomePage.js'
 
 export default class SmartWelcomePage extends React.Component {
   constructor(props) {

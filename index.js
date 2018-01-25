@@ -195,6 +195,9 @@ app.post('/request/alpha', function(req, res) {
 app.post('/authenticateMe',  function(req, res) {
   var tokenArray = req.body.token.split(' ')
   var token = tokenArray[1]
+  console.log('--------------------------------------------')
+  console.log('Token found')
+  console.log('--')
   console.log('authenticating: ' + token)
   console.log('--')
 
@@ -203,43 +206,54 @@ app.post('/authenticateMe',  function(req, res) {
       console.log('could not authenticate user - ' + error)
       res.send({success: false, errorText: error})
     } else {
-      console.log(authData)
+      console.log('User: ' + authData.username + ' was already logged in')
       Users.findOne({_id: authData.id})
       .then((userDoc) => {
-        console.log(userDoc)
+        console.log('SUCESSFULLY AUTHENTICATED USER')
+        console.log('--------------------------------------------')
         res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
       })
     }
 
   })
+  console.log('--------------------------------------------')
 })
 
 // this must be after the request routes. those three routes do not need a jwt to user
 // all of the routes below NEED a jwt so we are going to authenticate that jwt before it reaches the route
 // if it is wrong we are blocking it, if it is correct we are letting it through
-
 app.use(function (req, res, next) {
-  console.log('running authentication middleware --------------------------------------------')
-  const bearerHeader = req.headers.authorization
-  const bearer       = bearerHeader.split(' ')
-  const token        = bearer[1]
-  console.log('current localStorage bearer token: ' + token)
+  console.log('-------------------- AUTHENTICATION MIDDLEWARE ------------------------')
+  console.log('path: ' + req.path)
+  console.log('--------------------------------')
 
-    jwt.verify(token, secret, (error, authData) => {
-      if (error) {
-        console.log('error was found: ' + error)
-        console.log('------------> redirecting')
-        res.redirect('/')
-      } else {
-        console.log('no error found')
-        console.log('------------> allowing route')
-        next()
-      }
-    })
-  console.log('------------------------------------------------------------------------------')
+  if (!req.headers.access_token) {
+      console.log(req.headers)
+      console.log('ERROR')
+      console.log('no access_token found - route blocked')
+
+  } else {
+
+    const bearerHeader = req.headers.access_token
+    const bearer       = bearerHeader.split(' ')
+    const token        = bearer[1]
+    console.log('current localStorage bearer token: ' + token)
+
+      jwt.verify(token, secret, (error, authData) => {
+        if (error) {
+          console.log('error was found: ' + error)
+          console.log('------------> redirecting')
+          res.sendFile(indexPath)
+        } else {
+          console.log('no error found')
+          console.log('------------> allowing route')
+          next()
+        }
+      })
+
+  }
+  console.log('-------------------------------------------------------------------------')
 })
-
-
 
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
@@ -407,6 +421,10 @@ app.post('/feedbackDocument/submit', function(req,res) {
 })
 
 
+app.get('*', function (request, response){
+    console.log('--ALL PURPOSE ROUTING--')
+    response.sendFile(indexPath)
+})
 
 //----------------------------------------------------------------------------//
 //---------------------------UTILITY FUNCTIONS--------------------------------//

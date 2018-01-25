@@ -4,7 +4,6 @@ import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
-
 import SmartChooseMeeting from './SmartTeamMeeting/SmartChooseMeeting.js'
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
 import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'

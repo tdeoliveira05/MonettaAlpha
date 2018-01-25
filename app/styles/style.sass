@@ -6,6 +6,7 @@
 @import /Main/TeamMeeting.sass
 @import /Main/DocumentStorage.sass
 @import /Main/WelcomePage.sass
+@import /Main/NavigationBar.sass
 
 @import url('https://fonts.googleapis.com/css?family=Open+Sans|Quicksand|Roboto|Material+Icons')
 @import url('https://fonts.googleapis.com/css?family=Lato')
@@ -20,12 +21,6 @@ html, body, iframe
   font-family: "Lato"
   font-size: 12px
   min-width: 300px
+  width: 100%
   min-height: 100vh
   @include mobileMedia {font-size: 10px}
-
-.indent-guide-improved
-  background: repeating-linear-gradient(to bottom, rgba(158, 158, 158, 0.2), rgba(0, 0, 0, 0) 2px )
-  &.indent-guide-stack
-    background: repeating-linear-gradient(to bottom, rgba(158, 158, 158, 0.2), rgba(0, 0, 0, 0) 2px )
-    &.indent-guide-active
-      background: repeating-linear-gradient(to bottom, rgb(1, 162, 226), rgba(0, 0, 0, 0) 2px )

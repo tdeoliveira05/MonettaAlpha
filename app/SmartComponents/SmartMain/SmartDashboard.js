@@ -1,7 +1,7 @@
 import React from 'react'
-import DumbProductivityData from '../../DumbComponents/Main/DumbProductivityData.js'
+import DumbDashboard from '../../DumbComponents/Main/DumbDashboard.js'
 
-export default class SmartProductivityData extends React.Component {
+export default class SmartDashboard extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -13,7 +13,7 @@ export default class SmartProductivityData extends React.Component {
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <DumbProductivityData
+        <DumbDashboard
         />
       </div>
     )

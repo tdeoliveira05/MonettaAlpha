@@ -21,7 +21,7 @@ import AlphaUsers3 from '../../assets/images/alphausers3.png'
 import AlphaUsers4 from '../../assets/images/alphausers4.png'
 
 const DumbHomeMain = ({handleOnTempChange, handleSetDialogCall, username}) => (
-  <div className="LandingPage"> 
+  <div className="LandingPage">
 
     <div className='block1wrapper'>
       <div className='block1'>
