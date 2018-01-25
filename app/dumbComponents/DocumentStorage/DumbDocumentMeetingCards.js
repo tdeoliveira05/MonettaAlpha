@@ -43,17 +43,17 @@ const DumbDocumentMeetingCards = (props) => {
     chip: {
       margin:   '4px',
       display:  'inline-flex',
-      flexWrap:  'wrap',
+      // flexWrap:  'wrap',
       left:     '-10px',
       height:   '35px',
 
     },
     chipWrapper: {
-      // width: '100%',
+      width: '100%',
       // display: 'flex',
       // flexWrap: 'wrap',
-      // position: 'relative',
-      // top:  '-20px',
+      position: 'relative',
+      top:  '-20px',
     },
     card: {
       height: 'auto',
@@ -162,7 +162,7 @@ const DumbDocumentMeetingCards = (props) => {
                 <div style={styles.chipWrapper}>
                   {{
                     true: (
-                      <div className="DSFilterbarChips">
+                      <div className="DSParticipantChips">
                         <Chip
                         key={0}
                         style={styles.chip}
