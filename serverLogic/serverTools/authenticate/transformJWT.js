@@ -5,8 +5,8 @@ const config = require('config')
 
 module.exports = function (reqObj) {
   return new Promise (function(resolve, reject) {
-
-    jwt.verify(reqObj.headers.authorization.split(' ')[1], config.get('Presets.secret'), function (error, authData) {
+    console.log(reqObj.headers)
+    jwt.verify(reqObj.headers.access_token.split(' ')[1], config.get('Presets.secret'), function (error, authData) {
       if (error) {
         console.log('verify JWT ERROR - ' + error)
         reject(error)

@@ -192,7 +192,6 @@ app.post('/request/alpha', function(req, res) {
 // token always needs to be sent with the request if the client-side is making
 // a request
 
-/*
 
 app.post('/authenticateMe',  function(req, res) {
   var tokenArray = req.body.token.split(' ')
@@ -256,7 +255,6 @@ app.use(function (req, res, next) {
   }
   console.log('-------------------------------------------------------------------------')
 })
-*/
 
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
