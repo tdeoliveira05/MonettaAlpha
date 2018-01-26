@@ -1,0 +1,33 @@
+@import _mixins.sass
+@import _placeholders.sass
+@import _variables.sass
+
+@import /Home/Home.sass
+@import /Main/TeamMeeting.sass
+@import /Main/DocumentStorage.sass
+@import /Main/WelcomePage.sass
+@import /Main/NavigationBar.sass
+@import /Main/UserSettings.sass
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Quicksand|Roboto|Material+Icons')
+@import url('https://fonts.googleapis.com/css?family=Lato')
+
+
+
+
+html, body, iframe
+  margin: 0
+  padding: 0
+  border: none
+  font-family: "Lato"
+  font-size: 12px
+  min-width: 300px
+  width: 100%
+  min-height: 100vh
+  @include mobileMedia {font-size: 10px}
+  button
+    background-color: Transparent
+    background-repeat: no-repeat
+    border: none
+    cursor: pointer
+    overflow: hidden
