@@ -9,7 +9,7 @@ class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      appLocation: 'app',
+      appLocation: 'home',
       userTokenObj: {
         username: localStorage.username,
         fullName: localStorage.fullName,
