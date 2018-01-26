@@ -156,35 +156,33 @@ class SmartMain extends React.Component {
     } else {
       return (
         <div style = {{display: 'flex', minHeight: '100vh', height: '100%', flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
-          <div style = {{height: '100%'}}>
-            <DumbNavigationBar/>
-            <div style = {{height: '100%'}}>
-              <Route exact path = "/" render = {() =>
-                  <SmartDashboard
-                  />
-              }/>
-              <Route path = "/meeting" render = {() =>
-                  <SmartTeamMeeting
-                    defaultMeetingData = {this.state.defaultMeetingData}
-                  />
-              }/>
-              <Route path = "/storage" render = {() =>
-                <SmartDocumentStorage
+          <DumbNavigationBar/>
+          <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
+            <Route path = "/meeting" render = {() =>
+                <SmartDashboard
                 />
-              }/>
-              <Route path = "/data" render = {() =>
-                <SmartProductivityData
+            }/>
+            <Route path = "/meeting" render = {() =>
+                <SmartTeamMeeting
+                  defaultMeetingData = {this.state.defaultMeetingData}
                 />
-              }/>
-              <Route path = "/help" render = {() =>
-                <SmartHelp
-                />
-              }/>
-              <Route path = "/settings" render = {() =>
-                <SmartUserSettings
-                />
-              }/>
-            </div>
+            }/>
+            <Route path = "/storage" render = {() =>
+              <SmartDocumentStorage
+              />
+            }/>
+            <Route path = "/data" render = {() =>
+              <SmartProductivityData
+              />
+            }/>
+            <Route path = "/help" render = {() =>
+              <SmartHelp
+              />
+            }/>
+            <Route  exact path = "/" render = {() =>
+              <SmartUserSettings
+              />
+            }/>
           </div>
           <div>
             <FlatButton
