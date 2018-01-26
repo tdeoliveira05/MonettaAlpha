@@ -45,6 +45,8 @@ export default class SmartDocumentMain extends React.Component {
       searchText: '',
       showFilterMenu: false,
       sortMenuAnchor: {},
+      showParticipantMenu: false,
+      participantMenuAnchor: {},
       filterMenuAnchor: {},
       filters: {
         location: 'Display All',
@@ -56,15 +58,8 @@ export default class SmartDocumentMain extends React.Component {
       sortBy: 'DateDesc',
       allLocations: [],
       allParticipants: [],
-      participentsPerMeeting: [],
-      meetingPreviewCards: [
-        // {
-        //   meetingID: string,
-        //   expanded:  boolean,
-        //   selected:  boolean,
-        //   allowEdit: boolean,
-        // }
-      ],
+      participantProfiles: {},
+      participantsPerMeeting: [],
       meetingCardExpanded: {
         // meetingID: boolean (expanded or not)
       },
@@ -94,13 +89,17 @@ export default class SmartDocumentMain extends React.Component {
     this.handleSaveButtonClick          = this.handleSaveButtonClick.bind(this)
     // this.handleCancelEditButtonClick    = this.handleCancelEditButtonClick.bind(this)
     this.handleMoveToTrashButtonClick   = this.handleMoveToTrashButtonClick.bind(this)
+    this.handleDeleteForeverClick       = this.handleDeleteForeverClick.bind(this)
+    this.handleRequestChipDelete        = this.handleRequestChipDelete.bind(this)
+    this.handleAddParticipantButtonClick = this.handleAddParticipantButtonClick.bind(this)
+    this.handleAddParticipant           = this.handleAddParticipant.bind(this)
+    this.handleAddNoteClick             = this.handleAddNoteClick.bind(this)
+    this.handleDeleteNoteClick          = this.handleDeleteNoteClick.bind(this)
 
     //Axios Route Functions
     this.getAllMeetingDocs              = this.getAllMeetingDocs.bind(this)
     this.deleteThisMeetingDoc           = this.deleteThisMeetingDoc.bind(this)
-    this.deleteThisMeetingDocArrayEntry = this.deleteThisMeetingDocArrayEntry.bind(this)
     this.updateThisMeetingDoc           = this.updateThisMeetingDoc.bind(this)
-    this.updateThisMeetingDocArrayEntry = this.updateThisMeetingDocArrayEntry.bind(this)
   }
 
   //--------------------------LifeCycle-----------------------------------------
@@ -123,7 +122,7 @@ export default class SmartDocumentMain extends React.Component {
       return meeting._id === meetingID
     })
 
-    targetMeeting[0].metaData.starred = (targetMeeting[0].metaData.starred ? false : true) ;
+    targetMeeting[0].metaData.starred = (targetMeeting[0].metaData.starred ? false : true);
 
     this.setState({newDocArray});
     this.updateThisMeetingDoc(targetMeeting[0]);
@@ -137,6 +136,45 @@ export default class SmartDocumentMain extends React.Component {
   handleSortButtonClick(event) {
     this.setState({showSortMenu: (this.state.showSortMenu ? false : true)})
     this.setState({sortMenuAnchor: event.currentTarget})
+  }
+
+  handleAddParticipantButtonClick(event) {
+    this.setState({showParticipantMenu: (this.state.showParticipantMenu ? false : true)})
+    this.setState({participantMenuAnchor: event.currentTarget})
+  }
+
+  handleAddParticipant(participant, meetingIndex) {
+    let newDocArray = this.state.docArray;
+    let newParticipantsPerMeeting = this.state.participantsPerMeeting;
+
+    newDocArray[meetingIndex].participants.push(this.state.participantProfiles[participant])
+
+    newParticipantsPerMeeting[meetingIndex].splice(0, 0, participant)
+
+    this.setState({newDocArray})
+    this.setState({newParticipantsPerMeeting})
+  }
+
+  handleAddNoteClick(noteType, meetingIndex) {
+    let newDocArray = this.state.docArray;
+
+    let newNote = {
+      text: '',
+      category: noteType,
+      timeStamp: 0,
+      formattedTimeStamp: 'added-post-meeting',
+      metaData: {}
+    }
+
+    newDocArray[meetingIndex].notes.push(newNote)
+
+    this.setState({newDocArray})
+  }
+
+  handleDeleteNoteClick(noteIndex, meetingIndex) {
+    let newDocArray = this.state.docArray;
+    newDocArray[meetingIndex].notes.splice(noteIndex, 1);
+    this.setState({newDocArray})
   }
 
   handleSortByChange(event, value) {
@@ -223,9 +261,7 @@ export default class SmartDocumentMain extends React.Component {
     let meetingCardExpanded = Object.assign({}, this.state.meetingCardExpanded);
 
     meetingCardExpanded[targetMeetingID] = meetingCardExpanded[targetMeetingID] ? false : true;
-
     this.setState({meetingCardExpanded})
-    console.log(this.state.meetingCardExpanded)
   }
 
   handleEditButtonClick(event, targetMeetingID) {
@@ -234,7 +270,6 @@ export default class SmartDocumentMain extends React.Component {
     meetingCardEditEnabled[targetMeetingID] = meetingCardEditEnabled[targetMeetingID] ? false : true;
 
     this.setState({meetingCardEditEnabled})
-    console.log(this.state.meetingCardEditEnabled)
   }
 
   // handleCancelEditButtonClick(event, targetMeetingID, targetIndex) {
@@ -251,7 +286,6 @@ export default class SmartDocumentMain extends React.Component {
   //   console.log('You pressed the cancel button')
   // }
 
-
   // determineMeetingCardStyle(meetingTargetID) {
   //   let index = this.state.meetingPreviewCards.findIndex((meeting) => {
   //     meeting.meetingID = meetingTargetID
@@ -264,18 +298,12 @@ export default class SmartDocumentMain extends React.Component {
   // }
 
   handleMoveToTrashButtonClick(event, targetMeetingID) {
-    console.log(targetMeetingID)
-    console.log('You clicked the move to trash button!')
 
-    let confirmDelete = confirm("Are you sure you want to move this meeting to trash?")
-    if (confirmDelete) {
-      console.log('deletion confirmed')
       var newDocArray = this.state.docArray;
       var targetMeeting = newDocArray.filter((meeting) => {
         return meeting._id === targetMeetingID
       })
-      console.log(targetMeeting)
-      targetMeeting[0].metaData.trash = (targetMeeting[0].metaData.trash ? false : true) ;
+      targetMeeting[0].metaData.trash = (targetMeeting[0].metaData.trash ? false : true);
 
       this.setState({newDocArray});
       this.updateThisMeetingDoc(targetMeeting[0]);
@@ -284,6 +312,17 @@ export default class SmartDocumentMain extends React.Component {
       let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
       meetingCardEditEnabled[targetMeetingID] = false;
       this.setState({meetingCardEditEnabled})
+  }
+
+  handleDeleteForeverClick(event, targetMeetingIndex) {
+    let confirmDelete = confirm("Are you sure you want to permanently delete this meeting? This action is irreversible!")
+    if (confirmDelete) {
+      var newDocArray = this.state.docArray
+      var targetDocument = newDocArray[targetMeetingIndex]
+      newDocArray.splice(targetMeetingIndex, 1)
+      this.setState(newDocArray)
+      var targetDocumentId = targetDocument._id
+      this.deleteThisMeetingDoc(targetDocumentId)
     }
   }
 
@@ -293,11 +332,32 @@ export default class SmartDocumentMain extends React.Component {
 
     let newDocArray = this.state.docArray;
 
+    let hasEmptyNote = true;
+    while (hasEmptyNote) {
+      let lastIndex = newDocArray[targetMeetingIndex].notes.length - 1;
+      if (newDocArray[targetMeetingIndex].notes[lastIndex].text === '') {
+        newDocArray[targetMeetingIndex].notes.pop()
+      } else {
+        hasEmptyNote = false
+      }
+    }
+
     let targetDocument = newDocArray[targetMeetingIndex]
 
     this.updateThisMeetingDoc(targetDocument)
 
     this.setState({meetingCardEditEnabled})
+  }
+
+  handleRequestChipDelete(event, targetMeetingIndex, participantIndex){
+    let newDocArray = this.state.docArray;
+    let newParticipantsPerMeeting = this.state.participantsPerMeeting;
+
+    newDocArray[targetMeetingIndex].participants.splice(participantIndex, 1);
+    newParticipantsPerMeeting[targetMeetingIndex].splice(participantIndex, 1);
+    //
+    this.setState({newDocArray})
+    this.setState({newParticipantsPerMeeting})
   }
 
   handleTempChange (event, targetProperty, targetIndex, targetNoteIndex) {
@@ -317,11 +377,7 @@ export default class SmartDocumentMain extends React.Component {
         newDocArray[targetIndex].notes[targetNoteIndex].text = event.target.value;
         this.setState(newDocArray)
         break;
-
     }
-
-    // console.log(event.target.name + ' -----> ' + event.target.value)
-    // this.setState({[event.target.name]: event.target.value})
   }
 
   intializeStateVariables(docArrayVal) {
@@ -353,6 +409,18 @@ export default class SmartDocumentMain extends React.Component {
         uniqueParticipants.push(participant)
       }
     })
+
+    let participantProfiles = {};
+    for (var i = 0; i < uniqueParticipants.length; i++) {
+      docArrayVal.map((meeting) => {
+        meeting.participants.map((participant) => {
+          if (participant.fullName === uniqueParticipants[i]) {
+            participantProfiles[uniqueParticipants[i]] = participant
+          }
+        })
+      })
+      uniqueParticipants[i]
+    }
     // OPTIMIZE TO HERE
 
     let meetingCardExpanded = {};
@@ -375,7 +443,8 @@ export default class SmartDocumentMain extends React.Component {
     this.setState({meetingCardEditEnabled})
     this.setState({allLocations: allPossibleLocations})
     this.setState({allParticipants: uniqueParticipants})
-    this.setState({participentsPerMeeting: possibleParticipants})
+    this.setState({participantsPerMeeting: possibleParticipants})
+    this.setState({participantProfiles})
   }
 
   //-------------------------Axios Route Functions------------------------------
@@ -403,42 +472,6 @@ export default class SmartDocumentMain extends React.Component {
     })
   }
 
-  deleteThisMeetingDocArrayEntry (index) {
-    console.log(index)
-    //Retrieve the current array of meetign documents
-    var newDocArray = this.state.docArray
-    //Store the target document from the variable newDocArray that was just
-    // declared, this will be used a couple of lines down
-    var targetDocument = newDocArray[index]
-
-    //.splice() is an array method (aka. a function) that removes a number of
-    // array values relative to the index value that it requirements
-    // In this case, the line of code says "remove {1} item from the array
-    // starting at the position {index}". If the code was array.splice(index, 2)
-    // it would remove the first {2} values starting at {index}
-    // This line of code operates on the current array, such that after the engine
-    // runs that line of code, newDocArray no longer contains the target document at position newDocArray[index]
-    // This deletes the document locally. To delete the document in the server we use an axios.post() route
-    newDocArray.splice(index, 1)
-
-    // update the local state variable docArray, now that the code has finished
-    // deleting the document locally in this.state.docArray, it has to delete it
-    // remotely from the database with the following lines of code
-    this.setState(newDocArray)
-
-    // store the id of the targetDocument to pass into the axios route
-    // Keep in mind, the id of the document is a default property given to
-    // EVERY mongoose document, and any default property that is automatically
-    // given will start with an undersocre --> "_id"
-    // if you did var targetDocumentId = targetDocument.id (without the underscore)
-    // the server would have no idea what you're talking about
-    var targetDocumentId = targetDocument._id
-
-    // send the target document's id to the axios route so it can destroy it from the database
-    // and voila, everything should be settled
-    this.deleteThisMeetingDoc(targetDocumentId)
-  }
-
   deleteThisMeetingDoc (targetDocumentIdVal) {
     const self = this
     // Initialize the axios post route
@@ -463,36 +496,6 @@ export default class SmartDocumentMain extends React.Component {
       console.log('ERROR(deleteThisMeetingDoc): ' + error)
     })
   }
-
-  updateThisMeetingDocArrayEntry (index) {
-
-    console.log(index)
-    console.log(this.state.temp)
-    // same as before when we deleted a document, retrieve the current docArray
-    // stored in this.state so that you can manipulate it
-    var newDocArray = this.state.docArray
-
-    // the operand '+=' will add something to its old version. For example,
-    // a += b is asking the computer to do a = a + b, this will add the
-    // this.state.temp string to the title in the target document
-    newDocArray[index].title += this.state.temp
-
-    // overwrite the entire docArray with this new version
-    this.setState(newDocArray)
-
-    // retrieve the ENTIRE target document to send to axios for it to update in the database
-    var targetDocument = newDocArray[index]
-    console.log(targetDocument);
-
-    // BECAREFUL
-    // the premise behind the update route is to pass it the ENTIRE document,
-    // every single piece of it NOT only the updated pieces
-    // this axios.post() route will basically remove the old document and replace it with a new one
-    // if there are any missing properties from the target document, they will be PERMANENTLY localhost
-    // this is a security risk, treat it very carefully and test locally before deployment
-    this.updateThisMeetingDoc(targetDocument)
-  }
-
 
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
@@ -530,7 +533,7 @@ export default class SmartDocumentMain extends React.Component {
       let locationFilter = ((this.state.filters.location === meeting.location) || this.state.filters.location === 'Display All');
       let allParticipantsInMeeting = true;
       for (let i=1; i < this.state.filters.participants.length; i++) {
-        if (this.state.participentsPerMeeting[index].indexOf(this.state.filters.participants[i]) === -1) {
+        if (this.state.participantsPerMeeting[index].indexOf(this.state.filters.participants[i]) === -1) {
           allParticipantsInMeeting = false
           return allParticipantsInMeeting;
         }
@@ -549,51 +552,6 @@ export default class SmartDocumentMain extends React.Component {
     let filteredMeetingNames = filteredDocArray.map((meeting) => {
       return meeting.title
     })
-
-    const meetingPaperStyle = this.state.docArray.map((item, index) => {
-      return(
-        <div key={index} style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center'}}>
-          <Paper style = {{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-around',
-            width: '400px',
-            padding: '10px'}}>
-
-            <p> {item.title} </p>
-            <RaisedButton
-              label = 'x'
-              onClick = {() => this.deleteThisMeetingDocArrayEntry(index)}
-            />
-          </Paper>
-          <Paper style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '400px',
-            padding: '10px'}}>
-
-          <TextField
-            value = {this.state.temp}
-            name = 'temp'
-            hintText = 'add words to the title'
-            onChange = {this.handleTempChange}
-          />
-          <RaisedButton
-            label = 'update title'
-            onClick = {() => this.updateThisMeetingDocArrayEntry(index)}
-          />
-
-          </Paper>
-        </div>
-      );
-    });
 
     //---------------------------RETURN-----------------------------------------
     //--------------------------------------------------------------------------
@@ -636,6 +594,16 @@ export default class SmartDocumentMain extends React.Component {
             meetingCardSelected         = {this.state.meetingCardSelected}
             handleMoveToTrashButtonClick= {this.handleMoveToTrashButtonClick}
             handleTempChange            = {this.handleTempChange}
+            handleDeleteForeverClick    = {this.handleDeleteForeverClick}
+            handleRequestChipDelete     = {this.handleRequestChipDelete}
+            allParticipants             = {this.state.allParticipants}
+            participantsPerMeeting      = {this.state.participantsPerMeeting}
+            showParticipantMenu         = {this.state.showParticipantMenu}
+            participantMenuAnchor       = {this.state.participantMenuAnchor}
+            handleAddParticipantButtonClick = {this.handleAddParticipantButtonClick}
+            handleAddParticipant        = {this.handleAddParticipant}
+            handleAddNoteClick          = {this.handleAddNoteClick}
+            handleDeleteNoteClick       = {this.handleDeleteNoteClick}
             />
         </div>
       </div>
@@ -650,19 +618,4 @@ SmartDocumentMain.propTypes = {
 };
 
 
-{/*NOTE NOTE NOTE this field here is going to cause every*/}
-{/*text field to be filled with the same value you type. This*/}
-{/*is just a quick way for me to show you how the update*/}
-{/*route works, you would implement*/}
-{/*a better way to do this of course if you were focusing on*/}
-{/*creating the actual front end for use, rahter than for testing*/}
-{/*exact key of a temporary storage property in this.state
-that I will use*/}
-{/*this text field will let us fill in this.state.temp and
-when the user clicks 'update title' in <RaisedButton />
-below, we will update the title of the target meeting document*/}
-{/*after we update it locally using this.updateThisMeetingDocArrayEntry(),
-we will update it remotely too by passing the new meeting
-document to this.updateThisMeetingDoc() to send a command to the server*/}
- {/*the prompt button to initiate the update chain*/}
 // TODO, FIXME, CHANGED, XXX, IDEA, HACK, NOTE, REVIEW, NB, BUG, QUESTION, COMBAK, TEMP, DEBUG, OPTIMIZE
