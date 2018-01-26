@@ -1,8 +1,9 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 import DumbReviewMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbReviewMeeting.js'
 
-export default class SmartReviewMinutes extends React.Component {
+class SmartReviewMeeting extends React.Component {
   constructor(props) {
     super(props)
 
@@ -86,3 +87,5 @@ export default class SmartReviewMinutes extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartReviewMeeting)

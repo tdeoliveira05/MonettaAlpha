@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 // Importing Material-UI Components
 import AppBar       from 'material-ui/AppBar';

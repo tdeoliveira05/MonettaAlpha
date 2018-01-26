@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 
@@ -19,4 +20,4 @@ const DumbHomeHeader = ({handleSetDialogCall}) => (
   </div>
 )
 
-export default DumbHomeHeader;
+export default withRouter(DumbHomeHeader);

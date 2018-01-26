@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import Divider from 'material-ui/Divider'
@@ -8,7 +9,7 @@ import TextField from 'material-ui/TextField'
 
 import DumbPrepareMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbPrepareMeeting.js'
 
-export default class SmartPrepareMeeting extends React.Component {
+class SmartPrepareMeeting extends React.Component {
   constructor(props) {
     super(props)
     /*-------------------------------------------------------------------------
@@ -269,3 +270,5 @@ export default class SmartPrepareMeeting extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartPrepareMeeting)

@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -13,7 +14,7 @@ const DumbWelcomePage = ({
   jobPosition,
   jobPositionError,
   organization,
-  organizationError, 
+  organizationError,
   submitUserUpdate,
   handleChangeState
 }) => (
@@ -90,4 +91,4 @@ const DumbWelcomePage = ({
   </div>
 )
 
-export default DumbWelcomePage
+export default withRouter(DumbWelcomePage)

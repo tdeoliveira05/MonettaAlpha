@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
@@ -132,4 +133,4 @@ const DumbHomeMain = ({handleOnTempChange, handleSetDialogCall, username}) => (
   </div>
 )
 
-export default DumbHomeMain;
+export default withRouter(DumbHomeMain);

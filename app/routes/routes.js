@@ -1,7 +1,7 @@
 require('../styles/style.sass')
 import React from 'react';
 import {render} from 'react-dom';
-import {BrowserRouter as Router, Route, IndexRoute} from 'react-router-dom';
+import {BrowserRouter, Route, IndexRoute} from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import axios from 'axios'
@@ -34,11 +34,11 @@ const muiTheme = getMuiTheme({
 
 var routes = (
 	<MuiThemeProvider muiTheme={muiTheme}>
-		<Router>
+		<BrowserRouter>
 			<div>
 				<Route path="/" component={App}/>
       </div>
-		</Router>
+		</BrowserRouter>
 	</MuiThemeProvider>
 );
 

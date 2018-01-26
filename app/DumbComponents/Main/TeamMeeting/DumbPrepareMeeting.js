@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import Divider from 'material-ui/Divider'
@@ -238,4 +239,4 @@ const DumbPrepareMeeting = ({
   </div>
 )
 
-export default DumbPrepareMeeting
+export default withRouter(DumbPrepareMeeting)

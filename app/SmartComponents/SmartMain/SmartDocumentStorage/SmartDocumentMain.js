@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import axios from 'axios'
 import Paper from 'material-ui/Paper'
 
@@ -52,7 +53,7 @@ const styles = {
   },
 };
 
-export default class SmartDocumentMain extends React.Component {
+class SmartDocumentMain extends React.Component {
   constructor(props) {
     super(props)
 
@@ -84,7 +85,7 @@ export default class SmartDocumentMain extends React.Component {
 
     axios.post('http://localhost:8080/meetingDocument/findByUser') // initialize a post request for the server to authenticate and use the username to get all the relevant meetings. Remember that this is a "promise"
                                                                                     //  and has a specific structure of implementation (primarily the .then & .catch chain that follows it)
-                                                                                  
+
 
     .then((docArrayResponse) => {  // always remember to add the outputObject in the arrow function (outputObject) => {...}. index.js will tell you exactly what output object to expect for that route /get/allMeetingDocs
 
@@ -281,5 +282,6 @@ export default class SmartDocumentMain extends React.Component {
   }
 }
 
+export default withRouter(SmartDocumentMain)
 // SmartDocumentMain.proptypes = {
 // };

@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import Link from 'react-router'
 import Card from 'material-ui/Card'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -56,4 +57,4 @@ const DumbHomeLogin = ({
   </div>
 );
 
-export default DumbHomeLogin;
+export default withRouter(DumbHomeLogin);

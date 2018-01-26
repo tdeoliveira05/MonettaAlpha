@@ -5,7 +5,7 @@ import FontIcon from 'material-ui/FontIcon'
 import FlatButton from 'material-ui/FlatButton'
 import axios from 'axios'
 import Snackbar from 'material-ui/Snackbar'
-import {Link, Route, IndexRoute} from 'react-router-dom'
+import {Link, Route, IndexRoute, withRouter} from 'react-router-dom'
 
 import SmartTeamMeeting from './SmartMain/SmartTeamMeeting.js'
 import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
@@ -19,7 +19,7 @@ import SmartHelp from './SmartMain/SmartHelp.js'
 import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
-export default class SmartMain extends React.Component {
+class SmartMain extends React.Component {
   constructor(props) {
     super(props)
     this.state={
@@ -57,11 +57,14 @@ export default class SmartMain extends React.Component {
     this.feedbackSuccessFunction  = this.feedbackSuccessFunction.bind(this)
     this.openSnackbar             = this.openSnackbar.bind(this)
     this.activatePath             = this.activatePath.bind(this)
+    this.createRedirectComponent  = this.createRedirectComponent.bind(this)
   }
 
   componentDidMount () {
     this.updateMainLocation()
   }
+
+
 
   updateMainLocation () {
     if (localStorage.fullName.includes('undefined') || localStorage.fullName === '') {
@@ -112,11 +115,26 @@ export default class SmartMain extends React.Component {
     this.setState({path: pathVal})
   }
 
+  createRedirectComponent (urlString) {
+    // There may be better ways to redirect that forcibly rendering a redirect Component
+    // time permitting, look into this
+    if (urlString === undefined) return
+
+    var redirectComponent = (
+      <Redirect
+        to = {urlString}
+      />
+    )
+
+    return redirectComponent
+  }
+
 
 
 
 
   render () {
+
     //---------------------------CONDITIONS-------------------------------------
     var feedbackComponent = (
         <ReusableSmartFeedback
@@ -124,6 +142,8 @@ export default class SmartMain extends React.Component {
           successFunction       = {this.feedbackSuccessFunction}
         />
       )
+
+    var redirectComponent = this.createRedirectComponent()
 
     //----------------------------RETURN----------------------------------------
     if (this.state.mainLocation === 'welcome') {
@@ -184,58 +204,11 @@ export default class SmartMain extends React.Component {
               onRequestClose    = {this.openSnackbar}
             />
           </div>
+          {redirectComponent}
         </div>
       )
     }
   }
 }
 
-/*
-<div style = {{display: 'flex', height: '100vh', flexDirection: 'column', justifyContent: 'space-between'}}>
-  <div style = {{height: '100%'}}>
-    <FlatButton
-      label = 'Sign out'
-      style = {{backgroundColor: '#6699ff', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
-      onClick = {() => this.props.signOut()}
-    />
-    <Tabs value={this.state.tabValue} onChange={this.handleChangeTabValue} style = {{height: '90%'}}>
-      <Tab label='Team Meeting' value='Meeting' icon={<FontIcon className='material-icons'>question_answer</FontIcon>}>
-        <SmartTeamMeeting
-          handleChangeTabValue = {this.handleChangeTabValue}
-          defaultMeetingData   = {this.state.defaultMeetingData}
-        />
-      </Tab>
-      <Tab label='Document Storage' value='Storage' icon={<FontIcon className='material-icons'>cloud</FontIcon>}>
-        <SmartDocumentStorage
-        />
-      </Tab>
-      <Tab label='Productivity Data' value='Data' icon={<FontIcon className='material-icons'>trending_up</FontIcon>}>
-        <SmartProductivityData
-        />
-      </Tab>
-      <Tab label='User Settings' value='Settings' icon={<FontIcon className='material-icons'>settings_applications</FontIcon>}>
-        <SmartUserSettings
-        />
-      </Tab>
-    </Tabs>
-  </div>
-  <div>
-    <FlatButton
-      label     = 'Send Feedback'
-      style     = {{backgroundColor: '#ffac4d', color: 'white', width: '100%', display: 'flex', justifyContent: 'center', height: '5%'}}
-      onClick   = {() => this.openFeedbackDialog()}
-    />
-    <ReusableDumbDialog
-      dialogToggle          = {this.state.openFeedback}
-      dialogToggleFunction  = {this.openFeedbackDialog}
-      dialogComponent       = {feedbackComponent}
-    />
-    <Snackbar
-      open              = {this.state.snackbarOpen}
-      message           = 'Your feedback was sent straight to our Slack channel!'
-      autoHideDuration  = {4000}
-      onRequestClose    = {this.openSnackbar}
-    />
-  </div>
-</div>
-*/
+export default withRouter(SmartMain)

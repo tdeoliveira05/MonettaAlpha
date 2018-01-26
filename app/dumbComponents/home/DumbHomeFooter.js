@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import FlatButton from 'material-ui/FlatButton'
 
 import nameLogo from '../../assets/images/nameLogo.png'
@@ -30,4 +31,4 @@ const DumbHomeFooter = ({handleSetDialogCall}) => (
   </div>
 )
 
-export default DumbHomeFooter;
+export default withRouter(DumbHomeFooter);

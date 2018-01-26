@@ -1,8 +1,9 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 import DumbConductMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbConductMeeting.js'
 
-export default class SmartConductMeeting extends React.Component {
+class SmartConductMeeting extends React.Component {
   constructor(props) {
     super(props)
     /*-------------------------------------------------------------------------
@@ -226,3 +227,5 @@ export default class SmartConductMeeting extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartConductMeeting)

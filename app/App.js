@@ -1,10 +1,11 @@
 import React from 'react'
 import axios from 'axios'
+import {withRouter} from 'react-router-dom'
 
 import SmartHome from './SmartComponents/SmartHome.js'
 import SmartMain from './SmartComponents/SmartMain.js'
 
-export default class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
@@ -107,6 +108,8 @@ export default class App extends React.Component {
     }
   }
 }
+
+export default withRouter(App)
 
 /*
 

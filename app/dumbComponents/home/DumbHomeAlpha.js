@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 
@@ -91,4 +92,4 @@ const AlphaUserComponent = ({
   </div>
 )
 
-export default AlphaUserComponent;
+export default withRouter(AlphaUserComponent);

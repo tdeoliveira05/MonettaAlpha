@@ -1,5 +1,6 @@
 /************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import axios from 'axios'
 
@@ -13,7 +14,7 @@ import DumbHomePrivacyAndTerms from '../DumbComponents/Home/DumbHomePrivacyAndTe
 
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
-export default class SmartHome extends React.Component {
+class SmartHome extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -294,6 +295,8 @@ export default class SmartHome extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartHome)
 
 /*
 

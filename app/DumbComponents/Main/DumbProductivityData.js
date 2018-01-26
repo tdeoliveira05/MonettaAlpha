@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 
 const DumbProductivityData = ({}) => (
@@ -7,4 +8,4 @@ const DumbProductivityData = ({}) => (
   </div>
 )
 
-export default DumbProductivityData
+export default withRouter(DumbProductivityData)

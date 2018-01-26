@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 
 const DumbUserSettings = ({}) => (
@@ -7,4 +8,4 @@ const DumbUserSettings = ({}) => (
   </div>
 )
 
-export default DumbUserSettings
+export default withRouter(DumbUserSettings)

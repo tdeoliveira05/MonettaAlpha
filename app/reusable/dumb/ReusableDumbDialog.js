@@ -17,6 +17,7 @@ dialogComponent is the child component to be rendered inside the pop up dialog c
 */
 
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 
 
@@ -28,4 +29,4 @@ const ReusableDumbDialog = ({dialogToggle, dialogToggleFunction, dialogComponent
   </div>
 )
 
-export default ReusableDumbDialog
+export default withRouter(ReusableDumbDialog)

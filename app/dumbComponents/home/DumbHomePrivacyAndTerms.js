@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 const DumbHomePrivacyAndTerms = () => (
       <div className='PrivacyTermsWrapper' >
@@ -190,4 +191,4 @@ const DumbHomePrivacyAndTerms = () => (
 
 );
 
-export default DumbHomePrivacyAndTerms;
+export default withRouter(DumbHomePrivacyAndTerms);

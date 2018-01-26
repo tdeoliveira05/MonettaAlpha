@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 
 const DumbHelp = ({}) => (
@@ -7,4 +8,4 @@ const DumbHelp = ({}) => (
   </div>
 )
 
-export default DumbHelp
+export default withRouter(DumbHelp)

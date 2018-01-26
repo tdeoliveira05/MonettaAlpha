@@ -1,8 +1,10 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
+
 import DumbHelp from '../../DumbComponents/Main/DumbHelp.js'
 
 
-export default class SmartHelp extends React.Component {
+class SmartHelp extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -20,3 +22,5 @@ export default class SmartHelp extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartHelp)

@@ -1,9 +1,10 @@
-import React from 'react';
+import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 import SmartDocumentHeader  from './SmartDocumentStorage/SmartDocumentHeader.js';
 import SmartDocumentMain    from './SmartDocumentStorage/SmartDocumentMain.js';
 
-export default class SmartDocumentStorage extends React.Component {
+class SmartDocumentStorage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -24,3 +25,5 @@ export default class SmartDocumentStorage extends React.Component {
     );
   }
 }
+
+export default withRouter(SmartDocumentStorage)

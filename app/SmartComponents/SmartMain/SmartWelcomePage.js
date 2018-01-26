@@ -1,8 +1,9 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 
 import DumbWelcomePage from '../../DumbComponents/Main/DumbWelcomePage.js'
 
-export default class SmartWelcomePage extends React.Component {
+class SmartWelcomePage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -99,3 +100,5 @@ export default class SmartWelcomePage extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartWelcomePage)

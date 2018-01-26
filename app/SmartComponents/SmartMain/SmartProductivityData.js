@@ -1,7 +1,9 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
+
 import DumbProductivityData from '../../DumbComponents/Main/DumbProductivityData.js'
 
-export default class SmartProductivityData extends React.Component {
+class SmartProductivityData extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -19,3 +21,5 @@ export default class SmartProductivityData extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartProductivityData)

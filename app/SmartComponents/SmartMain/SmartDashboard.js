@@ -1,10 +1,18 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
+
 import DumbDashboard from '../../DumbComponents/Main/DumbDashboard.js'
 
-export default class SmartDashboard extends React.Component {
+class SmartDashboard extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
+
+    this.redirectToPath = this.redirectToPath.bind(this)
+  }
+
+  redirectToPath(urlPath) {
+    this.props.history.push(urlPath)
   }
 
   render () {
@@ -14,8 +22,11 @@ export default class SmartDashboard extends React.Component {
     return(
       <div>
         <DumbDashboard
+          redirectToPath = {this.redirectToPath}
         />
       </div>
     )
   }
 }
+
+export default withRouter(SmartDashboard)

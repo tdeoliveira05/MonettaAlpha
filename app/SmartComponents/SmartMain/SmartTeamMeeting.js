@@ -1,23 +1,23 @@
 /************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
-import SmartChooseMeeting from './SmartTeamMeeting/SmartChooseMeeting.js'
+
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
 import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
 import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'
-
 const defaultSettings = require('../../clientConfig/defaults.json')
 const defaultCategoryList = defaultSettings.defaultCategoryList
 
 
-export default class SmartTeamMeeting extends React.Component {
+class SmartTeamMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      meetingIndex: 1,
+      meetingIndex: 0,
       categoryList: defaultCategoryList,
       meetingData: this.props.defaultMeetingData
     }
@@ -85,15 +85,8 @@ export default class SmartTeamMeeting extends React.Component {
     //---------------------------CONDITIONS-------------------------------------
 
     switch (this.state.meetingIndex) {
-      case 0:
-        var MeetingComponent  = (
-          <SmartChooseMeeting
-            handleIndexChange = {this.handleIndexChange}
-            />
-        )
-        break
 
-      case 1:
+      case 0:
         var MeetingComponent  = (
           <SmartPrepareMeeting
             handleIndexChange       = {this.handleIndexChange}
@@ -104,7 +97,7 @@ export default class SmartTeamMeeting extends React.Component {
         )
         break
 
-      case 2:
+      case 1:
         var MeetingComponent  = (
           <SmartConductMeeting
             handleIndexChange       = {this.handleIndexChange}
@@ -116,7 +109,7 @@ export default class SmartTeamMeeting extends React.Component {
         )
         break
 
-      case 3:
+      case 2:
         var MeetingComponent  = (
           <SmartReviewMinutes
             handleIndexChange       = {this.handleIndexChange}
@@ -136,3 +129,5 @@ export default class SmartTeamMeeting extends React.Component {
     )
   }
 }
+
+export default withRouter(SmartTeamMeeting)

@@ -3,8 +3,9 @@ import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
+import {withRouter} from 'react-router-dom'
 
-export default class ReusableSmartFeedback extends React.Component {
+class ReusableSmartFeedback extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -81,3 +82,5 @@ export default class ReusableSmartFeedback extends React.Component {
     )
   }
 }
+
+export default withRouter(ReusableSmartFeedback)

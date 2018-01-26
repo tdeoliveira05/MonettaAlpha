@@ -1,5 +1,5 @@
 import React from 'react'
-
+import {withRouter} from 'react-router-dom'
 
 const CLASS_NAME = ({}) => (
   <div>
@@ -7,4 +7,4 @@ const CLASS_NAME = ({}) => (
   </div>
 )
 
-export default CLASS_NAME
+export default withRouter(CLASS_NAME)
