@@ -4,10 +4,10 @@ import {Tabs, Tab} from 'material-ui/Tabs'
 import FontIcon from 'material-ui/FontIcon'
 import FlatButton from 'material-ui/FlatButton'
 
-import SmartTeamMeeting from './SmartFeatures/SmartTeamMeeting.js'
-import SmartDocumentStorage from './SmartFeatures/SmartDocumentStorage.js'
-import SmartProductivityData from './SmartFeatures/SmartProductivityData.js'
-import SmartUserSettings from './SmartFeatures/SmartUserSettings.js'
+import SmartTeamMeeting from './SmartMain/SmartTeamMeeting.js'
+import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
+import SmartProductivityData from './SmartMain/SmartProductivityData.js'
+import SmartUserSettings from './SmartMain/SmartUserSettings.js'
 
 export default class SmartMain extends React.Component {
   constructor(props) {

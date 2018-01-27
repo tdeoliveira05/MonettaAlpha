@@ -5,7 +5,7 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
 
-import DumbChooseMeeting from '../../DumbComponents/TeamMeeting/DumbChooseMeeting.js'
+import DumbChooseMeeting from '../../DumbComponents/Main/TeamMeeting/DumbChooseMeeting.js'
 import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
 import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
 import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'

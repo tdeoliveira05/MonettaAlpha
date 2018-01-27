@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DumbConductMeeting from '../../../DumbComponents/TeamMeeting/DumbConductMeeting.js'
+import DumbConductMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbConductMeeting.js'
 
 export default class SmartConductMeeting extends React.Component {
   constructor(props) {

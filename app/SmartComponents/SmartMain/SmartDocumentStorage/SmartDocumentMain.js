@@ -4,9 +4,9 @@ import PropTypes  from 'prop-types';
 import moment     from 'moment';
 
 
-import DumbDocumentSearchbar    from '../../../dumbComponents/DocumentStorage/DumbDocumentSearchbar.js';
-import DumbDocumentFilterbar    from '../../../dumbComponents/DocumentStorage/DumbDocumentFilterbar.js';
-import DumbDocumentMeetingCards from '../../../dumbComponents/DocumentStorage/DumbDocumentMeetingCards.js';
+import DumbDocumentSearchbar    from '../../../DumbComponents/Main/DocumentStorage/DumbDocumentSearchbar.js';
+import DumbDocumentFilterbar    from '../../../DumbComponents/Main/DocumentStorage/DumbDocumentFilterbar.js';
+import DumbDocumentMeetingCards from '../../../DumbComponents/Main/DocumentStorage/DumbDocumentMeetingCards.js';
 
 
 

@@ -1,7 +1,7 @@
 import React        from 'react';
 import PropTypes    from 'prop-types';
 
-import DumbDocumentToolbar    from '../../../dumbComponents/DocumentStorage/DumbDocumentToolbar.js';
+import DumbDocumentToolbar    from '../../../DumbComponents/Main/DocumentStorage/DumbDocumentToolbar.js';
 
 export default class SmartDocumentHeader extends React.Component {
   constructor (props) {
