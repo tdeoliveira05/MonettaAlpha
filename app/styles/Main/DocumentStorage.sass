@@ -26,16 +26,16 @@
     margin: auto
 
     .DSSearchBarWrapper
-      width: 80%
+      width: 70%
       padding-top: 30px
       margin: auto
 
 
     .DSFilterbarWrapper
-      width: 80%
+      width: 70%
       margin: auto
       padding-top: 5px
-      padding-bottom: 35px
+      padding-bottom: 45px
 
       .DSFilterbarLeft
         // position: left
@@ -90,7 +90,7 @@
         flex-wrap: wrap
 
     .DocumentStorageCardsWrapper
-      width: 80%
+      width: 70%
       margin: auto
       padding-top: 10px
       padding-bottom: 50px
@@ -98,7 +98,10 @@
       .MeetingPreviewCard
         margin-bottom: 10px
         height: inherit
+        .DSMeetingCardTitle
+          flex-shrink: 2
+          @include mobileMedia {font-size: 1em}
         .DSParticipantChips
-          // display: inline-flex
+          display: inline-flex
           flex-wrap: wrap
-          height: auto
+          // height: auto

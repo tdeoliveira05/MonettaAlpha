@@ -57,28 +57,32 @@ const DumbDocumentMeetingCards = (props) => {
   let handleDeleteNoteClick         = props.handleDeleteNoteClick;
 
   let styles = {
-    chip: {
-      margin:   '4px',
-      display:  'inline-flex',
-      // flexWrap:  'wrap',
-      left:     '-10px',
-      height:   '35px',
-
-    },
-    chipWrapper: {
-      width: '100%',
-      // display: 'flex',
-      // flexWrap: 'wrap',
-      position: 'relative',
-      top:  '-20px',
-    },
     card: {
       height: 'auto',
+      justifyContent: 'center',
+      // textAlign: 'center',
+    },
+    starIcon: {
+      display: "inline-block",
+      position: 'relative',
+      top: '9px',
+      left: '5px',
+      maxWidth: 25,
     },
     cardHeader: {
-      top: -18,
-      left: 35,
-      marginRight: 35,
+      // top: -18,
+      // left: 60,
+      paddingBottom: 40,
+      // marginRight: 35,
+      margin: 'auto',
+      textAlign: 'left',
+      width: '83%',
+    },
+    headerTextField: {
+      fontSize: '21px',
+      width: '100%',
+       position: 'relative',
+        top: '-20px'
     },
     date: {
       // color: '#6699ff',
@@ -88,32 +92,58 @@ const DumbDocumentMeetingCards = (props) => {
     },
     location: {
       position: 'relative',
+      width: '100%',
       top: '-30px',
     },
-    starIcon: {
-      display: "inline-block",
-      position: 'relative',
-      top: '9px',
-      left: '5px',
-      maxWidth: 25,
+    chip: {
+      margin:   '4px',
+      display:  'inline-flex',
+      flexWrap:  'wrap',
+      left:     '-10px',
+      height:   '35px',
+
     },
-    headerTextField: {
-      fontSize: '20px',
-       position: 'relative',
-        top: '-20px'
+    chipWrapper: {
+      width: '100%',
+      display: 'flex',
+      flexWrap: 'wrap',
+      position: 'relative',
+      top:  '-20px',
+    },
+    noteHeader: {
+    },
+    noteTitleWrapper: {
+      display: 'inline-flex',
+    },
+    noteWrapper: {
+      width: '100%',
+      padding: '0px',
+    },
+    singleNoteRow: {
+      width: '100%',
+      display: 'inline-flex',
     },
     noteTextField: {
-      width: '80%',
+      width: '100%',
+    },
+    addNoteButton: {
+      position: 'relative',
+      bottom: '-5px',
+      // left: '-7px',
+    },
+    deleteNoteButton: {
+      position: 'relative',
+      margin: 'auto 0px',
+      padding: '0px',
     },
     cardText: {
       position: 'relative',
-      left: '35px',
+      margin: 'auto',
       top: '-50px',
-      width: '90%',
+      width: '80%',
     },
     editButton: {
       float: 'right',
-      // left: '40px',
       position: 'relative',
       bottom: '-25px',
     },
@@ -131,26 +161,8 @@ const DumbDocumentMeetingCards = (props) => {
     },
     addParticipantsButton: {
       position: 'relative',
-      bottom: '-9px',
+      bottom: '2px',
       left: '-7px',
-    },
-    addNoteButton: {
-      position: 'relative',
-      bottom: '-9px',
-      left: '-7px',
-    },
-    deleteNoteButton: {
-      // position: 'relative',
-      display: 'inline-flex',
-      flexWrap: 'wrap',
-      width: 'content',
-      height: 'content',
-      // top: '-47px',
-      // left: '-50px',
-    },
-    noteWrapper: {
-      width: '100%',
-      // justifyContent: 'inline',
     }
   }
 
@@ -174,13 +186,15 @@ const DumbDocumentMeetingCards = (props) => {
                 uncheckedIcon={<StarToggleOFF />} />
             </CardActions>
             <CardHeader
+              iconStyle={{margin: '0px'}}
               style={styles.cardHeader}
               actAsExpander={true}
               showExpandableButton={true} >
               <div >
                 <TextField
+                  className="DSMeetingCardTitle"
                   underlineShow={meetingCardEditEnabled[meeting._id]}
-                  multiLine = {false}
+                  multiLine = {true}
                   disabled = {!meetingCardEditEnabled[meeting._id]}
                   style={styles.headerTextField}
                   name = {JSON.stringify(index)}
@@ -193,7 +207,7 @@ const DumbDocumentMeetingCards = (props) => {
                 </h3>
                 <TextField
                   underlineShow={meetingCardEditEnabled[meeting._id]}
-                  multiLine = {false}
+                  multiLine = {true}
                   disabled = {!meetingCardEditEnabled[meeting._id]}
                   style = {styles.location}
                   name = {JSON.stringify(index)}
@@ -203,7 +217,7 @@ const DumbDocumentMeetingCards = (props) => {
                 <div style={styles.chipWrapper}>
                   {{
                     true: (
-                      <div className="DSParticipantChips">
+                      <div className="DSParticipantChips" >
                         <Chip
                         key={0}
                         style={styles.chip}
@@ -252,7 +266,7 @@ const DumbDocumentMeetingCards = (props) => {
                       </div>
                     ),
                     false: (
-                      <div className="DSFilterbarChips">
+                      <div className="DSParticipantChips">
                         <Chip
                         key={0}
                         style={styles.chip}
@@ -279,26 +293,41 @@ const DumbDocumentMeetingCards = (props) => {
             <CardText
               style={styles.cardText}
               expandable={!meetingCardEditEnabled[meeting._id]}>
-              <h2> General </h2>
-              {meeting.notes.map((note, noteIndex) => {
-                if (note.category !== 'general') return
-                return(
-                  <div
-                    style={styles.noteWrapper}
-                    key = {noteIndex}
-                    >
-                    <TextField
-                      underlineShow={meetingCardEditEnabled[meeting._id]}
-                      multiLine = {true}
-                      disabled = {!meetingCardEditEnabled[meeting._id]}
-                      name = {JSON.stringify(noteIndex)}
-                      value = {note.text}
-                      onChange = {(event) => handleTempChange(event, 'note', index, noteIndex)}
-                      style = {styles.noteTextField}
-                      />
-                      {{
-                        true: (
-                          <div>
+              <div style={styles.noteTitleWrapper} >
+                <h2 style={styles.noteHeader}> General </h2>
+                {{
+                  true: (
+                    <IconButton
+                      style={styles.addNoteButton}
+                      onClick={() => handleAddNoteClick('general', index)}>
+                      <AddIcon/>
+                    </IconButton>
+                  ),
+                  false: (
+                    <div>
+                    </div>
+                  )
+                }[meetingCardEditEnabled[meeting._id]]}
+              </div>
+              <div style={styles.noteWrapper}>
+                {meeting.notes.map((note, noteIndex) => {
+                  if (note.category !== 'general') return
+                  return(
+                    <div
+                      style={styles.singleNoteRow}
+                      key = {noteIndex}
+                      >
+                      <TextField
+                        underlineShow={meetingCardEditEnabled[meeting._id]}
+                        multiLine = {true}
+                        disabled = {!meetingCardEditEnabled[meeting._id]}
+                        name = {JSON.stringify(noteIndex)}
+                        value = {note.text}
+                        onChange = {(event) => handleTempChange(event, 'note', index, noteIndex)}
+                        style = {styles.noteTextField}
+                        />
+                        {{
+                          true: (
                             <IconButton
                               style={styles.deleteNoteButton}
                               onClick={() => handleDeleteNoteClick(noteIndex, index)}>
@@ -306,131 +335,116 @@ const DumbDocumentMeetingCards = (props) => {
                                 style={styles.deleteNoteButton}
                                 />
                             </IconButton>
-                          </div>
-                        ),
-                        false: (
-                          <div>
-                          </div>
-                        )
-                      }[meetingCardEditEnabled[meeting._id]]}
-                  </div>
-                )
-              })}
-              {{
-                true: (
-                  <div>
-                    <IconButton
-                      style={styles.addNoteButton}
-                      onClick={() => handleAddNoteClick('general', index)}>
-                      <AddIcon/>
-                    </IconButton>
-                  </div>
-                ),
-                false: (
-                  <div>
-                  </div>
-                )
-              }[meetingCardEditEnabled[meeting._id]]}
-              <h2> Actions </h2>
-              {meeting.notes.map((note, noteIndex) => {
-                if (note.category !== 'action') return
-                return(
-                  <div
-                    style={styles.noteWrapper}
-                    key = {noteIndex}
-                    >
-                    <TextField
-                      underlineShow={meetingCardEditEnabled[meeting._id]}
-                      multiLine = {true}
-                      disabled = {!meetingCardEditEnabled[meeting._id]}
-                      name = {JSON.stringify(noteIndex)}
-                      value = {note.text}
-                      onChange = {(event) => handleTempChange(event, 'note', index, noteIndex)}
-                      style = {styles.noteTextField}
-                      />
-                      {{
-                        true: (
-                          <div>
-                            <IconButton
-                              style={styles.deleteNoteButton}
-                              onClick={() => handleDeleteNoteClick(noteIndex, index)}>
-                              <ClearIcon/>
-                            </IconButton>
-                          </div>
-                        ),
-                        false: (
-                          <div>
-                          </div>
-                        )
-                      }[meetingCardEditEnabled[meeting._id]]}
-                  </div>
-                )
-              })}
-              {{
-                true: (
-                  <div>
+                          ),
+                          false: (
+                            <div>
+                            </div>
+                          )
+                        }[meetingCardEditEnabled[meeting._id]]}
+                    </div>
+                  )
+                })}
+              </div>
+              <div style={styles.noteTitleWrapper}>
+                <h2 style={styles.noteHeader}> Actions </h2>
+                {{
+                  true: (
                     <IconButton
                       style={styles.addNoteButton}
                       onClick={() => handleAddNoteClick('action', index)}>
                       <AddIcon/>
                     </IconButton>
-                  </div>
-                ),
-                false: (
-                  <div>
-                  </div>
-                )
-              }[meetingCardEditEnabled[meeting._id]]}
-              <h2> Decisions </h2>
-              {meeting.notes.map((note, noteIndex) => {
-                if (note.category !== 'decision') return
-                return(
-                  <div
-                    style={styles.noteWrapper}
-                    key = {noteIndex}
-                    >
-                    <TextField
-                      underlineShow={meetingCardEditEnabled[meeting._id]}
-                      multiLine = {true}
-                      disabled = {!meetingCardEditEnabled[meeting._id]}
-                      name = {JSON.stringify(noteIndex)}
-                      value = {note.text}
-                      onChange = {(event) => handleTempChange(event, 'note', index, noteIndex)}
-                      style = {styles.noteTextField}
-                      />
-                      {{
-                        true: (
-                          <div>
+                  ),
+                  false: (
+                    <div>
+                    </div>
+                  )
+                }[meetingCardEditEnabled[meeting._id]]}
+              </div>
+              <div style={styles.noteWrapper}>
+                {meeting.notes.map((note, noteIndex) => {
+                  if (note.category !== 'action') return
+                  return(
+                    <div
+                      style={styles.singleNoteRow}
+                      key = {noteIndex}
+                      >
+                      <TextField
+                        underlineShow={meetingCardEditEnabled[meeting._id]}
+                        multiLine = {true}
+                        disabled = {!meetingCardEditEnabled[meeting._id]}
+                        name = {JSON.stringify(noteIndex)}
+                        value = {note.text}
+                        onChange = {(event) => handleTempChange(event, 'note', index, noteIndex)}
+                        style = {styles.noteTextField}
+                        />
+                        {{
+                          true: (
                             <IconButton
                               style={styles.deleteNoteButton}
                               onClick={() => handleDeleteNoteClick(noteIndex, index)}>
                               <ClearIcon/>
                             </IconButton>
-                          </div>
-                        ),
-                        false: (
-                          <div>
-                          </div>
-                        )
-                      }[meetingCardEditEnabled[meeting._id]]}
-                  </div>
-                )
-              })}
-              {{
-                true: (
-                  <div>
+                          ),
+                          false: (
+                            <div>
+                            </div>
+                          )
+                        }[meetingCardEditEnabled[meeting._id]]}
+                    </div>
+                  )
+                })}
+              </div>
+              <div style={styles.noteTitleWrapper}>
+                <h2 style={styles.noteHeader}> Decisions </h2>
+                {{
+                  true: (
                     <IconButton
                       style={styles.addNoteButton}
                       onClick={() => handleAddNoteClick('decision', index)}>
                       <AddIcon/>
                     </IconButton>
-                  </div>
-                ),
-                false: (
-                  <div>
-                  </div>
-                )
-              }[meetingCardEditEnabled[meeting._id]]}
+                  ),
+                  false: (
+                    <div>
+                    </div>
+                  )
+                }[meetingCardEditEnabled[meeting._id]]}
+              </div>
+              <div style={styles.noteWrapper}>
+                {meeting.notes.map((note, noteIndex) => {
+                  if (note.category !== 'decision') return
+                  return(
+                    <div
+                      style={styles.singleNoteRow}
+                      key = {noteIndex}
+                      >
+                      <TextField
+                        underlineShow={meetingCardEditEnabled[meeting._id]}
+                        multiLine = {true}
+                        disabled = {!meetingCardEditEnabled[meeting._id]}
+                        name = {JSON.stringify(noteIndex)}
+                        value = {note.text}
+                        onChange = {(event) => handleTempChange(event, 'note', index, noteIndex)}
+                        style = {styles.noteTextField}
+                        />
+                        {{
+                          true: (
+                            <IconButton
+                              style={styles.deleteNoteButton}
+                              onClick={() => handleDeleteNoteClick(noteIndex, index)}>
+                              <ClearIcon/>
+                            </IconButton>
+                          ),
+                          false: (
+                            <div>
+                            </div>
+                          )
+                        }[meetingCardEditEnabled[meeting._id]]}
+                    </div>
+                  )
+                })}
+              </div>
               <CardActions>
 
                 {{
