@@ -1,13 +1,14 @@
-
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import FontIcon from 'material-ui/FontIcon'
 import FlatButton from 'material-ui/FlatButton'
 import axios from 'axios'
 import Snackbar from 'material-ui/Snackbar'
-import {Link, Route, IndexRoute, withRouter} from 'react-router-dom'
+import {Link, Route, IndexRoute, withRouter, Switch, BrowserRouter as Router} from 'react-router-dom'
 
-import SmartTeamMeeting from './SmartMain/SmartTeamMeeting.js'
+import SmartStandardMeeting from './SmartMain/SmartStandardMeeting.js'
+import SmartCustomMeeting from './SmartMain/SmartCustomMeeting.js'
 import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
 import SmartProductivityData from './SmartMain/SmartProductivityData.js'
 import SmartUserSettings from './SmartMain/SmartUserSettings.js'
@@ -47,7 +48,9 @@ class SmartMain extends React.Component {
         }
       },
       openFeedback: false,
-      snackbarOpen: false
+      snackbarOpen: false,
+      userSettings: this.props.userSettings,
+      quickMeeting: false
     }
 
     this.handleChangeTabValue     = this.handleChangeTabValue.bind(this)
@@ -57,14 +60,23 @@ class SmartMain extends React.Component {
     this.feedbackSuccessFunction  = this.feedbackSuccessFunction.bind(this)
     this.openSnackbar             = this.openSnackbar.bind(this)
     this.activatePath             = this.activatePath.bind(this)
-    this.createRedirectComponent  = this.createRedirectComponent.bind(this)
+    this.passUserSettings         = this.passUserSettings.bind(this)
   }
 
   componentDidMount () {
     this.updateMainLocation()
   }
 
+  componentWillReceiveProps (nextProps) {
+    // App.js needs more time to initialize user settings due to the asynchronous nature of the code
+    // this line of code will ensure that once App.js re-sets its own state with the initial version of the user's settings, the
+    // change will pass down through a new userSettings prop and smartMain.js will update its own state accordingly to propagate the user settings
+    if (nextProps.userSettings !== this.props.userSettings) this.setState({userSettings: nextProps.userSettings})
+  }
 
+  passUserSettings (userSettingsVal) {
+    this.setState({userSettings: userSettingsVal})
+  }
 
   updateMainLocation () {
     if (localStorage.fullName.includes('undefined') || localStorage.fullName === '') {
@@ -75,7 +87,7 @@ class SmartMain extends React.Component {
 
   updateUserDocument(updateObjVal) {
     const self = this
-    axios.post('http://localhost:8080/userDocument/update', {
+    axios.post('http://localhost:8080/secure/userDocument/updateInfo', {
       updateObj: updateObjVal
     })
     .then((successObj) => {
@@ -115,35 +127,19 @@ class SmartMain extends React.Component {
     this.setState({path: pathVal})
   }
 
-  createRedirectComponent (urlString) {
-    // There may be better ways to redirect that forcibly rendering a redirect Component
-    // time permitting, look into this
-    if (urlString === undefined) return
-
-    var redirectComponent = (
-      <Redirect
-        to = {urlString}
-      />
-    )
-
-    return redirectComponent
-  }
-
 
 
 
 
   render () {
-
     //---------------------------CONDITIONS-------------------------------------
     var feedbackComponent = (
-        <ReusableSmartFeedback
-          location              = {'General(SmartMain.js), Tab value: ' + this.state.tabValue}
-          successFunction       = {this.feedbackSuccessFunction}
-        />
-      )
+      <ReusableSmartFeedback
+        successFunction       = {this.feedbackSuccessFunction}
+      />
+    )
 
-    var redirectComponent = this.createRedirectComponent()
+
 
     //----------------------------RETURN----------------------------------------
     if (this.state.mainLocation === 'welcome') {
@@ -158,29 +154,37 @@ class SmartMain extends React.Component {
         <div style = {{display: 'flex', minHeight: '100vh', height: '100%', flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
           <DumbNavigationBar/>
           <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
-            <Route path = "/meeting" render = {() =>
+            <Route exact path = "/" render = {() =>
                 <SmartDashboard
                 />
             }/>
-            <Route path = "/meeting" render = {() =>
-                <SmartTeamMeeting
-                  defaultMeetingData = {this.state.defaultMeetingData}
-                />
+            <Route exact path = "/meeting" render = {() =>
+              <SmartStandardMeeting
+                defaultMeetingData = {this.state.defaultMeetingData}
+              />
             }/>
-            <Route path = "/storage" render = {() =>
+            <Route exact path = "/meeting/custom-:id" render = {() =>
+              <SmartCustomMeeting
+                defaultMeetingData = {this.state.defaultMeetingData}
+                userSettings       = {this.state.userSettings}
+              />
+            }/>
+            <Route exact path = "/storage" render = {() =>
               <SmartDocumentStorage
               />
             }/>
-            <Route path = "/data" render = {() =>
+            <Route exact path = "/data" render = {() =>
               <SmartProductivityData
               />
             }/>
-            <Route path = "/help" render = {() =>
+            <Route exact path = "/help" render = {() =>
               <SmartHelp
               />
             }/>
-            <Route  exact path = "/" render = {() =>
+            <Route  exact path = "/settings" render = {() =>
               <SmartUserSettings
+                userSettings     = {this.state.userSettings}
+                passUserSettings = {this.passUserSettings}
               />
             }/>
           </div>
@@ -202,7 +206,6 @@ class SmartMain extends React.Component {
               onRequestClose    = {this.openSnackbar}
             />
           </div>
-          {redirectComponent}
         </div>
       )
     }
@@ -210,3 +213,7 @@ class SmartMain extends React.Component {
 }
 
 export default withRouter(SmartMain)
+
+/*
+
+*/

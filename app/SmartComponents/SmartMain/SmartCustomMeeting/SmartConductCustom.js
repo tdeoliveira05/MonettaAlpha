@@ -1,9 +1,9 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
-import DumbConductMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbConductMeeting.js'
+import DumbConductCustom from '../../../DumbComponents/Main/CustomMeeting/DumbConductCustom.js'
 
-class SmartConductMeeting extends React.Component {
+class SmartConductCustom extends React.Component {
   constructor(props) {
     super(props)
     /*-------------------------------------------------------------------------
@@ -12,16 +12,12 @@ class SmartConductMeeting extends React.Component {
     primarily due to the fact that if the props value changes in the parent Component
     the child component (this) would not update since the prop constructor is only
     called when the prop first renders.
-
     React docs mentions the following exemption:
     "However, it’s not an anti-pattern if you make it clear that the prop is only
     seed data for the component’s internally-controlled state:"
-
     Because of this, the use of this prop is in fact NOT an anti-pattern. Please
     communicate any concerns or newfound inefficiencies with this method to the
     technical staff.
-
-
     ---------------------------------------------------------------------------
     */
 
@@ -45,16 +41,11 @@ class SmartConductMeeting extends React.Component {
     this.handleTypeClick        = this.handleTypeClick.bind(this)
     this.deleteNoteItem         = this.deleteNoteItem.bind(this)
     this.nextStep               = this.nextStep.bind(this)
-    this.previousStep           = this.previousStep.bind(this)
     this.getAndUpdateDuration   = this.getAndUpdateDuration.bind(this)
     this.formatDuration         = this.formatDuration.bind(this)
     this.setRef                 = this.setRef.bind(this)
     this.updateMeetingData      = this.updateMeetingData.bind(this)
     this.changeItemType         = this.changeItemType.bind(this)
-  }
-
-  componentWillMount () {
-
   }
 
   componentDidMount () {
@@ -85,13 +76,9 @@ class SmartConductMeeting extends React.Component {
   }
 
   nextStep () {
+    console.log('nextStep()')
     this.updateMeetingData()
-    this.props.handleIndexChange('forward')
-  }
-
-  previousStep () {
-    this.updateMeetingData()
-    this.props.handleIndexChange('backward')
+    this.props.handleIndexChange('finished')
   }
 
   updateMeetingData () {
@@ -168,16 +155,6 @@ class SmartConductMeeting extends React.Component {
     this.setState({tempItemColor: newItemColor, tempItemCategory: targetCategory})
   }
 
-  createGoalList () {
-    var tempGoalList = this.state.goals
-    var goalList = []
-
-    tempGoalList.map((goalItem) => {
-      goalList.push(goalItem.text)
-    })
-    return goalList
-  }
-
   changeItemType (event, key, value, index, noteItem) {
     console.log(value)
     console.log(noteItem)
@@ -189,24 +166,13 @@ class SmartConductMeeting extends React.Component {
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
-    var goalList = this.createGoalList()
-
-    var meetingInfoHeading = (
-      <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0', padding: '0'}}>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {localStorage.fullName + this.props.meetingData.participants.map((participantsItem) => (', '+ participantsItem.fullName))} </p>
-        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.location} </p>
-      </div>
-    )
-
 
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <DumbConductMeeting
+        <DumbConductCustom
           noteList               = {this.state.notes}
-          meetingInfoHeading     = {meetingInfoHeading}
           setRef                 = {this.setRef}
-          goalList               = {goalList}
           categoryList           = {this.props.categoryList} /**************************************NEEDS FIX*****/
           selectedIndex          = {this.state.selectedIndex}
           tempItemText           = {this.state.tempItemText}
@@ -217,7 +183,6 @@ class SmartConductMeeting extends React.Component {
           handleTypeClick        = {this.handleTypeClick}  /**************************************NEEDS FIX*****/
           deleteNoteItem         = {this.deleteNoteItem}
           nextStep               = {this.nextStep}
-          previousStep           = {this.previousStep}
           errorText              = {this.state.errorText}
           formattedDuration      = {this.state.timeElapsed.formattedActualDuration}
           changeItemType         = {this.changeItemType}
@@ -228,4 +193,4 @@ class SmartConductMeeting extends React.Component {
   }
 }
 
-export default withRouter(SmartConductMeeting)
+export default withRouter(SmartConductCustom)

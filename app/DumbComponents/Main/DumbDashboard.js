@@ -42,6 +42,7 @@ const DumbDashboard = ({
             label = 'Start Quick Meeting'
             primary = {true}
             style = {{width: '100%'}}
+            onClick = {() => redirectToPath('meeting/custom-quick')}
           />
         </div>
       </div>

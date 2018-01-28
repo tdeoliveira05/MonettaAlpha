@@ -6,16 +6,9 @@ module.exports = function (updateObj) {
     var usernameVal = updateObj.username
     var updateParam = updateObj.updateParam
 
-    User.findOneAndUpdate({username: usernameVal}, {
-      $set: {
-              firstName: updateParam.firstName,
-              lastName: updateParam.lastName,
-              jobPosition: updateParam.jobPosition,
-              organization: updateParam.organization
-            }
-      },
-      {returnNewDocument: true}
-    )
+
+
+    User.findOneAndUpdate({username: usernameVal},   {$set: {settings: updateParam.settings}}  , {returnNewDocument: true})
     .then((newUserDoc) => {
       console.log('new document updated')
       resolve(newUserDoc)

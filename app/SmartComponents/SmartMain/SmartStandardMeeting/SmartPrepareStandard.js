@@ -7,9 +7,9 @@ import Paper from 'material-ui/Paper'
 import Chip from 'material-ui/Chip'
 import TextField from 'material-ui/TextField'
 
-import DumbPrepareMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbPrepareMeeting.js'
+import DumbPrepareStandard from '../../../DumbComponents/Main/StandardMeeting/DumbPrepareStandard.js'
 
-class SmartPrepareMeeting extends React.Component {
+class SmartPrepareStandard extends React.Component {
   constructor(props) {
     super(props)
     /*-------------------------------------------------------------------------
@@ -66,6 +66,10 @@ class SmartPrepareMeeting extends React.Component {
     this.changeParticipantListItem = this.changeParticipantListItem.bind(this)
   }
 
+  componentDidMount () {
+    console.log('SmartPrepareStandard has mounted...')
+  }
+
   componentDidUpdate () {
     // Error Check
     var errorText = this.state.errorText
@@ -113,7 +117,7 @@ class SmartPrepareMeeting extends React.Component {
   }
 
   previousStep () {
-    this.props.handleIndexChange('backward')
+    this.props.history.push('/')
   }
 
   checkErrors () {
@@ -237,11 +241,10 @@ class SmartPrepareMeeting extends React.Component {
     //---------------------------CONDITIONS-------------------------------------
     var participantsList = this.createParticipantList()
 
-
     //----------------------------RETURN----------------------------------------
     return(
       <div style = {{height: '100%'}}>
-        <DumbPrepareMeeting
+        <DumbPrepareStandard
           nextStep                    = {this.nextStep}
           tempGoal                    = {this.state.tempGoal}
           previousStep                = {this.previousStep}
@@ -271,4 +274,4 @@ class SmartPrepareMeeting extends React.Component {
   }
 }
 
-export default withRouter(SmartPrepareMeeting)
+export default withRouter(SmartPrepareStandard)

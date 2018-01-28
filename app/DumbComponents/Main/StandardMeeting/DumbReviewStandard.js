@@ -8,7 +8,7 @@ import { Button } from 'reactstrap'
 
 
 
-const DumbReviewMeeting = ({
+const DumbReviewStandard = ({
   handleNoteItemChange,
   finishMeeting,
   previousStep,
@@ -146,4 +146,4 @@ const DumbReviewMeeting = ({
   </div>
 )
 
-export default withRouter(DumbReviewMeeting)
+export default withRouter(DumbReviewStandard)

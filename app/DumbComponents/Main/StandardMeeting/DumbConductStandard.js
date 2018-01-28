@@ -14,7 +14,7 @@ import FontIcon from 'material-ui/FontIcon'
 import DropDownMenu from 'material-ui/DropDownMenu'
 
 
-const DumbConductMeeting = ({
+const DumbConductStandard = ({
   handleChange,
   meetingInfoHeading,
   setRef,
@@ -212,4 +212,4 @@ const DumbConductMeeting = ({
     </div>
   </div>
 )
-export default withRouter(DumbConductMeeting)
+export default withRouter(DumbConductStandard)

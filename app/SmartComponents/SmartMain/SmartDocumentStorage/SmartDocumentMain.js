@@ -83,7 +83,7 @@ class SmartDocumentMain extends React.Component {
     const self = this  // this tells axios that when you refer to any variables or functions, you are referring to this component as you function scope
 
 
-    axios.post('http://localhost:8080/meetingDocument/findByUser') // initialize a post request for the server to authenticate and use the username to get all the relevant meetings. Remember that this is a "promise"
+    axios.post('http://localhost:8080/secure/meetingDocument/findByUser') // initialize a post request for the server to authenticate and use the username to get all the relevant meetings. Remember that this is a "promise"
                                                                                     //  and has a specific structure of implementation (primarily the .then & .catch chain that follows it)
 
 
@@ -108,7 +108,7 @@ class SmartDocumentMain extends React.Component {
 
   deleteThisMeetingDoc (targetDocumentIdVal) {
     const self = this
-    axios.post('http://localhost:8080/meetingDocument/deleteById', {  // Initialize the axios post route
+    axios.post('http://localhost:8080/secure/meetingDocument/deleteById', {  // Initialize the axios post route
       targetDocumentId: targetDocumentIdVal                           // include the target document's id
     })
     .then((successObject) => {
@@ -167,7 +167,7 @@ class SmartDocumentMain extends React.Component {
 
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
-    axios.post('http://localhost:8080/meetingDocument/updateThisDocument', {
+    axios.post('http://localhost:8080/secure/meetingDocument/updateThisDocument', {
       targetDocument: targetDocumentVal                               // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document with the update
 
     })                                                                // double check before deployment

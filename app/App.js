@@ -1,3 +1,4 @@
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import axios from 'axios'
 import {withRouter} from 'react-router-dom'
@@ -9,20 +10,36 @@ class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      appLocation: 'home',
+      appLocation: 'app',
       userTokenObj: {
         username: localStorage.username,
         fullName: localStorage.fullName,
         token: localStorage.token
       },
-      isLoggedIn: false
+      isLoggedIn: false,
+      userSettings: {
+        quickMeeting: {
+          title: 'Quick Meeting',
+          participants: [{
+            fullName: '',
+            email: '',
+            guest: true
+          }],
+          location: 'HQ',
+          timeElapsed: {
+            expectedDuration: 900000,
+            formattedExpectedDuration: '15 mins'
+          }
+        }
+      }
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
 
-    this.submitUserTokenObj = this.submitUserTokenObj.bind(this)
-    this.changeAppLocation  = this.changeAppLocation.bind(this)
-    this.authenticateMe     = this.authenticateMe.bind(this)
-    this.signOut            = this.signOut.bind(this)
+    this.submitUserTokenObj     = this.submitUserTokenObj.bind(this)
+    this.changeAppLocation      = this.changeAppLocation.bind(this)
+    this.authenticateMe         = this.authenticateMe.bind(this)
+    this.signOut                = this.signOut.bind(this)
+    this.initializeUserSettings = this.initializeUserSettings.bind(this)
 	}
 
   componentWillMount () {
@@ -46,6 +63,7 @@ class App extends React.Component {
       } else {
         localStorage.username = successObj.data.username
         localStorage.fullName = successObj.data.fullName
+        this.initializeUserSettings()
         this.setState({isLoggedIn: true})
       }
     })
@@ -55,6 +73,24 @@ class App extends React.Component {
 
     return this.state.isLoggedIn
   }
+
+  initializeUserSettings () {
+      const self = this
+      axios.post('http://localhost:8080/secure/userDocument/getSettings')
+      .then((resultObj) => {
+        if (resultObj.data.settings) {
+          console.log(resultObj.data.settings)
+          this.setState({userSettings: resultObj.data.settings})
+        } else {
+          console.log('no user settings were found')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+
 
   submitUserTokenObj (userTokenObjVal) {
     localStorage.access_token  = 'bearer ' + userTokenObjVal.token
@@ -82,7 +118,6 @@ class App extends React.Component {
 
   render() {
     //---------------------------CONDITIONS-------------------------------------
-
     //----------------------------RETURN----------------------------------------
     switch(this.state.appLocation) {
       case 'home':
@@ -102,6 +137,7 @@ class App extends React.Component {
             submitUserTokenObj = {this.submitUserTokenObj}
             changeAppLocation  = {this.changeAppLocation}
             signOut            = {this.signOut}
+            userSettings       = {this.state.userSettings}
           />
         </div>
       )

@@ -11,7 +11,7 @@ const MeetingSchema = new Schema({
     {
     fullName: String,
     email: String,
-    guest: Boolean
+    guest: {type: Boolean, default: true}
     }
   ],
   date: Date,
@@ -35,7 +35,8 @@ const MeetingSchema = new Schema({
   ],
   metaData: {
     starred: {type: Boolean, default: false},
-    folder: {type: String, default: 'none'}
+    folder: {type: String, default: 'none'},
+    meetingType: {type: String, default: 'standard'}
   },
   meetingStats: {
     timeElapsed: {

@@ -1,5 +1,7 @@
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import {withRouter} from 'react-router-dom'
+import axios from 'axios'
 
 import DumbUserSettings from '../../DumbComponents/Main/DumbUserSettings.js'
 
@@ -7,51 +9,130 @@ class SmartUserSettings extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-        title: 'Quick Meeting',
-        host: {
-          fullName: localStorage.fullName,
-          username: localStorage.username
-        },
-        participants: [{
-          fullName: '',
-          email: '',
-          guest: false
-        }],
-        date: new Date,
-        location: 'Head Quarters',
-        goals: [],
-        notes: [],
-        metaData: {},
-        meetingStats: {
-          timeElapsed: {
-            actualDuration: 0,
-            formattedActualDuration: '00:00',
-            expectedDuration: 900000,
-            formattedExpectedDuration: '15 mins'
-          }
-        },
-        automaticEmails: false
+      userSettings: this.props.userSettings,
+      automaticEmails: true,
+      snackbarOpen: false,
+      errorText: {}
     }
 
-    this.changeExpectedDuration = this.changeExpectedDuration.bind(this)
-    this.onChange               = this.onChange.bind(this)
-    this.onCheck                = this.onCheck.bind(this)
-    this.createParticipantList  = this.createParticipantList.bind(this)
+    this.changeExpectedDuration     = this.changeExpectedDuration.bind(this)
+    this.createParticipantList      = this.createParticipantList.bind(this)
+    this.onQuickMeetingChange       = this.onQuickMeetingChange.bind(this)
+    this.onCheck                    = this.onCheck.bind(this)
+    this.onSave                     = this.onSave.bind(this)
+    this.onDelete                   = this.onDelete.bind(this)
+    this.onSave                     = this.onSave.bind(this)
+    this.onReset                    = this.onReset.bind(this)
+    this.onAdd                      = this.onAdd.bind(this)
+    this.onParticipantChange        = this.onParticipantChange.bind(this)
+    this.handleSnackbarOpen         = this.handleSnackbarOpen.bind(this)
+    this.checkForQuickMeetingErrors = this.checkForQuickMeetingErrors.bind(this)
+    this.submitQuickMeetingSettings = this.submitQuickMeetingSettings.bind(this)
+    this.getUserSettings            = this.getUserSettings.bind(this)
+  }
 
+  componentWillMount () {
+    this.getUserSettings()
+  }
+
+  getUserSettings () {
+      const self = this
+      axios.post('http://localhost:8080/secure/userDocument/getSettings')
+      .then((resultObj) => {
+        if (resultObj.data.settings) {
+          console.log(resultObj.data.settings)
+          this.setState({userSettings: resultObj.data.settings})
+          this.props.passUserSettings(resultObj.data.settings)
+        } else {
+          console.log('no user settings were found')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  submitQuickMeetingSettings () {
+    // get user settings and locally update them
+    var newSettings = this.props.userSettings
+    newSettings.quickMeeting = this.state.userSettings.quickMeeting
+
+    // send updated user settings to overwrite outdated user settings in the server
+    const self = this
+    axios.post('http://localhost:8080/secure/userDocument/updateSettings',{
+      updateObj: {
+        settings: newSettings
+      }
+    })
+    .then((successObj) => {
+      console.log(successObj)
+      if (successObj.data.success) this.getUserSettings()
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+  checkForQuickMeetingErrors () {
+      var errorTextVal = this.state.errorText
+      var isThereAnError = false
+
+      if (this.state.userSettings.quickMeeting.title === '') {
+        errorTextVal.title = 'Required'
+        isThereAnError =  true
+      } else {
+        errorTextVal.title = ''
+      }
+
+      if (this.state.userSettings.quickMeeting.location === '') {
+        errorTextVal.location = 'Required'
+        isThereAnError = true
+      } else {
+        errorTextVal.location = ''
+      }
+
+      this.state.userSettings.quickMeeting.participants.map((item) => {
+        if (item.fullName === '') {
+          errorTextVal.participants = 'Please fill out all participant names'
+          isThereAnError = true
+        } else if (item.email === '' || !item.email.includes('@') || !item.email.includes('.')) {
+          errorTextVal.participants = 'Please provide valid emails for all participants'
+          isThereAnError = true
+        } else {
+            errorTextVal.participants = ''
+        }
+      })
+
+      this.setState({errorText: errorTextVal})
+      if (isThereAnError) {
+        return true
+      } else {
+        return false
+      }
+  }
+
+  onSave () {
+    console.log('Saving...')
+    if (!this.checkForQuickMeetingErrors()) {
+      this.handleSnackbarOpen()
+      this.submitQuickMeetingSettings()
+      console.log('user settings saved')
+    }
   }
 
   changeExpectedDuration (mins) {
-    var newStats = this.state.meetingStats
+    var newState = this.state
 
-    newStats.timeElapsed.expectedDuration          = mins*60000
-    newStats.timeElapsed.formattedExpectedDuration = mins + ' mins'
+    newState.userSettings.quickMeeting.timeElapsed.expectedDuration          = mins*60000
+    newState.userSettings.quickMeeting.timeElapsed.formattedExpectedDuration = mins + ' mins'
 
-    this.setState({meetingStats: newStats})
+    this.setState(newState)
   }
 
-  onChange (event) {
-    console.log(event.target.name + '----->' + event.target.value)
-    this.setState({[event.target.name]: event.target.value})
+  onQuickMeetingChange (event) {
+    var newState = this.state
+    newState.userSettings.quickMeeting[event.target.name] = event.target.value
+    this.setState(newState)
   }
 
   onCheck (event, isInputChecked) {
@@ -59,8 +140,8 @@ class SmartUserSettings extends React.Component {
   }
 
   createParticipantList () {
-    var currentParticipants = this.state.participants
-    var currentHost         = this.state.host
+    var currentParticipants = this.state.userSettings.quickMeeting.participants
+    var currentHost         = {username: localStorage.username, fullName: localStorage.fullName}
 
     var participantList = [
       {
@@ -70,22 +151,72 @@ class SmartUserSettings extends React.Component {
       }
     ]
 
+    currentParticipants.map((item) => participantList.push(item))
+
     return participantList
   }
 
+  onReset () {
+    this.getUserSettings()
+  }
+
+  onAdd () {
+    var newState = this.state
+    var newItem = {
+      fullName: '',
+      email: '',
+      guest: true
+    }
+    newState.userSettings.quickMeeting.participants.push(newItem)
+
+    this.setState(newState)
+  }
+
+  onDelete (index) {
+    var participantIndex = index - 1 //host is index = 0 in the input map function and you cant delete the only participant left
+    var newState = this.state
+    newState.userSettings.quickMeeting.participants.splice(participantIndex, 1)
+    this.setState(newState)
+
+  }
+
+  onParticipantChange(event, index, currentTarget) {
+    //host is index = 0 in the input map function
+    var newState = this.state
+    var participantIndex = index - 1
+    newState.userSettings.quickMeeting.participants[participantIndex][currentTarget] = event.target.value
+    this.setState(newState)
+  }
+
+  handleSnackbarOpen () {
+    this.setState({snackbarOpen: !this.state.snackbarOpen})
+  }
+
   render () {
+    console.log(this.props.userSettings)
     //---------------------------CONDITIONS-------------------------------------
     var participantsList = this.createParticipantList()
     //----------------------------RETURN----------------------------------------
     return(
       <DumbUserSettings
-        changeExpectedDuration = {this.changeExpectedDuration}
-        tempMins               = {this.state.meetingStats.timeElapsed.formattedExpectedDuration.split(' ')[0]}
-        defaultTitle           = {this.state.title}
-        defaultLocation        = {this.state.location}
-        onChange               = {this.onChange}
-        onCheck                = {this.onCheck}
         participantsList       = {participantsList}
+        tempMins               = {this.state.userSettings.quickMeeting.timeElapsed.formattedExpectedDuration.split(' ')[0]}
+        defaultTitle           = {this.state.userSettings.quickMeeting.title}
+        defaultLocation        = {this.state.userSettings.quickMeeting.location}
+        snackbarOpen           = {this.state.snackbarOpen}
+        automaticEmails        = {this.state.automaticEmails}
+        onChange               = {this.onQuickMeetingChange}
+        onCheck                = {this.onCheck}
+        changeExpectedDuration = {this.changeExpectedDuration}
+        onSave                 = {this.onSave}
+        onDelete               = {this.onDelete}
+        onReset                = {this.onReset}
+        onAdd                  = {this.onAdd}
+        onParticipantChange    = {this.onParticipantChange}
+        handleSnackbarOpen     = {this.handleSnackbarOpen}
+        titleError             = {this.state.errorText.title}
+        locationError          = {this.state.errorText.location}
+        participantError       = {this.state.errorText.participants}
       />
     )
   }

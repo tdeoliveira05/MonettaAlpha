@@ -3,8 +3,9 @@ import {withRouter} from 'react-router-dom'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton'
 import Checkbox from 'material-ui/Checkbox'
-import Divider from 'material-ui/Divider'
+import Snackbar from 'material-ui/Snackbar'
 
 
 const DumbUserSettings = ({
@@ -14,15 +15,23 @@ const DumbUserSettings = ({
   defaultLocation,
   onChange,
   onCheck,
-  participantsList
+  participantsList,
+  onSave,
+  onDelete,
+  onReset,
+  onAdd,
+  onParticipantChange,
+  snackbarOpen,
+  handleSnackbarOpen,
+  automaticEmails,
+  titleError,
+  participantError,
+  locationError
 }) => (
   <div className = 'UserSettingsWrapper'>
     <div className = 'UserSettings'>
       <Paper className = 'UserSettingsPaper'>
-
-
-
-        <h1> Set your Quick Meeting default settings: </h1>
+        <h1> Set your default Quick Meeting settings: </h1>
 
 
         <div className = 'UserSettingsInfo'>
@@ -33,6 +42,7 @@ const DumbUserSettings = ({
                 name = 'title'
                 value = {defaultTitle}
                 onChange = {onChange}
+                errorText = {titleError}
                 style = {{width: '60%', fontSize: '1.1em'}}
                 inputStyle = {{paddingLeft: '5px'}}
               />
@@ -42,6 +52,7 @@ const DumbUserSettings = ({
               <TextField
                 name = 'location'
                 value = {defaultLocation}
+                errorText = {locationError}
                 onChange = {onChange}
                 style = {{width: '50%', fontSize: '1.1em'}}
                 inputStyle = {{paddingLeft: '5px'}}
@@ -52,7 +63,7 @@ const DumbUserSettings = ({
                 label="Automatically send out minutes"
                 labelPosition="left"
                 onCheck = {onCheck}
-                checked = {true}
+                checked = {automaticEmails}
                 labelStyle = {{fontWeight: 'bold', paddingLeft: '5px'}}
                 iconStyle = {{padding: '0', margin: '0'}}
               />
@@ -70,44 +81,87 @@ const DumbUserSettings = ({
             </div>
           </div>
 
-          <div style = {{borderBottom: '1px solid rgb(230,230,230)', width: '100%', margin: '10px 0px 10px 0px'}}> </div>
+          <div className = 'Divider'> </div>
 
           <div className = 'UserSettingsBottomColumn'>
             <div>
-              <h2 style = {{margin: '0', padding: '0', marginBottom: '10px'}}> Default participants </h2>
-              <RaisedButton
-                label = 'Add participant'
-                fullWidth = {true}
-              />
+              <h2 style = {{margin: '0', padding: '0'}}> Default participants </h2>
             </div>
-            <div style = {{display: 'flex', width: '80%', justifyContent: 'space-around', margin: '0', padding: '0', marginTop: '10px'}}>
-              <h3 style = {{margin: '0', padding: '0'}}> Full Name </h3>
-              <h3 style = {{margin: '0', padding: '0'}}> Email </h3>
-            </div>
+            <div className = 'Divider'></div>
             {participantsList.map((item, index) => {
               if (index === 0) {
-
+                return (
+                  <div key = {index} className = 'UserSettingsParticipantInfo' >
+                    <div>
+                      <h3 style = {{margin: '0px 0px 5px 0px', padding: '0'}}> Full name </h3>
+                      <input type ='text' value = {item.fullName} style = {{border: 'none'}} readOnly/>
+                    </div>
+                    <div>
+                      <h3 style = {{margin: '0px 0px 5px 0px', padding: '0'}}> Email </h3>
+                      <input type ='text' value = {item.email} style = {{border: 'none'}} readOnly/>
+                    </div>
+                    <div style = {{width: '30px'}}></div>
+                  </div>
+                )
+              } else if (index === participantsList.length - 1 && participantsList.length !== 2) {
+                return (
+                  <div key = {index}  className = 'UserSettingsParticipantInfoContainer'>
+                     <div className = 'UserSettingsParticipantInfo' style = {{width: '100%'}}>
+                      <input type ='text' required value = {item.fullName}  onChange = {(event) => onParticipantChange(event, index, 'fullName')}/>
+                      <input type ='text' required value = {item.email} onChange = {(event) => onParticipantChange(event, index, 'email')}/>
+                      <button className = 'UserSettingsParticipantRemoveButton' onClick = {() => onDelete(index)}> X </button>
+                    </div>
+                    <button className = 'UserSettingsParticipantAddButton' onClick = {() => onAdd()}> + Add Participant </button>
+                  </div>
+                )
+              } else if (index === participantsList.length - 1 && participantsList.length === 2)  {
+                return (
+                  <div key = {index}  className = 'UserSettingsParticipantInfoContainer'>
+                     <div className = 'UserSettingsParticipantInfo' style = {{width: '100%'}}>
+                      <input type ='text' required value = {item.fullName} onChange = {(event) => onParticipantChange(event, index, 'fullName')}/>
+                      <input type ='text' required value = {item.email} onChange = {(event) => onParticipantChange(event, index, 'email')}/>
+                      <div style = {{width: '30px'}}></div>
+                    </div>
+                    <button className = 'UserSettingsParticipantAddButton' onClick = {() => onAdd()}> + Add Participant </button>
+                  </div>
+                )
+              } else {
+                return (
+                  <div key = {index} className = 'UserSettingsParticipantInfo'>
+                     <input type ='text' required value = {item.fullName} onChange = {(event) => onParticipantChange(event, index, 'fullName')}/>
+                     <input type ='text' required value = {item.email} onChange = {(event) => onParticipantChange(event, index, 'email')}/>
+                     <button className = 'UserSettingsParticipantRemoveButton' onClick = {() => onDelete(index)}> X </button>
+                  </div>
+                )
               }
-              return (
-                <div key = {index} className = 'UserSettingsParticipantInfo'>
-                  <input type ='text' style = {{border: '1px solid rgb(210, 210, 210)', borderRadius: '2px 0px 0px 2px', boxShadow: 'none', padding: '2px'}}/>
-                  <input type ='text' style = {{border: '1px solid rgb(210, 210, 210)', borderRadius: '0px 2px 2px 0px', boxShadow: 'none', padding: '2px'}}/>
-                  <button style = {{color: '#6699ff', border: '1px solid #6699ff', borderRadius: '5px', marginLeft: '5px'}}> X </button>
-                </div>
-              )
+
             })}
+            <p style = {{textAlign: 'center', color: 'red'}}> {participantError} </p>
           </div>
 
         </div>
-
-
-
-        <RaisedButton
-          label = 'Save'
-          primary
-        />
+        <div style = {{margin: '20px'}}>
+          <RaisedButton
+            label = 'Save'
+            primary
+            style = {{width: '50px', float: 'right'}}
+            onClick = {() => onSave()}
+          />
+          <FlatButton
+            label = 'Reset Fields'
+            style = {{width: '50px', float: 'right', color: 'gray'}}
+            onClick = {() => onReset()}
+          />
+        </div>
       </Paper>
     </div>
+    <Snackbar
+      open = {snackbarOpen}
+      onRequestClose = {handleSnackbarOpen}
+      autoHideDuration = {4000}
+      message = 'Your settings have been saved!'
+      style = {{textAlign: 'center'}}
+    />
   </div>
 )
 
