@@ -404,7 +404,7 @@ Process =>
 
 inputObject = req.body = {
   sortObj: {
-    type: 'title' || 'location' || 'date',
+    type: 'title' || 'location' || 'date',    <------ only these keys are able to be used for now
     order: 'asc' || 'desc'
   },
   filterObj: {
