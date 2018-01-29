@@ -1,3 +1,4 @@
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
@@ -20,10 +21,10 @@ class ReusableSmartFeedback extends React.Component {
 
   submitFeedback () {
     const self = this
-    axios.post('http://localhost:8080/feedbackDocument/submit', {
+    axios.post('http://localhost:8080/secure/feedbackDocument/submit', {
       feedback: {
         message: this.state.feedbackVal,
-        location: this.props.location
+        location: this.props.location.pathname
       }
     })
     .then((successObj) => {
@@ -52,6 +53,8 @@ class ReusableSmartFeedback extends React.Component {
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
+    console.log('feedback')
+    console.log(this.props)
     //----------------------------RETURN----------------------------------------
     return(
       <div>

@@ -1,9 +1,9 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
-import DumbReviewMeeting from '../../../DumbComponents/Main/TeamMeeting/DumbReviewMeeting.js'
+import DumbReviewStandard from '../../../DumbComponents/Main/StandardMeeting/DumbReviewStandard.js'
 
-class SmartReviewMeeting extends React.Component {
+class SmartReviewStandard extends React.Component {
   constructor(props) {
     super(props)
 
@@ -39,6 +39,7 @@ class SmartReviewMeeting extends React.Component {
   }
 
   finishMeeting () {
+    console.log('finished meeting')
     this.updateParentMeetingData()
     this.props.handleIndexChange('finished')
     this.props.handleChangeTabValue('Storage')
@@ -75,7 +76,7 @@ class SmartReviewMeeting extends React.Component {
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <DumbReviewMeeting
+        <DumbReviewStandard
           noteList             = {this.state.notes}
           handleNoteItemChange = {this.handleNoteItemChange}
           handleNoteItemDelete = {this.handleNoteItemDelete}
@@ -89,4 +90,4 @@ class SmartReviewMeeting extends React.Component {
   }
 }
 
-export default withRouter(SmartReviewMeeting)
+export default withRouter(SmartReviewStandard)

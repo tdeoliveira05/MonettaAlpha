@@ -226,6 +226,12 @@ app.post('/authenticateMe',  function(req, res) {
 app.use(function (req, res, next) {
   console.log('-------------------- AUTHENTICATION MIDDLEWARE ------------------------')
   console.log('path: ' + req.path)
+  if (req.path.includes('secure')) {
+    console.log('path does not need secure authorization')
+    console.log('------------> allowing route')
+    console.log('-------------------------------------------------------------------------')
+    next()
+  }
   console.log('--------------------------------')
 
   if (!req.headers.access_token) {
@@ -256,6 +262,9 @@ app.use(function (req, res, next) {
   console.log('-------------------------------------------------------------------------')
 })
 
+
+
+
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
 Updates user document with additional information
@@ -266,10 +275,11 @@ Process =>
 -------------------
 
 inputObject = req.body = {
-  updateObj: {      // any field inside this object must have the same names as the user model, the route will loop through and update depending on this object's keys
-    firstName: ...
-    lastName: ...
-    ETC
+  updateObj: {
+    firstName: STRING
+    lastName: STRING
+    organization: STRING
+    jobPosition: STRING
   }
 }
 
@@ -280,8 +290,54 @@ outputObject = req.body = {
 
 }*/
 
-app.post('/userDocument/update', function(req,res) {
-	serverLogic.updateUserDoc(req, res)
+app.post('/secure/userDocument/updateInfo', function(req,res) {
+	serverLogic.updateUserDocInfo(req, res)
+})
+
+/* -----------------------------------------------------------------------------
+Updates a user's settings and preferences based on a new settings object
+Process =>
+1. finds the user document in database
+2. updates relevant fields
+
+-------------------
+
+inputObject = req.body = {
+  updateObj: {
+    settings: Object
+  }
+}
+
+outputObject = req.body = {
+  sucess: BOOLEAN,
+  errorText: STRING
+}
+
+}*/
+
+app.post('/secure/userDocument/updateSettings', function(req,res) {
+	serverLogic.updateUserSettings(req, res)
+})
+/* -----------------------------------------------------------------------------
+Retrieves user settings and preferences
+Process =>
+1. finds the user document in database
+2. returns settings object
+
+-------------------
+
+NO INPUT OBJECT (JSON web token is used for identification)
+
+outputObject = req.body = {
+  sucess: BOOLEAN,
+  errorText: STRING,
+  settings: OBJECT
+}
+
+}*/
+
+app.post('/secure/userDocument/getSettings', function(req,res) {
+	serverLogic.getUserSettings(req, res)
 })
 /* -----------------------------------------------------------------------------
 Enters a new meeting into the database
@@ -332,7 +388,7 @@ outputObject = req.body = {
 
 }*/
 
-app.post('/meetingDocument/submit', function(req,res) {
+app.post('/secure/meetingDocument/submit', function(req,res) {
 	serverLogic.submitNewMeeting(req, res)
 })
 
@@ -356,7 +412,7 @@ outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
 }*/
 
-app.post('/meetingDocument/findByUser',function(req,res){
+app.post('/secure/meetingDocument/findByUser',function(req,res){
 	serverLogic.findAllMeetingDocs(req, res)
 })
 
@@ -377,7 +433,7 @@ inputObject = req.body = {
 NO OUTPUT OBJECT
 */
 
-app.post('/meetingDocument/deleteById',function(req,res){
+app.post('/secure/meetingDocument/deleteById',function(req,res){
 	serverLogic.deleteMeetingDocById(req, res)
 })
 
@@ -400,7 +456,7 @@ outputObject = res.data = sucessObject = {
 }
 */
 
-app.post('/meetingDocument/updateThisDocument', function(req,res){
+app.post('/secure/meetingDocument/updateThisDocument', function(req,res){
 	serverLogic.updateThisMeetingDoc(req, res)
 })
 
@@ -416,11 +472,12 @@ Process =>
 
 */
 
-app.post('/feedbackDocument/submit', function(req,res) {
-  console.log('here')
+app.post('/secure/feedbackDocument/submit', function(req,res) {
 	serverLogic.submitNewFeedback(req, res)
 })
 
+
+/* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
 app.get('*', function (request, response){
     console.log('--ALL PURPOSE ROUTING--')

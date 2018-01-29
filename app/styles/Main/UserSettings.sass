@@ -6,19 +6,21 @@
   min-height: calc(100vh - 100px)
   align-items: center
   justify-content: center
+  background-color: $grayTop
   .UserSettings
     display: flex
     flex-direction: column
     min-width: 300px
     max-width: 520px
     width: 80%
+    padding: 10px 0px 10px 0px
     .UserSettingsPaper
       display: flex
       flex-direction: column
       text-align: center
       width: 100%
-      background-color: $grayTop !important
-
+      padding: 5px
+      min-height: 500px
       .UserSettingsInfo
         display: flex
         flex-wrap: wrap
@@ -31,17 +33,51 @@
           display: flex
           flex-direction: column
           align-items: center
-          justify-content: center
           text-align: center
           width: 100%
+          min-height: 265px
+          .UserSettingsParticipantAddButton
+            color: $gold !important
+            border: 1px solid $gold
+            border-radius: 3px
+            margin: 2px 0px 0px 5px
+            padding: 0px 35px 0px 35px
+            height: 21px
+            @include mobileMedia {width: 95%}
+          .UserSettingsParticipantInfoContainer
+            display: flex
+            flex-direction: column
+            @include mobileMedia {width: 100%}
+            width: 80%
+            min-width: 290px
           .UserSettingsParticipantInfo
             display: flex
+            justify-content: space-around
+            text-align: left
             width: 80%
-            min-width: 300px
-            margin-top: 5px
-            margin-bottom: 5px
+            @include mobileMedia {width: 100%}
+            min-width: 280px
+            margin-top: 2px
+            margin-bottom: 2px
             input
-              width: 50%
+              border: 1px solid rgb(230, 230, 230)
+              border-radius: 3px
+              box-shadow: none
+              padding: 5px 2px 5px 5px
+              font-weight: bold
+              color: gray
+              display: flex
+              align-items: center
+              justify-content: center
+              height: 15px
+              @include mobileMedia {min-width: 100px}
+              @include mobileMedia {width: 35%}
+              @include mobileMedia {font-size: 1.2em}
+            .UserSettingsParticipantRemoveButton
+              color: $blueMain
+              border: 1px solid $blueMain
+              border-radius: 5px
+              margin-left: 5px
         .UserSettingsColumn
           display: flex
           flex-direction: column

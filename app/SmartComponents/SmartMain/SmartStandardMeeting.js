@@ -6,14 +6,14 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
 
-import SmartPrepareMeeting from './SmartTeamMeeting/SmartPrepareMeeting.js'
-import SmartConductMeeting from './SmartTeamMeeting/SmartConductMeeting.js'
-import SmartReviewMinutes from './SmartTeamMeeting/SmartReviewMeeting.js'
+import SmartPrepareStandard from './SmartStandardMeeting/SmartPrepareStandard.js'
+import SmartConductStandard from './SmartStandardMeeting/SmartConductStandard.js'
+import SmartReviewStandard from './SmartStandardMeeting/SmartReviewStandard.js'
 const defaultSettings = require('../../clientConfig/defaults.json')
 const defaultCategoryList = defaultSettings.defaultCategoryList
 
 
-class SmartTeamMeeting extends React.Component {
+class SmartStandardMeeting extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -31,7 +31,6 @@ class SmartTeamMeeting extends React.Component {
 
   getMeetingData () {
     return this.state.meetingData
-
   }
 
   submitMeetingData (meetingDataVal) {
@@ -51,6 +50,7 @@ class SmartTeamMeeting extends React.Component {
         break
 
       case 'finished':
+        console.log('activating sequence')
         this.resetTeamMeeting()
         this.handleFinishedMeeting()
         break
@@ -61,7 +61,7 @@ class SmartTeamMeeting extends React.Component {
     console.log('Submitting: ')
     console.log(this.state.meetingData)
 
-    axios.post('http://localhost:8080/meetingDocument/submit', this.state.meetingData)
+    axios.post('http://localhost:8080/secure/meetingDocument/submit', this.state.meetingData)
     .then((response) => {
       console.log(response)
     })
@@ -80,6 +80,8 @@ class SmartTeamMeeting extends React.Component {
 
   render () {
     //---------------------------VARIABLE CREATION------------------------------
+    console.log('SmartStandardMeeting state')
+    console.log(this.state)
 
 
     //---------------------------CONDITIONS-------------------------------------
@@ -88,7 +90,7 @@ class SmartTeamMeeting extends React.Component {
 
       case 0:
         var MeetingComponent  = (
-          <SmartPrepareMeeting
+          <SmartPrepareStandard
             handleIndexChange       = {this.handleIndexChange}
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
@@ -99,7 +101,7 @@ class SmartTeamMeeting extends React.Component {
 
       case 1:
         var MeetingComponent  = (
-          <SmartConductMeeting
+          <SmartConductStandard
             handleIndexChange       = {this.handleIndexChange}
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
@@ -111,7 +113,7 @@ class SmartTeamMeeting extends React.Component {
 
       case 2:
         var MeetingComponent  = (
-          <SmartReviewMinutes
+          <SmartReviewStandard
             handleIndexChange       = {this.handleIndexChange}
             handleChangeTabValue    = {this.props.handleChangeTabValue}
             meetingData             = {this.state.meetingData}
@@ -131,4 +133,4 @@ class SmartTeamMeeting extends React.Component {
   }
 }
 
-export default withRouter(SmartTeamMeeting)
+export default withRouter(SmartStandardMeeting)

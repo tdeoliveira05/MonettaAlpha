@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import Slider from 'material-ui/Slider'
 
-const DumbPrepareMeeting = ({
+const DumbPrepareStandard = ({
   handleChange,
   changeParticipantListItem,
   nextStep,
@@ -215,7 +215,7 @@ const DumbPrepareMeeting = ({
           </div>
         </div>
       </div>
-      <div style = {{height: '20px', color: 'red'}}>
+      <div style = {{height: '20px', color: 'red'}}> 
         {goalError}
         {participantError}
         {titleError}
@@ -228,6 +228,7 @@ const DumbPrepareMeeting = ({
           label     = 'Back'
           primary   = {true}
           onClick   = {() => previousStep()}
+          disabled
         />
         <RaisedButton
           label     = 'Next'
@@ -239,4 +240,4 @@ const DumbPrepareMeeting = ({
   </div>
 )
 
-export default withRouter(DumbPrepareMeeting)
+export default withRouter(DumbPrepareStandard)

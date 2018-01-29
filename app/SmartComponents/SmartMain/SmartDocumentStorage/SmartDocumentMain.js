@@ -452,7 +452,7 @@ export default class SmartDocumentMain extends React.Component {
   getAllMeetingDocs () {
     const self = this
 
-    axios.post('http://localhost:8080/meetingDocument/findByUser', this.props.userTokenObj)
+    axios.post('http://localhost:8080/secure/meetingDocument/findByUser')
 
     .then((docArrayResponse) => {
 
@@ -475,12 +475,9 @@ export default class SmartDocumentMain extends React.Component {
   deleteThisMeetingDoc (targetDocumentIdVal) {
     const self = this
     // Initialize the axios post route
-    axios.post('http://localhost:8080/meetingDocument/deleteById', {
+    axios.post('http://localhost:8080/secure/meetingDocument/deleteById', {
       // include the target document's id
-      targetDocumentId: targetDocumentIdVal,
-       // always remember to include the user token object when making a
-       // server request in order to let the server authenticate the user
-      userTokenObj: this.props.userTokenObj
+      targetDocumentId: targetDocumentIdVal
     })
     .then((successObject) => {
       // if the axios route isnt trying to retrieve an actual piece of data and
@@ -499,14 +496,10 @@ export default class SmartDocumentMain extends React.Component {
 
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
-    axios.post('http://localhost:8080/meetingDocument/updateThisDocument', {
-      // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
-      // with the update
-      targetDocument: targetDocumentVal,
-      // as always, send the token with the request
-      userTokenObj: this.props.userTokenObj
-      // double check before deployment
-    })
+    axios.post('http://localhost:8080/secure/meetingDocument/updateThisDocument', {
+      targetDocument: targetDocumentVal                               // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document with the update
+
+    })                                                                // double check before deployment
     .then((successObject) => {
       // axios.post() routes that do not return a piece of data, will once again
       // return a successObject for checking

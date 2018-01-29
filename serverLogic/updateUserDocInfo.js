@@ -8,7 +8,7 @@ module.exports = function (userUpdateReq, res) {
   serverTools.authenticate.transformJWT(userUpdateReq)
   .then((userInfo) => {
     console.log(userInfo)
-    return serverTools.update.thisUserDoc({username: userInfo.username, updateParam: userUpdateReq.body.updateObj})
+    return serverTools.update.thisUserDocInfo({username: userInfo.username, updateParam: userUpdateReq.body.updateObj})
   })
   .then((oldUserDoc) => {
     return serverTools.find.singleDoc(User, {username: oldUserDoc.username})
