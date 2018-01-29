@@ -1,5 +1,6 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
+// import PropTypes    from 'prop-types';
 
 class CLASS_NAME extends React.Component {
   constructor(props) {
@@ -10,7 +11,7 @@ class CLASS_NAME extends React.Component {
   render () {
     //---------------------------CONDITIONS-------------------------------------
 
-    //----------------------------RETURN----------------------------------------
+    //---------------------------RETURN-----------------------------------------
     return(
       <div>
 
@@ -20,3 +21,8 @@ class CLASS_NAME extends React.Component {
 }
 
 export default withRouter(CLASS_NAME)
+//-------------------------------EXPECTED PROP TYPES----------------------------
+// CLASS_NAME.propTypes = {
+//   propName: PropTypes.type,
+  //Example: currentFolder: PropTypes.string.isRequired,
+// };
