@@ -226,7 +226,7 @@ app.post('/authenticateMe',  function(req, res) {
 app.use(function (req, res, next) {
   console.log('-------------------- AUTHENTICATION MIDDLEWARE ------------------------')
   console.log('path: ' + req.path)
-  if (req.path.includes('secure')) {
+  if (!req.path.includes('secure')) {
     console.log('path does not need secure authorization')
     console.log('------------> allowing route')
     console.log('-------------------------------------------------------------------------')
@@ -254,6 +254,7 @@ app.use(function (req, res, next) {
         } else {
           console.log('no error found')
           console.log('------------> allowing route')
+          console.log('-------------------------------------------------------------------------')
           next()
         }
       })
@@ -337,6 +338,7 @@ outputObject = req.body = {
 }*/
 
 app.post('/secure/userDocument/getSettings', function(req,res) {
+  console.log('reached settings')
 	serverLogic.getUserSettings(req, res)
 })
 /* -----------------------------------------------------------------------------
@@ -393,20 +395,27 @@ app.post('/secure/meetingDocument/submit', function(req,res) {
 })
 
 /* -----------------------------------------------------------------------------
-Finds and returns ALL meeting documents belonging to a host
+Finds and returns ALL meeting documents belonging to a host according to sorting and filtering options
 Process =>
 1. search DB for all meeting documents matching the host user
 2. return a JSON.stringify(docArray) which is an array of meeting documents owned by the host user
 
 -------------------
 
-inputObject = req.body = usernameParam = {
-  host {
-    username: String,
-    ...
+inputObject = req.body = {
+  sortObj: {
+    type: 'title' || 'location' || 'date',
+    order: 'asc' || 'desc'
+  },
+  filterObj: {
+    date: {greaterThan: NUMBER, lessThan: NUMBER},
+    participants: {equals: name},
+    location: {equals: name},
+
   }
 }
-
+- no username needed since it is extracted from the authentication token
+- use lowercase for field name and uppercase for sorting order
 
 outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'

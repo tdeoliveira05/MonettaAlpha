@@ -455,7 +455,7 @@ export default class SmartDocumentMain extends React.Component {
     axios.post('http://localhost:8080/secure/meetingDocument/findByUser')
 
     .then((docArrayResponse) => {
-
+      console.log(docArrayResponse.data)
       var docArrayVal = docArrayResponse.data;
       // Reordered the meetings to display most recent first
       docArrayVal.sort((a, b) => {

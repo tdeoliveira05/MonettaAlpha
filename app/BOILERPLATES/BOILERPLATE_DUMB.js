@@ -7,8 +7,6 @@ const CLASS_NAME = ({}) => (
   </div>
 );
 
-export default CLASS_NAME
-
 
 // To implement prop-types:
 /*
