@@ -497,9 +497,10 @@ export default class SmartDocumentMain extends React.Component {
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
     axios.post('http://localhost:8080/secure/meetingDocument/updateThisDocument', {
-      targetDocument: targetDocumentVal                               // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document with the update
-
-    })                                                                // double check before deployment
+      // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
+      // with the update
+      targetDocument: targetDocumentVal
+    })
     .then((successObject) => {
       // axios.post() routes that do not return a piece of data, will once again
       // return a successObject for checking
@@ -607,7 +608,6 @@ export default class SmartDocumentMain extends React.Component {
 //-------------------------------PROP TYPES-------------------------------------
 SmartDocumentMain.propTypes = {
   currentFolder:  PropTypes.string.isRequired,
-  userTokenObj:   PropTypes.object.isRequired,
 };
 
 

@@ -19,15 +19,89 @@
       // z-index: 10
       // position: fixed
 
+  .DocumentStorageMain
+    width: 100%
+    justify-content: center
+    align-items: center
+    margin: auto
+
     .DSSearchBarWrapper
-      width: 80%
+      width: 70%
       padding-top: 30px
       margin: auto
 
-  .DocumentStorageCardsWrapper
-    width: 80%
-    margin: auto
-    padding-top: 30px
 
-    .MeetingPreviewCard
-      margin-bottom: 5px
+    .DSFilterbarWrapper
+      width: 70%
+      margin: auto
+      padding-top: 5px
+      padding-bottom: 45px
+
+      .DSFilterbarLeft
+        // position: left
+        // margin-left: 0
+        // margin: auto
+        display: inline-block
+        position: relative
+        margin: auto
+        // left: 0px
+
+      .DSFilterbarRight
+        // position: right
+        // margin-right: 0
+        margin: auto
+        display: inline-block
+        position: relative
+        float: right
+        right: 25px
+      // .DSFilterbarChips
+      //   width: 100%
+      //   display: inline-flex
+      //   flex-wrap: wrap
+
+      .DSFilterbarMenuIcon
+        display: inline-block
+        height: auto
+        position: relative
+        float: right
+        top: -5px
+        right: -205px
+
+    .FilterOptionsMenu
+      width: 100%
+      margin: auto
+      align-items: center
+      .LocationFilterField
+        display: flex
+        flex-wrap: wrap
+      .ParticipantFilterField
+        display: flex
+        flex-wrap: wrap
+      .DateToFilterField
+        display: flex
+        flex-wrap: wrap
+        width: fit-content
+      .DateFromFilterField
+        display: flex
+        flex-wrap: wrap
+        width: fit-content
+      .ClearFilterButton
+        display: flex
+        flex-wrap: wrap
+
+    .DocumentStorageCardsWrapper
+      width: 70%
+      margin: auto
+      padding-top: 10px
+      padding-bottom: 50px
+
+      .MeetingPreviewCard
+        margin-bottom: 10px
+        height: inherit
+        .DSMeetingCardTitle
+          flex-shrink: 2
+          @include mobileMedia {font-size: 1em}
+        .DSParticipantChips
+          display: inline-flex
+          flex-wrap: wrap
+          // height: auto
