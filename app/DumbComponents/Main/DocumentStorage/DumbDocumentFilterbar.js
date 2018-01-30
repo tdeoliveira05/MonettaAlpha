@@ -25,15 +25,16 @@ import SortIcon           from 'material-ui/svg-icons/content/sort';
 import CheckboxToggleON   from 'material-ui/svg-icons/toggle/check-box';
 import CheckboxToggleOFF  from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import ClearIcon          from 'material-ui/svg-icons/content/clear';
+import SwapVertIcon       from 'material-ui/svg-icons/action/swap-vert';
 
 const DumbDocumentFilterbar = (props) => {
 
   let onFilterButtonClick       = props.onFilterButtonClick;
-  let showFilterMenu          = props.showFilterMenu;
+  let showFilterMenu            = props.showFilterMenu;
   let filters                   = props.filters;
   let filterMenuAnchor          = props.filterMenuAnchor;
   let showSortMenu              = props.showSortMenu;
-  let sortBy                    = props.sortBy;
+  let sortObj                   = props.sortObj;
   let onSortButtonClick         = props.onSortButtonClick;
   let sortMenuAnchor            = props.sortMenuAnchor;
   let onSortByChange            = props.onSortByChange;
@@ -152,26 +153,17 @@ const DumbDocumentFilterbar = (props) => {
           targetOrigin={{horizontal: 'right', vertical: 'top'}}
           onRequestClose={onSortButtonClick}>
           <Menu
-            value={sortBy}
+            value={sortObj.type}
             onChange={onSortByChange}>
             <MenuItem
-              value='DateDesc'
-              primaryText='Date Descending'/>
+              value='date'
+              primaryText='Date'/>
             <MenuItem
-              value='DateAsc'
-              primaryText='Date Ascending' />
+              value='title'
+              primaryText='Meeting Name'/>
             <MenuItem
-              value='MeetingDesc'
-              primaryText='Meeting Name Descending'/>
-            <MenuItem
-              value='MeetingAsc'
-              primaryText='Meeting Name Ascending'/>
-            <MenuItem
-              value='LocDesc'
-              primaryText='Location Descending'/>
-            <MenuItem
-              value='LocAsc'
-              primaryText='Location Ascending' />
+              value='location'
+              primaryText='Location'/>
           </Menu>
         </Popover>
       );
@@ -203,6 +195,10 @@ const DumbDocumentFilterbar = (props) => {
           primary       = {false}
           icon          = {<SortIcon />}
         />
+        <IconButton
+          onClick= {(event) => onSortByChange(event, 'order')}>
+          <SwapVertIcon/>
+        </IconButton>
       </div>
       {/*<div className="DSFilterbarMenuIcon" >
         <IconMenu
@@ -233,7 +229,7 @@ DumbDocumentFilterbar.propTypes = {
   showFilterMenu:            PropTypes.bool.isRequired,
   filters:                   PropTypes.object.isRequired,
   showSortMenu:              PropTypes.bool.isRequired,
-  sortBy:                    PropTypes.string.isRequired,
+  sortObj:                   PropTypes.object.isRequired,
   sortMenuAnchor:            PropTypes.object,
   filterMenuAnchor:          PropTypes.object,
   onSortButtonClick:         PropTypes.func.isRequired,
