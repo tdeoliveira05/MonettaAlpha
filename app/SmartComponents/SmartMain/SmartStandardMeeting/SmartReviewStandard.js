@@ -36,13 +36,14 @@ class SmartReviewStandard extends React.Component {
     this.previousStep            = this.previousStep.bind(this)
     this.updateParentMeetingData = this.updateParentMeetingData.bind(this)
     this.handleNoteItemDelete    = this.handleNoteItemDelete.bind(this)
+    this.redirectToPath          = this.redirectToPath.bind(this)
   }
 
   finishMeeting () {
     console.log('finished meeting')
     this.updateParentMeetingData()
     this.props.handleIndexChange('finished')
-    this.props.handleChangeTabValue('Storage')
+    this.redirectToPath('storage')
   }
 
   previousStep () {
@@ -68,6 +69,10 @@ class SmartReviewStandard extends React.Component {
     var newNoteList = this.state.notes
     newNoteList.splice(targetIndex, 1)
     this.setState({notes: newNoteList})
+  }
+
+  redirectToPath(urlPath) {
+    this.props.history.push(urlPath)
   }
 
 
