@@ -25,6 +25,7 @@ const DumbDocumentToolbar = (props) => {
 
   let currentFolder         = props.currentFolder;
   let onCurrentFolderChange = props.onCurrentFolderChange;
+  let redirectToPath        = props.redirectToPath;
 
   return(
     <Toolbar className="DocumentStorageToolbar">
@@ -48,6 +49,7 @@ const DumbDocumentToolbar = (props) => {
       <ToolbarGroup className="DSToolbarRightGroup">
         <FlatButton
           label="Create New Meeting"
+          onClick = {() => redirectToPath('')}
           primary={true}
         />
       </ToolbarGroup>
@@ -60,6 +62,7 @@ const DumbDocumentToolbar = (props) => {
 DumbDocumentToolbar.propTypes = {
   currentFolder:          PropTypes.string.isRequired,
   onCurrentFolderChange:  PropTypes.func.isRequired,
+  redirectToPath:         PropTypes.func.isRequired,
 };
 
 export default DumbDocumentToolbar
