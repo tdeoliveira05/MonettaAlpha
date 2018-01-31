@@ -18,6 +18,7 @@ const DumbConductStandard = ({
   handleChange,
   meetingInfoHeading,
   setRef,
+  setRefTextField,
   handleTypeClick,
   deleteNoteItem,
   nextStep,
@@ -165,6 +166,8 @@ const DumbConductStandard = ({
           <TextField
             underlineShow = {true}
             name = 'tempItemText'
+            autoFocus
+            ref = {setRefTextField}
             value = {tempItemText}
             onChange = {handleChange}
             hintText = 'Speak to Monetta or type notes here'

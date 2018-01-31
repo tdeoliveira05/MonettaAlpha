@@ -45,6 +45,7 @@ class SmartConductStandard extends React.Component {
     this.getAndUpdateDuration   = this.getAndUpdateDuration.bind(this)
     this.formatDuration         = this.formatDuration.bind(this)
     this.setRef                 = this.setRef.bind(this)
+    this.setRefTextField        = this.setRefTextField.bind(this)
     this.updateMeetingData      = this.updateMeetingData.bind(this)
     this.changeItemType         = this.changeItemType.bind(this)
   }
@@ -71,6 +72,10 @@ class SmartConductStandard extends React.Component {
       targetBottomScrollElement.scrollTop = targetBottomScrollElement.scrollHeight
       this.setState({scrollToBottom: false})
     }
+    //autoFocuses the text field
+    if (!this.textFieldRef.state.isFocused) {
+      this.textFieldRef.focus()
+    }
 
   }
 
@@ -78,6 +83,10 @@ class SmartConductStandard extends React.Component {
     //this function grabs the ref property of the notes list to force the component
     //to scroll to the bottom when it is updated
     this.scrollRef = ref
+  }
+
+  setRefTextField (ref) {
+    this.textFieldRef = ref
   }
 
   nextStep () {
@@ -202,6 +211,7 @@ class SmartConductStandard extends React.Component {
           noteList               = {this.state.notes}
           meetingInfoHeading     = {meetingInfoHeading}
           setRef                 = {this.setRef}
+          setRefTextField        = {this.setRefTextField}
           goalList               = {goalList}
           categoryList           = {this.props.categoryList} /**************************************NEEDS FIX*****/
           selectedIndex          = {this.state.selectedIndex}
