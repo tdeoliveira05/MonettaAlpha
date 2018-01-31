@@ -64,7 +64,6 @@ export default class SmartDocumentMain extends React.Component {
     this.handleStarredChange            = this.handleStarredChange.bind(this)
     this.handleEditButtonClick          = this.handleEditButtonClick.bind(this)
     this.handleSaveButtonClick          = this.handleSaveButtonClick.bind(this)
-    // this.handleCancelEditButtonClick    = this.handleCancelEditButtonClick.bind(this)
     this.handleMoveToTrashButtonClick   = this.handleMoveToTrashButtonClick.bind(this)
     this.handleDeleteForeverClick       = this.handleDeleteForeverClick.bind(this)
     this.handleRequestChipDelete        = this.handleRequestChipDelete.bind(this)
@@ -93,8 +92,7 @@ export default class SmartDocumentMain extends React.Component {
   }
 
   handleStarredChange (meetingID) {
-    // Can't use index to identify target meeting because .filter() restarts index
-    // console.log(meetingID);
+    console.log(meetingID);
     var newDocArray = this.state.docArray;
     var targetMeeting = newDocArray.filter((meeting) => {
       return meeting._id === meetingID
@@ -226,31 +224,6 @@ export default class SmartDocumentMain extends React.Component {
 
     this.setState({meetingCardEditEnabled})
   }
-
-  // handleCancelEditButtonClick(event, targetMeetingID, targetIndex) {
-  //   let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
-  //   let newDocArray = Object.assign({}, this.state.docArray)
-  //   let newTempDocArray = this.state.tempDocArray;
-  //   console.log(newTempDocArray[targetIndex])
-  //   console.log(newDocArray[targetIndex])
-  //   newTempDocArray[targetIndex] = newDocArray[targetIndex]
-  //   //reset the changes in the temp array
-  //   this.setState({tempDocArray: newTempDocArray})
-  //   meetingCardEditEnabled[targetMeetingID] = false;
-  //   this.setState({meetingCardEditEnabled})
-  //   console.log('You pressed the cancel button')
-  // }
-
-  // determineMeetingCardStyle(meetingTargetID) {
-  //   let index = this.state.meetingPreviewCards.findIndex((meeting) => {
-  //     meeting.meetingID = meetingTargetID
-  //   })
-  //   if (this.state.meetingPreviewCards[index].expanded) {
-  //     return this.styles.expandedCard
-  //   } else {
-  //     return this.styles.unExpandedCard
-  //   }
-  // }
 
   handleMoveToTrashButtonClick(event, targetMeetingID) {
 
@@ -451,6 +424,7 @@ export default class SmartDocumentMain extends React.Component {
 
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
+    console.log(targetDocumentVal);
     axios.post('http://localhost:8080/secure/meetingDocument/updateThisDocument', {
       // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
       // with the update
