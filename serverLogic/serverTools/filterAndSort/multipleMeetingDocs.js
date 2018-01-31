@@ -69,7 +69,6 @@ module.exports = function (hostUsernameObj, filterAndSortObj) {
     }
 
     if (totalDocs) {
-      console.log(totalDocs)
       resolve(totalDocs)
     } else {
       reject('Error(findAndSort.multipleMeetingDocs.js): totalDocs is undefined')

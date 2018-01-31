@@ -469,8 +469,8 @@ outputObject = res.data = sucessObject = {
 }
 */
 
-app.post('/secure/meetingDocument/updateThisDocument', function(req,res){
-	serverLogic.updateThisMeetingDoc(req, res)
+app.post('/secure/meetingDocument/overwriteThisDocument', function(req,res){
+	serverLogic.overwriteThisMeetingDoc(req, res)
 })
 
 /* -----------------------------------------------------------------------------

@@ -75,7 +75,7 @@ export default class SmartDocumentMain extends React.Component {
     //Axios Route Functions
     this.getAllMeetingDocs              = this.getAllMeetingDocs.bind(this)
     this.deleteThisMeetingDoc           = this.deleteThisMeetingDoc.bind(this)
-    this.updateThisMeetingDoc           = this.updateThisMeetingDoc.bind(this)
+    this.overwriteThisMeetignDoc           = this.overwriteThisMeetignDoc.bind(this)
   }
 
   //--------------------------LifeCycle-----------------------------------------
@@ -101,7 +101,7 @@ export default class SmartDocumentMain extends React.Component {
     targetMeeting[0].metaData.starred = (targetMeeting[0].metaData.starred ? false : true);
 
     this.setState({newDocArray});
-    this.updateThisMeetingDoc(targetMeeting[0]);
+    this.overwriteThisMeetignDoc(targetMeeting[0]);
   }
 
   handleFilterButtonClick(event) {
@@ -234,7 +234,7 @@ export default class SmartDocumentMain extends React.Component {
       targetMeeting[0].metaData.trash = (targetMeeting[0].metaData.trash ? false : true);
 
       this.setState({newDocArray});
-      this.updateThisMeetingDoc(targetMeeting[0]);
+      this.overwriteThisMeetignDoc(targetMeeting[0]);
 
       // Turns off edit mode so that the card isn't expanded in trash folder
       let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
@@ -260,6 +260,7 @@ export default class SmartDocumentMain extends React.Component {
 
     let newDocArray = this.state.docArray;
 
+    /*
     let hasEmptyNote = true;
     while (hasEmptyNote) {
       let lastIndex = newDocArray[targetMeetingIndex].notes.length - 1;
@@ -269,10 +270,11 @@ export default class SmartDocumentMain extends React.Component {
         hasEmptyNote = false
       }
     }
+    */
 
     let targetDocument = newDocArray[targetMeetingIndex]
 
-    this.updateThisMeetingDoc(targetDocument)
+    this.overwriteThisMeetignDoc(targetDocument)
 
     this.setState({meetingCardEditEnabled})
   }
@@ -422,10 +424,10 @@ export default class SmartDocumentMain extends React.Component {
     })
   }
 
-  updateThisMeetingDoc (targetDocumentVal) {
+  overwriteThisMeetignDoc (targetDocumentVal) {
     const self = this
     console.log(targetDocumentVal);
-    axios.post('http://localhost:8080/secure/meetingDocument/updateThisDocument', {
+    axios.post('http://localhost:8080/secure/meetingDocument/overwriteThisDocument', {
       // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
       // with the update
       targetDocument: targetDocumentVal
@@ -439,7 +441,7 @@ export default class SmartDocumentMain extends React.Component {
     .catch((error) => {
       // can't forget the console.log(error) to know if something is up -
       // how can you put out a fire without knowing its there right? lol
-      console.log('ERROR(updateThisMeetingDoc): ' + error)
+      console.log('ERROR(overwriteThisMeetignDoc): ' + error)
     })
   }
 

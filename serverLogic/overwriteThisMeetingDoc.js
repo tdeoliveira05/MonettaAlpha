@@ -4,22 +4,18 @@ const serverTools = requireDir('./serverTools', {recurse: true}) // special node
 const Meeting = require('../models/meetingModel')
 
 module.exports = function (updateReq, res) {
+  console.log('updating req:')
+  console.log(updateReq.body.targetDocument)
 
   // get info of whoever is trying to make the request
   serverTools.authenticate.transformJWT(updateReq)
-  .then((userInfo) => {
+  .then(() => {
     // make sure that the person making that request is the person that hosted that meeting
-    return serverTools.find.singleDoc(Meeting, {'host.username': userInfo.username, '_id': updateReq.body.targetDocument._id})
+    return serverTools.overwrite.thisMeetingDoc(updateReq.body.targetDocument)
   })
-  .then((meetingDoc) => {
-    console.log('old doc')
-    console.log(meetingDoc)
-    // update that doc
-    return serverTools.update.thisMeetingDoc(meetingDoc)
-  })
-  .then((newMeetingDoc) => {
+  .then((returnObj) => {
     console.log('sucessful update')
-    console.log(newMeetingDoc)
+    console.log(returnObj)
     res.send({success: true, errorText: ''})
   })
   .catch((error) => {
