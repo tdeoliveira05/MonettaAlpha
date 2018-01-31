@@ -20,12 +20,17 @@ class SmartDocumentStorage extends React.Component {
         'Crash analysis' ],
 
     };
-    this.handleCurrentFolderChange = this.handleCurrentFolderChange.bind(this)
+    this.handleCurrentFolderChange  = this.handleCurrentFolderChange.bind(this)
+    this.redirectToPath             = this.redirectToPath.bind(this)
   }
 
   handleCurrentFolderChange(event, value){
     this.setState({currentFolder: value});
     // console.log(this.state.currentFolder);
+  }
+
+  redirectToPath(urlPath) {
+    this.props.history.push(urlPath)
   }
 
   render () {
@@ -35,8 +40,9 @@ class SmartDocumentStorage extends React.Component {
     return(
       <div className='DocumentStorageWrapper'>
         <SmartDocumentHeader
-          handleCurrentFolderChange={this.handleCurrentFolderChange}
-          currentFolder={this.state.currentFolder}
+          handleCurrentFolderChange     = {this.handleCurrentFolderChange}
+          currentFolder                 = {this.state.currentFolder}
+          redirectToPath                = {this.redirectToPath}
         />
         <SmartDocumentMain
           currentFolder = {this.state.currentFolder}

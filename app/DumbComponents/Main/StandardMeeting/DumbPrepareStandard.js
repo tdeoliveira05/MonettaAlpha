@@ -44,7 +44,7 @@ const DumbPrepareStandard = ({
         onChange      = {handleChange}
         hintStyle     = {{textAlign: 'center', fontSize: '1.7em'}}
         inputStyle    = {{textAlign: 'center', fontSize: '1.5em', fontWeight: 'bold'}}
-        style         = {{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '300px'}}
+        style         = {{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}
       />
       <Divider style = {{width: '100%'}}/>
       <TextField
@@ -215,7 +215,7 @@ const DumbPrepareStandard = ({
           </div>
         </div>
       </div>
-      <div style = {{height: '20px', color: 'red'}}> 
+      <div style = {{height: '20px', color: 'red'}}>
         {goalError}
         {participantError}
         {titleError}

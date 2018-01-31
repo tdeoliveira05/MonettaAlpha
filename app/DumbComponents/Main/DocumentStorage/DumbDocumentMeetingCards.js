@@ -142,8 +142,17 @@ const DumbDocumentMeetingCards = (props) => {
       top: '-50px',
       width: '80%',
     },
+    addParticipantsButton: {
+      position: 'relative',
+      bottom: '2px',
+      left: '-7px',
+    },
+    cardFooterActions: {
+      width: '100%',
+      display: 'inline',
+    },
     editButton: {
-      float: 'right',
+      float: 'left',
       position: 'relative',
       bottom: '-25px',
     },
@@ -151,18 +160,13 @@ const DumbDocumentMeetingCards = (props) => {
       float: 'right',
       position: 'relative',
       bottom: '-20px',
-      right: '-150px',
+      // right: '-150px',
     },
     trashForeverButton: {
       float: 'right',
       position: 'relative',
       bottom: '-20px',
-      right: '-175px',
-    },
-    addParticipantsButton: {
-      position: 'relative',
-      bottom: '2px',
-      left: '-7px',
+      // right: '-175px',
     }
   }
 
@@ -445,7 +449,8 @@ const DumbDocumentMeetingCards = (props) => {
                   )
                 })}
               </div>
-              <CardActions>
+              <CardActions
+                style = {styles.cardFooterActions}>
 
                 {{
                   true: (

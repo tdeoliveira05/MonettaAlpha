@@ -9,32 +9,6 @@ import DumbDocumentFilterbar    from '../../../DumbComponents/Main/DocumentStora
 import DumbDocumentMeetingCards from '../../../DumbComponents/Main/DocumentStorage/DumbDocumentMeetingCards.js';
 
 
-
-// Importing Material-UI Components
-import IconButton   from 'material-ui/IconButton';
-import IconMenu     from 'material-ui/IconMenu';
-import FontIcon     from 'material-ui/FontIcon';
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton   from 'material-ui/FlatButton';
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
-import MenuItem     from 'material-ui/MenuItem';
-import TextField    from 'material-ui/TextField';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import Checkbox     from 'material-ui/Checkbox';
-import Paper        from 'material-ui/Paper';
-import Chip         from 'material-ui/Chip';
-
-
-// Importing Material-UI SVG-Icons
-import MoreVertIcon   from 'material-ui/svg-icons/navigation/more-vert';
-import MenuIcon       from 'material-ui/svg-icons/navigation/menu';
-import FilterListIcon from 'material-ui/svg-icons/content/filter-list';
-import SortIcon       from 'material-ui/svg-icons/content/sort';
-import StarToggleON   from 'material-ui/svg-icons/toggle/star';
-import StarToggleOFF  from 'material-ui/svg-icons/toggle/star-border';
-
-
-
 export default class SmartDocumentMain extends React.Component {
   constructor(props) {
     super(props)
@@ -55,7 +29,10 @@ export default class SmartDocumentMain extends React.Component {
         dateTo:   new Date()
       },
       showSortMenu: false,
-      sortBy: 'DateDesc',
+      sortObj: {
+        type: 'date',
+        order: 'desc'
+      },
       allLocations: [],
       allParticipants: [],
       participantProfiles: {},
@@ -87,7 +64,6 @@ export default class SmartDocumentMain extends React.Component {
     this.handleStarredChange            = this.handleStarredChange.bind(this)
     this.handleEditButtonClick          = this.handleEditButtonClick.bind(this)
     this.handleSaveButtonClick          = this.handleSaveButtonClick.bind(this)
-    // this.handleCancelEditButtonClick    = this.handleCancelEditButtonClick.bind(this)
     this.handleMoveToTrashButtonClick   = this.handleMoveToTrashButtonClick.bind(this)
     this.handleDeleteForeverClick       = this.handleDeleteForeverClick.bind(this)
     this.handleRequestChipDelete        = this.handleRequestChipDelete.bind(this)
@@ -105,7 +81,8 @@ export default class SmartDocumentMain extends React.Component {
   //--------------------------LifeCycle-----------------------------------------
   //----------------------------------------------------------------------------
   componentWillMount() {
-    this.getAllMeetingDocs();
+    let sortObjVal = this.state.sortObj
+    this.getAllMeetingDocs(sortObjVal);
   }
 
   //------------------------Event Handlers--------------------------------------
@@ -115,8 +92,7 @@ export default class SmartDocumentMain extends React.Component {
   }
 
   handleStarredChange (meetingID) {
-    // Can't use index to identify target meeting because .filter() restarts index
-    // console.log(meetingID);
+    console.log(meetingID);
     var newDocArray = this.state.docArray;
     var targetMeeting = newDocArray.filter((meeting) => {
       return meeting._id === meetingID
@@ -148,7 +124,6 @@ export default class SmartDocumentMain extends React.Component {
     let newParticipantsPerMeeting = this.state.participantsPerMeeting;
 
     newDocArray[meetingIndex].participants.push(this.state.participantProfiles[participant])
-
     newParticipantsPerMeeting[meetingIndex].splice(0, 0, participant)
 
     this.setState({newDocArray})
@@ -178,43 +153,21 @@ export default class SmartDocumentMain extends React.Component {
   }
 
   handleSortByChange(event, value) {
-    this.setState({sortBy: value})
-    let newDocArray = this.state.docArray;
-    // SORTING DISPLAYED MEETINGS ----------------------------------------------
-    switch(value) {
-      case 'DateDesc':
-        newDocArray.sort((a, b) => {
-          return new Date(b.date) - new Date(a.date)
-        })
-        break
-      case 'DateAsc':
-        newDocArray.sort((a, b) => {
-          return new Date(a.date) - new Date(b.date)
-        })
-        break
-      case 'MeetingDesc':
-        newDocArray.sort((a, b) => {
-          return b.title.toLowerCase() > a.title.toLowerCase()
-        })
-        break
-      case 'MeetingAsc':
-        newDocArray.sort((a, b) => {
-          return a.title.toLowerCase() > b.title.toLowerCase()
-        })
-        break
-      case 'LocDesc':
-        newDocArray.sort((a, b) => {
-          return b.location.toLowerCase() > a.location.toLowerCase()
-        })
-        break
-      case 'LocAsc':
-        newDocArray.sort((a, b) => {
-          return a.location.toLowerCase() > b.location.toLowerCase()
-        })
-        break
-    }
+    let newSortObj = this.state.sortObj;
 
-    this.setState({docArray: newDocArray});
+    if (value === 'title' || value === 'location') {
+      newSortObj.type = value;
+      // Set default order to 'asc' for 'location' and 'title'
+      newSortObj.order = 'asc';
+    } else if (value === 'date') {
+      newSortObj.type = value;
+      newSortObj.order = 'desc';
+    } else {
+      // if the value is 'order'
+      newSortObj.order === 'asc' ? newSortObj.order = 'desc' : newSortObj.order = 'asc';
+    }
+    this.setState({newSortObj});
+    this.getAllMeetingDocs(newSortObj);
   }
 
   handleLocationFilterChange(event, target, value) {
@@ -271,31 +224,6 @@ export default class SmartDocumentMain extends React.Component {
 
     this.setState({meetingCardEditEnabled})
   }
-
-  // handleCancelEditButtonClick(event, targetMeetingID, targetIndex) {
-  //   let meetingCardEditEnabled = Object.assign({}, this.state.meetingCardEditEnabled);
-  //   let newDocArray = Object.assign({}, this.state.docArray)
-  //   let newTempDocArray = this.state.tempDocArray;
-  //   console.log(newTempDocArray[targetIndex])
-  //   console.log(newDocArray[targetIndex])
-  //   newTempDocArray[targetIndex] = newDocArray[targetIndex]
-  //   //reset the changes in the temp array
-  //   this.setState({tempDocArray: newTempDocArray})
-  //   meetingCardEditEnabled[targetMeetingID] = false;
-  //   this.setState({meetingCardEditEnabled})
-  //   console.log('You pressed the cancel button')
-  // }
-
-  // determineMeetingCardStyle(meetingTargetID) {
-  //   let index = this.state.meetingPreviewCards.findIndex((meeting) => {
-  //     meeting.meetingID = meetingTargetID
-  //   })
-  //   if (this.state.meetingPreviewCards[index].expanded) {
-  //     return this.styles.expandedCard
-  //   } else {
-  //     return this.styles.unExpandedCard
-  //   }
-  // }
 
   handleMoveToTrashButtonClick(event, targetMeetingID) {
 
@@ -449,18 +377,18 @@ export default class SmartDocumentMain extends React.Component {
 
   //-------------------------Axios Route Functions------------------------------
   //----------------------------------------------------------------------------
-  getAllMeetingDocs () {
+  getAllMeetingDocs (sortObjVal) {
     const self = this
-
-    axios.post('http://localhost:8080/secure/meetingDocument/findByUser')
+    axios.post('http://localhost:8080/secure/meetingDocument/findByUser', {
+      sortObj: sortObjVal
+    })
 
     .then((docArrayResponse) => {
-      console.log(docArrayResponse.data)
       var docArrayVal = docArrayResponse.data;
       // Reordered the meetings to display most recent first
-      docArrayVal.sort((a, b) => {
-        return new Date(b.date) - new Date(a.date)
-      });
+      // docArrayVal.sort((a, b) => {
+      //   return new Date(b.date) - new Date(a.date)
+      // });
 
       this.intializeStateVariables(docArrayVal);
       this.setState({docArray: docArrayVal});
@@ -496,6 +424,7 @@ export default class SmartDocumentMain extends React.Component {
 
   updateThisMeetingDoc (targetDocumentVal) {
     const self = this
+    console.log(targetDocumentVal);
     axios.post('http://localhost:8080/secure/meetingDocument/updateThisDocument', {
       // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
       // with the update
@@ -563,7 +492,7 @@ export default class SmartDocumentMain extends React.Component {
           filters                   = {this.state.filters}
           filterMenuAnchor          = {this.state.filterMenuAnchor}
           showSortMenu              = {this.state.showSortMenu}
-          sortBy                    = {this.state.sortBy}
+          sortObj                   = {this.state.sortObj}
           sortMenuAnchor            = {this.state.sortMenuAnchor}
           onSortButtonClick         = {this.handleSortButtonClick}
           onSortByChange            = {this.handleSortByChange}
