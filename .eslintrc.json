@@ -76,7 +76,7 @@
         "for-direction": "error",
         "func-call-spacing": "error",
         "func-name-matching": "error",
-        "func-names": "as-needed",
+        "func-names": "error",
         "func-style": [
             "error",
             "expression"
