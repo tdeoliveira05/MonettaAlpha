@@ -1,33 +1,39 @@
-// THIS IS THE SERVER [ROUTER FILE] //
+// THIS IS THE SERVER [ROUTER FILE] //------------------------------------------
+// initializing express app + http server + web socket-----------------------
 const express = require('express')
-const cors = require('cors')
-const axios = require('axios')
-const path = require('path')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
-const assert = require('assert')
-const bcrypt = require('bcrypt')
-const watson = require('watson-developer-cloud')
-const config = require('config')
-const yes = require('yes-https')
+const app     = express()                      // APP
+const server  = require('http').Server(app)    // SERVER
+const io      = require('socket.io')(server)   // WEBSOCKET
+//------------------------------------------------------------------------------
+const cors                 = require('cors')
+const axios                = require('axios')
+const path                 = require('path')
+const bodyParser           = require('body-parser')
+const mongoose             = require('mongoose')
+const assert               = require('assert')
+const bcrypt               = require('bcrypt')
+const watson               = require('watson-developer-cloud')
+const config               = require('config')
+const yes                  = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
-const Users = require('./models/userModel.js')
-const Meetings = require('./models/meetingModel.js')
-const Feedbacks = require('./models/feedbackModel.js')
-const Codes = require('./models/codeModel.js')
-const jwt = require('jsonwebtoken')
-
-//Amazon requirements
-const AWS = require('aws-sdk')
-AWS.config.region = process.env.REGION
-
-//initialize general app
-const app = express();
-
+const Users                = require('./models/userModel.js')
+const Meetings             = require('./models/meetingModel.js')
+const Feedbacks            = require('./models/feedbackModel.js')
+const Codes                = require('./models/codeModel.js')
+const jwt                  = require('jsonwebtoken')
+const fs                   = require('fs')
+const googleCloudSpeechAPI = require('@google-cloud/speech')
+//------------------------------------------------------------------------------
 // Import entire directory of server logic and tools
-const requireDir = require('require-dir')
-const serverLogic = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
+const requireDir    = require('require-dir')
+const serverLogic   = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
 const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
+
+
+// Initialize speech client and pass service_account.json to it for authentication
+const speech = new googleCloudSpeechAPI.SpeechClient({
+  keyFilename: path.join(__dirname, './config/service_account.json')
+})
 
 //Establishing middleware
 app.use(cors())
@@ -37,15 +43,15 @@ app.use(bodyParser.json())
 const indexPath = path.join(__dirname, './dist/index.html');
 const publicPath = express.static(path.join(__dirname, './dist'));
 
-const sslPath = path.join(__dirname, './dist/well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8');
-const sslPath1 = path.join(__dirname, './dist/well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E');
+//const sslPath = path.join(__dirname, './dist/well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8');
+//const sslPath1 = path.join(__dirname, './dist/well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E');
 
 app.use('/', publicPath);
 
 app.get('/', function(_,res){ res.sendFile(indexPath) });
 
-app.get('/.well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8', function(_,res){ res.sendFile(sslPath) });
-app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E', function(_,res){ res.sendFile(sslPath1) });
+//app.get('/.well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8', function(_,res){ res.sendFile(sslPath) });
+//app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E', function(_,res){ res.sendFile(sslPath1) });
 
 //Constants from config
 const dbConfig = config.get('Customer.dbConfig');
@@ -113,7 +119,6 @@ outputObject = res.data = {
 
 app.post('/request/login',function(req, res){
   console.log('requested login')
-  console.log(req.headers)
 	serverLogic.requestLogin(req, res)
 })
 
@@ -196,11 +201,9 @@ app.post('/request/alpha', function(req, res) {
 app.post('/authenticateMe',  function(req, res) {
   var tokenArray = req.body.token.split(' ')
   var token = tokenArray[1]
-  console.log('--------------------------------------------')
+  console.log('-------------------------------------------------------------------------')
   console.log('Token found')
-  console.log('--')
   console.log('authenticating: ' + token)
-  console.log('--')
 
   jwt.verify(token, secret, (error, authData) => {
     if (error) {
@@ -211,34 +214,36 @@ app.post('/authenticateMe',  function(req, res) {
       Users.findOne({_id: authData.id})
       .then((userDoc) => {
         console.log('SUCESSFULLY AUTHENTICATED USER')
-        console.log('--------------------------------------------')
+        console.log('-------------------------------------------------------------------------')
         res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
+      })
+      .catch((error) => {
+        console.log(error)
+        console.log('-------------------------------------------------------------------------')
       })
     }
 
   })
-  console.log('--------------------------------------------')
 })
 
 // this must be after the request routes. those three routes do not need a jwt to user
 // all of the routes below NEED a jwt so we are going to authenticate that jwt before it reaches the route
 // if it is wrong we are blocking it, if it is correct we are letting it through
 app.use(function (req, res, next) {
-  console.log('-------------------- AUTHENTICATION MIDDLEWARE ------------------------')
+  console.log('-------------------- AUTHENTICATION MIDDLEWARE --------------------------')
   console.log('path: ' + req.path)
   if (!req.path.includes('secure')) {
     console.log('path does not need secure authorization')
     console.log('------------> allowing route')
-    console.log('-------------------------------------------------------------------------')
     next()
   }
   console.log('--------------------------------')
 
   if (!req.headers.access_token) {
-      console.log(req.headers)
       console.log('ERROR')
-      console.log('no access_token found - route blocked')
-
+      console.log('no access_token found - route blocked:')
+      console.log(req.path)
+      res.sendStatus(500)
   } else {
 
     const bearerHeader = req.headers.access_token
@@ -338,7 +343,6 @@ outputObject = req.body = {
 }*/
 
 app.post('/secure/userDocument/getSettings', function(req,res) {
-  console.log('reached settings')
 	serverLogic.getUserSettings(req, res)
 })
 /* -----------------------------------------------------------------------------
@@ -486,12 +490,72 @@ app.post('/secure/feedbackDocument/submit', function(req,res) {
 })
 
 
+
 /* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
-app.get('*', function (request, response){
+app.get('*', function (request, response) {
     console.log('--ALL PURPOSE ROUTING--')
     response.sendFile(indexPath)
 })
+
+/* ------------------------------WEB SOCKET-----------------------------------*/
+
+io.on('connection', function (socket) {
+// This is where all socket functionality and the socket's lifecyle is built
+  console.log('~ Successful web socket connected: ' + socket.id)
+  var recognizeStream = null
+
+  socket.on('startGoogleCloudSpeech', function () {
+    console.log('Google Cloud speech API initializing...')
+
+    const request = {
+      config : {
+        encoding: 'LINEAR16',
+        sampleRateHertz: '48000',
+        languageCode: 'en-US'
+      },
+      interimResults: false
+    }
+
+
+    recognizeStream = speech.streamingRecognize(request)
+    .on('error', console.error)
+    .on('data', function (data) {
+      console.log('data received')
+      console.log(data)
+      io.sockets.emit('speechData', data);
+    });
+
+  })
+
+  socket.on('audioStream', function (bufferChunk) {
+    // If statement is to avoid index.js trigerring an error because reconizeStream is not yet defined and might not have a write() function
+    //console.log(recognizeStream)
+    //console.log('---------------------------------------')
+    if (recognizeStream !== null) {
+
+      recognizeStream.write('dsg')
+
+
+      // alternatives:
+      //fs.createReadStream(bufferChunk).pipe(recognizeStream)
+      //recognizeStream.write(bufferChunk)
+    }
+
+  })
+
+  socket.on('stopGoogleCloudSpeech', function () {
+    console.log('Google Cloud speech API shutting down...')
+    // If statement is for same reason as above in socket.on('audioStream', funct...)
+    if (recognizeStream !== null) {
+      recognizeStream.end()
+      recognizeStream = null
+    }
+  })
+
+
+})
+
 
 //----------------------------------------------------------------------------//
 //---------------------------UTILITY FUNCTIONS--------------------------------//
@@ -511,6 +575,6 @@ serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111',
 //----------------------------------------------------------------------------//
 //------------------------------SERVER PORT-----------------------------------//
 
-app.listen(process.env.PORT || port, function() {
+server.listen(process.env.PORT || port, function() {
 	console.log('App listening on port', port)
 })

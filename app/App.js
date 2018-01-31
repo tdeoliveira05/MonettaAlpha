@@ -6,6 +6,12 @@ import {withRouter} from 'react-router-dom'
 import SmartHome from './SmartComponents/SmartHome.js'
 import SmartMain from './SmartComponents/SmartMain.js'
 
+//------------------------- Initialize web socket ----------------------------//
+
+var socketInit
+
+//----------------------------------------------------------------------------//
+
 class App extends React.Component {
   constructor(props) {
 		super(props);
@@ -40,6 +46,7 @@ class App extends React.Component {
     this.authenticateMe         = this.authenticateMe.bind(this)
     this.signOut                = this.signOut.bind(this)
     this.initializeUserSettings = this.initializeUserSettings.bind(this)
+    this.initializeWebSocket    = this.initializeWebSocket.bind(this)
 	}
 
   componentWillMount () {
@@ -61,9 +68,11 @@ class App extends React.Component {
         console.log(successObj.data.errorText)
         this.setState({isLoggedIn: false})
       } else {
+        console.log('Welcome back!')
         localStorage.username = successObj.data.username
         localStorage.fullName = successObj.data.fullName
         this.initializeUserSettings()
+        this.initializeWebSocket()
         this.setState({isLoggedIn: true})
       }
     })
@@ -79,7 +88,7 @@ class App extends React.Component {
       axios.post('http://localhost:8080/secure/userDocument/getSettings')
       .then((resultObj) => {
         if (resultObj.data.settings) {
-          console.log(resultObj.data.settings)
+          console.log('User settings successfully loaded')
           this.setState({userSettings: resultObj.data.settings})
         } else {
           console.log('no user settings were found')
@@ -90,15 +99,20 @@ class App extends React.Component {
       })
   }
 
-
+  initializeWebSocket () {
+    console.log('initializing operations...')
+    socketInit = io('http://localhost:8080')
+  }
 
   submitUserTokenObj (userTokenObjVal) {
-    localStorage.access_token  = 'bearer ' + userTokenObjVal.token
+    localStorage.access_token    = 'bearer ' + userTokenObjVal.token
     localStorage.username        = userTokenObjVal.username
     localStorage.fullName        = userTokenObjVal.fullName
 
 
     axios.defaults.headers.common['access_token'] = localStorage.access_token
+    this.initializeWebSocket()
+
     this.setState({appLocation: 'app'})
   }
 
@@ -118,6 +132,8 @@ class App extends React.Component {
 
   render() {
     //---------------------------CONDITIONS-------------------------------------
+    var socket
+    if (socketInit) socket = socketInit
     //----------------------------RETURN----------------------------------------
     switch(this.state.appLocation) {
       case 'home':
@@ -138,6 +154,7 @@ class App extends React.Component {
             changeAppLocation  = {this.changeAppLocation}
             signOut            = {this.signOut}
             userSettings       = {this.state.userSettings}
+            socket             = {socket}
           />
         </div>
       )

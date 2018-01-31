@@ -12,11 +12,14 @@ module.exports = function (updateReq, res) {
     return serverTools.find.singleDoc(Meeting, {'host.username': userInfo.username, '_id': updateReq.body.targetDocument._id})
   })
   .then((meetingDoc) => {
+    console.log('old doc')
+    console.log(meetingDoc)
     // update that doc
     return serverTools.update.thisMeetingDoc(meetingDoc)
   })
   .then((newMeetingDoc) => {
     console.log('sucessful update')
+    console.log(newMeetingDoc)
     res.send({success: true, errorText: ''})
   })
   .catch((error) => {

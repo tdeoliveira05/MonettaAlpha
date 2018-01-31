@@ -42,7 +42,6 @@ class SmartReviewStandard extends React.Component {
     console.log('finished meeting')
     this.updateParentMeetingData()
     this.props.handleIndexChange('finished')
-    this.props.handleChangeTabValue('Storage')
   }
 
   previousStep () {

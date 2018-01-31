@@ -115,7 +115,6 @@ class SmartStandardMeeting extends React.Component {
         var MeetingComponent  = (
           <SmartReviewStandard
             handleIndexChange       = {this.handleIndexChange}
-            handleChangeTabValue    = {this.props.handleChangeTabValue}
             meetingData             = {this.state.meetingData}
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}

@@ -5,13 +5,13 @@ const config = require('config')
 
 module.exports = function (reqObj) {
   return new Promise (function(resolve, reject) {
-    console.log(reqObj.headers)
+    //console.log(reqObj.headers)
     jwt.verify(reqObj.headers.access_token.split(' ')[1], config.get('Presets.secret'), function (error, authData) {
       if (error) {
         console.log('verify JWT ERROR - ' + error)
         reject(error)
       } else {
-        console.log('return JWT user info + fullName')
+        //console.log('return JWT user info + fullName')
 
         Users.findOne({_id: authData.id})
         .then((userDoc) => {

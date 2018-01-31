@@ -15,7 +15,7 @@ module.exports = function (userReq, res) {
   })
   .then((userDoc) => {
     // extract settings from userDoc
-    console.log(userDoc)
+    // console.log(userDoc)
     var settingsObj = userDoc.settings
     settingsObj ? res.send({success: true, errorText: '', settings: settingsObj}) : res.send({success: true, errorText: 'no settings ever set', settings: false})
   })

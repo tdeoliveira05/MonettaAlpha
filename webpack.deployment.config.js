@@ -36,8 +36,7 @@ const config = {
 		  'process.env': {
 		    NODE_ENV: JSON.stringify('production')
 		  }
-		}),
-		new webpack.optimize.UglifyJsPlugin()
+		})
 	],
 	node: {
 	  fs: 'empty'
