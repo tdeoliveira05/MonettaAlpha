@@ -195,10 +195,12 @@ const DumbDocumentFilterbar = (props) => {
           primary       = {false}
           icon          = {<SortIcon />}
         />
-        <IconButton
-          onClick= {(event) => onSortByChange(event, 'order')}>
-          <SwapVertIcon/>
-        </IconButton>
+        <div className="DSFilterbarMenuIcon" >
+          <IconButton
+            onClick= {(event) => onSortByChange(event, 'order')}>
+            <SwapVertIcon/>
+          </IconButton>
+        </div>
       </div>
       {/*<div className="DSFilterbarMenuIcon" >
         <IconMenu

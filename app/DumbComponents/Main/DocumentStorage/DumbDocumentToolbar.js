@@ -40,7 +40,7 @@ const DumbDocumentToolbar = (props) => {
         >
           <MenuItem value='All Meetings'      primaryText="All Meetings"    />
           <MenuItem value='Starred Meetings'  primaryText="Starred Meetings"/>
-          <MenuItem value='Custom Category'   primaryText="Custom Category" />
+        {  /** <MenuItem value='Custom Category'   primaryText="Custom Category" /> **/}
           <MenuItem value='Trash'             primaryText='Trash'           />
         </IconMenu>
         <ToolbarTitle text={currentFolder}/>
