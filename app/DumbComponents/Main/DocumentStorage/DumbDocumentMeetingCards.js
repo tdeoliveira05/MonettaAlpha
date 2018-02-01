@@ -80,9 +80,10 @@ const DumbDocumentMeetingCards = (props) => {
     },
     headerTextField: {
       fontSize: '21px',
-      width: '100%',
-       position: 'relative',
-        top: '-20px'
+      width: '85%',
+      cursor: 'allowed',
+      position: 'relative',
+      top: '-20px'
     },
     date: {
       // color: '#6699ff',
@@ -92,8 +93,9 @@ const DumbDocumentMeetingCards = (props) => {
     },
     location: {
       position: 'relative',
-      width: '100%',
+      width: '85%',
       top: '-30px',
+      cursor: 'allowed',
     },
     chip: {
       margin:   '4px',
@@ -125,6 +127,7 @@ const DumbDocumentMeetingCards = (props) => {
     },
     noteTextField: {
       width: '100%',
+      cursor: 'allowed',
     },
     addNoteButton: {
       position: 'relative',
@@ -199,6 +202,7 @@ const DumbDocumentMeetingCards = (props) => {
                   className="DSMeetingCardTitle"
                   underlineShow={meetingCardEditEnabled[meeting._id]}
                   multiLine = {true}
+                  hintText = "Enter Meeting Title"
                   disabled = {!meetingCardEditEnabled[meeting._id]}
                   style={styles.headerTextField}
                   name = {JSON.stringify(index)}
@@ -212,6 +216,7 @@ const DumbDocumentMeetingCards = (props) => {
                 <TextField
                   underlineShow={meetingCardEditEnabled[meeting._id]}
                   multiLine = {true}
+                  hintText = "Enter Location"
                   disabled = {!meetingCardEditEnabled[meeting._id]}
                   style = {styles.location}
                   name = {JSON.stringify(index)}
@@ -324,6 +329,7 @@ const DumbDocumentMeetingCards = (props) => {
                       <TextField
                         underlineShow={meetingCardEditEnabled[meeting._id]}
                         multiLine = {true}
+                        hintText = "Type note here"
                         disabled = {!meetingCardEditEnabled[meeting._id]}
                         name = {JSON.stringify(noteIndex)}
                         value = {note.text}
@@ -376,6 +382,7 @@ const DumbDocumentMeetingCards = (props) => {
                       <TextField
                         underlineShow={meetingCardEditEnabled[meeting._id]}
                         multiLine = {true}
+                        hintText = "Type note here"
                         disabled = {!meetingCardEditEnabled[meeting._id]}
                         name = {JSON.stringify(noteIndex)}
                         value = {note.text}
@@ -426,6 +433,7 @@ const DumbDocumentMeetingCards = (props) => {
                       <TextField
                         underlineShow={meetingCardEditEnabled[meeting._id]}
                         multiLine = {true}
+                        hintText = "Type note here"
                         disabled = {!meetingCardEditEnabled[meeting._id]}
                         name = {JSON.stringify(noteIndex)}
                         value = {note.text}

@@ -92,7 +92,6 @@ export default class SmartDocumentMain extends React.Component {
   }
 
   handleStarredChange (meetingID) {
-    console.log(meetingID);
     var newDocArray = this.state.docArray;
     var targetMeeting = newDocArray.filter((meeting) => {
       return meeting._id === meetingID
@@ -260,15 +259,16 @@ export default class SmartDocumentMain extends React.Component {
 
     let newDocArray = this.state.docArray;
 
-
     let hasEmptyNote = true;
-    while (hasEmptyNote) {
+    let endLoop = 0;
+    while (hasEmptyNote && newDocArray[targetMeetingIndex].notes.length !== 0 ) {
       let lastIndex = newDocArray[targetMeetingIndex].notes.length - 1;
       if (newDocArray[targetMeetingIndex].notes[lastIndex].text === '') {
         newDocArray[targetMeetingIndex].notes.pop()
       } else {
         hasEmptyNote = false
       }
+      endLoop += 1
     }
 
 
@@ -426,7 +426,7 @@ export default class SmartDocumentMain extends React.Component {
 
   overwriteThisMeetingDoc (targetDocumentVal) {
     const self = this
-    console.log(targetDocumentVal);
+    // console.log(targetDocumentVal);
     axios.post('http://localhost:8080/secure/meetingDocument/overwriteThisDocument', {
       // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
       // with the update
