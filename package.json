@@ -93,7 +93,7 @@
   "homepage": "https://github.com/ColinLMacLeod1/MonetaMVP#readme",
   "devDependencies": {
     "eslint": "^4.16.0",
-    "eslint-plugin-react": "^7.6.0",
+    "eslint-plugin-react": "^7.6.1",
     "install-peers": "^1.0.2"
   }
 }
