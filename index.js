@@ -511,10 +511,10 @@ io.on('connection', function (socket) {
     const request = {
       config : {
         encoding: 'LINEAR16',
-        sampleRateHertz: '48000',
+        sampleRateHertz: '16000',
         languageCode: 'en-US'
       },
-      interimResults: false
+      interimResults: true
     }
 
 
@@ -522,7 +522,7 @@ io.on('connection', function (socket) {
     .on('error', console.error)
     .on('data', function (data) {
       console.log('data received')
-      console.log(data)
+      console.log(data.results[0])
       io.sockets.emit('speechData', data);
     });
 
@@ -534,7 +534,7 @@ io.on('connection', function (socket) {
     //console.log('---------------------------------------')
     if (recognizeStream !== null) {
 
-      recognizeStream.write('dsg')
+      recognizeStream.write(bufferChunk)
 
 
       // alternatives:

@@ -5,7 +5,7 @@ import FontIcon from 'material-ui/FontIcon'
 import FlatButton from 'material-ui/FlatButton'
 import axios from 'axios'
 import Snackbar from 'material-ui/Snackbar'
-import {Link, Route, IndexRoute, withRouter, Switch, BrowserRouter as Router} from 'react-router-dom'
+import { Route, withRouter} from 'react-router-dom'
 
 import SmartStandardMeeting from './SmartMain/SmartStandardMeeting.js'
 import SmartCustomMeeting from './SmartMain/SmartCustomMeeting.js'
@@ -20,6 +20,16 @@ import SmartHelp from './SmartMain/SmartHelp.js'
 import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
+//for activating mic + STT----------------------------------------------------
+
+import getUserMedia from 'get-user-media-promise'
+import MicrophoneStream from 'microphone-stream'
+var micStream = new MicrophoneStream() // creates an instance of MicrophoneStream, this will hold the microphone input and will send to backend
+var socket
+var context, processor, input
+var AudioContext = window.AudioContext || window.webkitAudioContext
+
+//-----------------------------------------------------------------------------
 class SmartMain extends React.Component {
   constructor(props) {
     super(props)
@@ -127,7 +137,105 @@ class SmartMain extends React.Component {
     this.setState({path: pathVal})
   }
 
+  //--------------------------------------------------------------------------//
+  //---------------VOICE RECOGNITION PROTOCOLS AND FUNCTIONS------------------//
 
+  startSpeechStream () {
+    // Check this with Safari (https://www.npmjs.com/package/microphone-stream)
+    // create a read stream that will read the .raw audio file being created by the audio input and send it up to the server
+    console.log('Starting voice recognition...')
+
+    //initialize speech api and broaden global scope
+    this.props.socket.emit('startGoogleCloudSpeech')
+
+    const self = this
+
+    // code used from https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
+    // AudioContext already defined, grabs the audio of the window
+
+    // initiates an instance
+    context = new AudioContext()
+
+    //buffer Process
+    processor = context.createScriptProcessor(2048, 1, 1)
+    processor.connect(context.destination)
+    context.resume()
+
+
+    navigator.mediaDevices.getUserMedia({video: false, audio: true})
+    .then((stream) => {
+      input = context.createMediaStreamSource(stream)
+      input.connect(processor)
+
+      processor.onaudioprocess = (audio) => {
+        var buffer = audio.inputBuffer.getChannelData(0)
+        //--------------------------------------------
+        // Transforming a Float32 buffer into an int16 buffer for processing
+        let l = buffer.length
+        let buf = new Int16Array(l/3)
+
+        while (l--) {
+          if (l % 3 === 0) {
+            buf[l/3] = buffer[l] * 0xFFFF
+          }
+        }
+
+        var audioStream = buf.buffer
+        //--------------------------------------------
+        socket.emit('audioStream', audioStream)
+
+        socket.on('speechData', function (speechData) {
+
+          if (speechData.error) {
+            // If there is an error, console.log() it
+            console.log('Error detected: ')
+            console.log(speechData.error.message)
+
+          } else if (!speechData.results[0].isFinal) {
+            // try setting the state as the phrase is built
+            self.setState({transcript: speechData.results[0].alternatives[0].transcript})
+
+          } else if (speechData.results[0].isFinal) {
+            // if google says it is final, update this.state.transcript to store the transcript
+            console.log('isFinal === true')
+            console.log(speechData.results[0].alternatives[0])
+            var transcriptVal = speechData.results[0].alternatives[0].transcript
+
+            // only update the state when the current transcript is different than the one being received
+            if (self.state.transcript !== transcriptVal) {
+              self.setState({transcript: transcriptVal})
+            }
+
+          } else {
+            // If this triggers, investigate it - not supposed to end up in this else block
+            console.log('Nothing happened - ')
+            console.log(speechData)
+          }
+        })
+      }
+
+    })
+    .catch((error) => {
+      console.log('navigatior catch block')
+      console.log(error)
+    })
+  }
+
+
+
+  stopSpeechStream () {
+    console.log('Stopping voice recognition...')
+    this.props.socket.emit('stopGoogleCloudSpeech')
+    context.close()
+    processor.disconnect(context.destination)
+    input.disconnect(processor)
+    input        = null
+    processor    = null
+    context      = null
+    console.log('--')
+  }
+
+  //--------------------------------------------------------------------------//
 
 
 
