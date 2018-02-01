@@ -5,14 +5,6 @@ import axios from 'axios'
 import Snackbar from 'material-ui/Snackbar'
 import { Route, withRouter} from 'react-router-dom'
 
-//for activating mic----------------------------------
-import getUserMedia from 'get-user-media-promise'
-import MicrophoneStream from 'microphone-stream'
-var micStream = new MicrophoneStream() // creates an instance of MicrophoneStream, this will hold the microphone input and will send to backend
-var socket
-var AudioContext, context, processor, input
-//----------------------------------------------------
-
 import SmartStandardMeeting from './SmartMain/SmartStandardMeeting.js'
 import SmartCustomMeeting from './SmartMain/SmartCustomMeeting.js'
 import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
@@ -26,6 +18,16 @@ import SmartHelp from './SmartMain/SmartHelp.js'
 import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
+//for activating mic + STT----------------------------------------------------
+
+import getUserMedia from 'get-user-media-promise'
+import MicrophoneStream from 'microphone-stream'
+var micStream = new MicrophoneStream() // creates an instance of MicrophoneStream, this will hold the microphone input and will send to backend
+var socket
+var context, processor, input
+var AudioContext = window.AudioContext || window.webkitAudioContext
+
+//-----------------------------------------------------------------------------
 class SmartMain extends React.Component {
   constructor(props) {
     super(props)
@@ -150,7 +152,6 @@ class SmartMain extends React.Component {
 
     // code used from https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
     // AudioContext already defined, grabs the audio of the window
-    AudioContext = window.AudioContext || window.webkitAudioContext
 
     // initiates an instance
     context = new AudioContext()
@@ -184,9 +185,32 @@ class SmartMain extends React.Component {
         socket.emit('audioStream', audioStream)
 
         socket.on('speechData', function (speechData) {
-          console.log('in speechData')
-          console.log(transcriptVal)
-          if (speechData.results[0].isFinal) self.setState({transcript: transcriptVal})
+
+          if (speechData.error) {
+            // If there is an error, console.log() it
+            console.log('Error detected: ')
+            console.log(speechData.error.message)
+
+          } else if (!speechData.results[0].isFinal) {
+            // try setting the state as the phrase is built
+            self.setState({transcript: speechData.results[0].alternatives[0].transcript})
+
+          } else if (speechData.results[0].isFinal) {
+            // if google says it is final, update this.state.transcript to store the transcript
+            console.log('isFinal === true')
+            console.log(speechData.results[0].alternatives[0])
+            var transcriptVal = speechData.results[0].alternatives[0].transcript
+
+            // only update the state when the current transcript is different than the one being received
+            if (self.state.transcript !== transcriptVal) {
+              self.setState({transcript: transcriptVal})
+            }
+
+          } else {
+            // If this triggers, investigate it - not supposed to end up in this else block
+            console.log('Nothing happened - ')
+            console.log(speechData)
+          }
         })
       }
 
@@ -202,9 +226,9 @@ class SmartMain extends React.Component {
   stopSpeechStream () {
     console.log('Stopping voice recognition...')
     this.props.socket.emit('stopGoogleCloudSpeech')
-    input.disconnect(processor)
+    context.close()
     processor.disconnect(context.destination)
-    AudioContext = null
+    input.disconnect(processor)
     input        = null
     processor    = null
     context      = null
