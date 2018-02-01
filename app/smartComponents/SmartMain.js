@@ -22,7 +22,6 @@ import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
 import getUserMedia from 'get-user-media-promise'
 import MicrophoneStream from 'microphone-stream'
-var micStream = new MicrophoneStream() // creates an instance of MicrophoneStream, this will hold the microphone input and will send to backend
 var socket
 var context, processor, input
 var AudioContext = window.AudioContext || window.webkitAudioContext
