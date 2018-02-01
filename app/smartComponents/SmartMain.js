@@ -151,7 +151,6 @@ class SmartMain extends React.Component {
 
     // code used from https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
     // AudioContext already defined, grabs the audio of the window
-
     // initiates an instance
     context = new AudioContext()
 
