@@ -18,6 +18,9 @@ exports.dropDatabaseCollections = function() {
 	mongoose.connection.collections.feedbacks.drop(function(){
 	  console.log('feedbacks droppped');
 	});
+	mongoose.connection.collections.applicants.drop(function(){
+	  console.log('feedbacks droppped');
+	});
 
 }
 

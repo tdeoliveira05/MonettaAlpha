@@ -260,17 +260,6 @@ class SmartMain extends React.Component {
       return (
         <div style = {{display: 'flex', minHeight: '100vh', height: '100%', flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
           <DumbNavigationBar/>
-          <FlatButton
-            label = 'record'
-            onClick = {() => this.startSpeechStream()}
-            style = {{backgroundColor: 'rgb(150, 150, 150)'}}
-          />
-          <h1 style = {{textAlign: 'center'}}> {this.state.transcript} </h1>
-          <FlatButton
-            label = 'stop'
-            onClick = {() => this.stopSpeechStream()}
-            style = {{backgroundColor: 'rgb(150, 150, 150)'}}
-          />
           <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
             <Route exact path = "/" render = {() =>
                 <SmartDashboard
@@ -335,6 +324,28 @@ export default withRouter(SmartMain)
 
 
 /*
+
+-------------------------------------------------------------------------------
+Recording html elements
+
+
+<FlatButton
+  label = 'record'
+  onClick = {() => this.startSpeechStream()}
+  style = {{backgroundColor: 'rgb(150, 150, 150)'}}
+/>
+<h1 style = {{textAlign: 'center'}}> {this.state.transcript} </h1>
+<FlatButton
+  label = 'stop'
+  onClick = {() => this.stopSpeechStream()}
+  style = {{backgroundColor: 'rgb(150, 150, 150)'}}
+/>
+
+
+--------------------------------------------------------------------------------
+alternative audio recording method
+
+
 getUserMedia({video: false, audio: true})
 .then((stream) => {
   micStream.setStream(stream) // attached the MicrophoneStream instance (micStream) to the audio input of the user
