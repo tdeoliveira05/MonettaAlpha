@@ -59,7 +59,7 @@ class ReusableSmartFeedback extends React.Component {
     return(
       <div>
         <Paper style = {{width: '100%', minWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px 20px 10px', textAlign: 'center'}}>
-          <h2> We are eager to know what you think of Monetta! </h2>
+          <h2> We're eager to hear what you think of Monetta! </h2>
           <div>
             <TextField
               hintText = 'Enter feedback here'

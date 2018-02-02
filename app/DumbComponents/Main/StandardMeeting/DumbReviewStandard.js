@@ -5,6 +5,7 @@ import TextField from 'material-ui/TextField'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import { Button } from 'reactstrap'
+import { Rating } from 'material-ui-rating'
 
 
 
@@ -14,7 +15,9 @@ const DumbReviewStandard = ({
   previousStep,
   handleNoteItemDelete,
   categoryList,
-  noteList
+  noteList,
+  handleRatingChange,
+  rating
 }) => (
   <div className = 'ReviewMeetingWrapper'>
     <div className = 'ReviewMeetingContent'>
@@ -117,6 +120,19 @@ const DumbReviewStandard = ({
       </div>
       <div className = 'ReviewMeetingStats'>
 
+      </div>
+
+      <div className = 'ReviewMeetingRating'>
+        <h2> How was your experience? </h2>
+        <div className = 'ReviewMeetingStepperButtons'>
+          <Rating
+            value = {rating}
+            max = {5}
+            onChange = {(value) => handleRatingChange(value)}
+            itemStyle = {{width: '72', height: '72', padding: '18'}}
+            itemIconStyle = {{width: '36', height: '36'}}
+            />
+        </div>
       </div>
 
       <div className = 'ReviewMeetingStepper'>

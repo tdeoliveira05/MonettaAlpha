@@ -14,6 +14,7 @@ import SmartWelcomePage from './SmartMain/SmartWelcomePage.js'
 import DumbNavigationBar from '../DumbComponents/Main/DumbNavigationBar'
 import SmartDashboard from './SmartMain/SmartDashboard.js'
 import SmartHelp from './SmartMain/SmartHelp.js'
+import SmartYourMonetta from './SmartMain/SmartYourMonetta.js'
 
 import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
@@ -283,6 +284,9 @@ class SmartMain extends React.Component {
             <Route exact path = "/data" render = {() =>
               <SmartProductivityData
               />
+            }/>
+            <Route exact path = "/yourmonetta" render = {() =>
+              <SmartYourMonetta />
             }/>
             <Route exact path = "/help" render = {() =>
               <SmartHelp
