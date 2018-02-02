@@ -147,6 +147,9 @@ const DumbNavigationBar = ({}) => (
         <NavLink to = '/data' activeStyle = {activeStyle} style = {inactiveStyle}>
           Productivity Data
         </NavLink>
+        <NavLink to = '/yourmonetta' activeStyle = {activeStyle} style = {inactiveStyle}>
+          Your Monetta
+        </NavLink>
       </div>
     </div>
     <div className = 'NavBarRightDiv'>
