@@ -56,7 +56,7 @@ class SmartReviewStandard extends React.Component {
   updateParentMeetingData () {
     var dataObj   = this.props.getMeetingData()
     dataObj.notes = this.state.notes
-    dataObj.metaData.rating = this.state.rating
+    dataObj.metaData.expRating = this.state.expRating
 
     this.props.submitMeetingData(dataObj)
   }
@@ -68,9 +68,9 @@ class SmartReviewStandard extends React.Component {
   }
 
   handleExpRatingChange (value) {
-    var newRating = this.state.rating
-    newRating = value
-    this.setState({rating: newRating})
+    var newExpRating = this.state.expRating
+    newExpRating = value
+    this.setState({expRating: newExpRating})
   }
 
   handleNoteItemDelete (targetIndex) {
@@ -98,8 +98,8 @@ class SmartReviewStandard extends React.Component {
           previousStep         = {this.previousStep}
           categoryList         = {this.props.categoryList}
           meetingData          = {this.props.meetingData}
-          handleExpRatingChange   = {this.handleExpRatingChange}
-          rating               = {this.state.rating}
+          handleExpRatingChange= {this.handleExpRatingChange}
+          expRating            = {this.state.expRating}
           />
       </div>
     )
