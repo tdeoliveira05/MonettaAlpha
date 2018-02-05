@@ -16,8 +16,8 @@ const DumbReviewStandard = ({
   handleNoteItemDelete,
   categoryList,
   noteList,
-  handleRatingChange,
-  rating
+  handleExpRatingChange,
+  expRating
 }) => (
   <div className = 'ReviewMeetingWrapper'>
     <div className = 'ReviewMeetingContent'>
@@ -126,9 +126,9 @@ const DumbReviewStandard = ({
         <h2> How was your experience? </h2>
         <div className = 'ReviewMeetingStepperButtons'>
           <Rating
-            value = {rating}
+            value = {expRating}
             max = {5}
-            onChange = {(value) => handleRatingChange(value)}
+            onChange = {(value) => handleExpRatingChange(value)}
             itemStyle = {{width: '72', height: '72', padding: '18'}}
             itemIconStyle = {{width: '36', height: '36'}}
             />
