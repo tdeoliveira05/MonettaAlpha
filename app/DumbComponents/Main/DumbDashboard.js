@@ -5,49 +5,128 @@ import RaisedButton from 'material-ui/RaisedButton'
 
 
 const DumbDashboard = ({
-  redirectToPath
-}) => {
-  return (
-  <div className = 'ChooseMeetingWrapper'>
-    <div className = 'ChooseMeetingContent'>
-
-      <div className = 'ChooseMeetingHeader'>
-        <h1> What kind of meeting would you like to host? </h1>
+  history,
+  templateList,
+  scheduledList,
+  dataList
+}) => (
+  <div className = 'DashboardWrapper'>
+    <div className = 'DashboardContent'>
+      <div className = 'DashboardContentLeft'>
+        <h1> Monetta Dashboard </h1>
+        <p> date here </p>
+        <div className = 'DashboardProductivityData'>
+          {dataList.map((item, index) => {
+            return (
+              <div className = 'DashboardDataBucket'>
+                <h3> {item.header} </h3>
+                <p> {item.label} </p>
+              </div>
+            )
+          })}
+        </div>
+        <div className = 'DashboardScheduledMeetings'>
+          <div className = 'DashboardScheduledHeader'>
+            <h3> Scheduled </h3>
+            <button> + </button>
+          </div>
+          {scheduledList.map((item, index) => {
+            return (
+              <div className = 'DashboardScheduledMeetingCards' key = {index}>
+                {item.name}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      <div className = 'ChooseMeetingOptions'>
-        <div className = 'ChooseMeetingOptionPaperDiv'>
-          <Paper className = 'ChooseMeetingOptionPaper'>
-            <h2> Normal Meeting </h2>
-            <p> This will allow you to easily prepare an agenda for the meeting and set it up to have a more complex meeting. </p>
-            <p> You can set default meeting settings in the Settings tab in case you are part of an established team </p>
-
-          </Paper>
-          <RaisedButton
-            name = ''
-            label = 'Prepare a Meeting'
-            secondary = {true}
-            style = {{width: '100%'}}
-            onClick = {() => redirectToPath('/meeting')}
-          />
+      <div className = 'DashboardContentRight'>
+        <div className = 'DashboardHostButtonDiv'>
+          <button> host a meeting </button>
         </div>
-        <div className = 'ChooseMeetingOptionPaperDiv'>
-          <Paper className = 'ChooseMeetingOptionPaper'>
-            <h2> Quick Meeting </h2>
-            <p> Having an impromptu meeting? No worries we got you covered. You can skip right to the good part and use your default settings </p>
-            <p> To change your default quick meeting settings, visit the Settings tab. </p>
-          </Paper>
-          <RaisedButton
-            name = ''
-            label = 'Start Quick Meeting'
-            primary = {true}
-            style = {{width: '100%'}}
-            onClick = {() => redirectToPath('meeting/custom-quick')}
-          />
+        <div className = 'DashboardCustomTemplates'>
+          <h3> Custom Meeting Templates </h3>
+          {templateList.map((item, index) => {
+            return (
+              <div className = 'DashboardTemplateCard' key = {index}>
+                <button>
+                  {item.name}
+                </button>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
   </div>
-)}
+)
 
 export default withRouter(DumbDashboard)
+
+/*
+<div className = 'DashboardContent'>
+  <div className = 'DashboardHeader'>
+
+    <h1> Monetta Dashboard </h1>
+
+    <div className = 'DashboardHeaderOptions'>
+      <div>
+        <Paper className = 'DashboardHeaderPaper'>
+          <button> Schedule a meeting </button>
+        </Paper>
+      </div>
+
+      <div>
+        <Paper className = 'DashboardHeaderPaper'>
+          <button> Host a meeting </button>
+        </Paper>
+      </div>
+    </div>
+  </div>
+
+  <div className = 'DashboardBody'>
+
+  </div>
+</div>
+
+.DashboardWrapper
+ width: 100%
+ height: 100%
+ display: flex
+ flex-direction: column
+ justify-content: center
+ align-items: center
+ .DashboardContent
+  display: flex
+  flex-direction: column
+  width: 80%
+  height: 100%
+  min-width: 320px
+  .DashboardBody
+    display: flex
+    flex-direction: column
+  .DashboardHeader
+   display: flex
+   flex-direction: column
+   align-items: center
+   text-align: center
+   margin-top: 30px
+   .DashboardHeaderOptions
+     display: flex
+     margin-top: 20px
+     align-items: center
+     width: 260px
+     justify-content: space-between
+     .DashboardHeaderPaper
+       display: flex
+       flex-direction: column
+       align-items: center
+       justify-content: center
+       height: 100px
+       width: 100px
+       margin: 0
+       padding: 0
+       button
+        width: 100%
+        height: 100%
+*/

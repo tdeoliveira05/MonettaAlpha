@@ -46,8 +46,9 @@
   .NavBarRightDiv
     display: flex
     align-items: center
+    justify-content: flex-end
     height: 100%
-    max-width: 250px
+    width: 100%
     @include mobileMedia {width: 100%}
     @include mobileMedia {flex-direction: column}
     @include mobileMedia {align-items: center}
@@ -56,6 +57,7 @@
     @include mobileMedia {max-width: 100%}
     .NavBarRightButtons
       display: flex
+      justify-content: flex-end
       width: 100%
       height: 100%
       @include mobileMedia {flex-direction: column}

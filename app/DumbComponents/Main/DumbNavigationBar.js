@@ -62,7 +62,8 @@ const profileStyle = {
   color: 'rgb(110,110,110)',
   fontWeight: 'bold',
   height: '100%',
-  width: '100%',
+  width: '50%',
+  minWidth: '120px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -144,12 +145,6 @@ const DumbNavigationBar = ({}) => (
         <NavLink to = '/storage' activeStyle = {activeStyle} style = {inactiveStyle}>
           Document Storage
         </NavLink>
-        <NavLink to = '/data' activeStyle = {activeStyle} style = {inactiveStyle}>
-          Productivity Data
-        </NavLink>
-        <NavLink to = '/yourmonetta' activeStyle = {activeStyle} style = {inactiveStyle}>
-          Your Monetta
-        </NavLink>
       </div>
     </div>
     <div className = 'NavBarRightDiv'>
@@ -157,6 +152,10 @@ const DumbNavigationBar = ({}) => (
         <div style = {profileStyle}>
           {localStorage.fullName}
         </div>
+
+        <NavLink to = '/yourvoice' activeStyle = {activeStyle} style = {inactiveStyle}>
+          Your Voice
+        </NavLink>
 
         <NavLink to = '/help' activeStyle = {activeHelpStyle} style = {inactiveHelpStyle}>
           Help

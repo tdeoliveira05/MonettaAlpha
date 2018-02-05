@@ -34,9 +34,9 @@ const DumbHomeLogin = ({
           onChange          = {handleOnTempChange}
           value             = {password}
           errorText         = {loginErrors.password}
-          onKeyPress = {(ev) => {
-            if (ev.key == 'Enter') {
-              ev.preventDefault()
+          onKeyPress = {(event) => {
+            if (event.key == 'Enter') {
+              event.preventDefault()
               handleSubmit('login')
             }
           }}

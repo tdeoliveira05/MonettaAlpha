@@ -1,0 +1,53 @@
+.DashboardWrapper
+  display: flex
+  width: 100%
+  height: 100%
+  h1, h3, p
+    margin: 0
+    padding: 0
+  .DashboardContent
+    display: flex
+    width: 80%
+    margin-top: 80px
+    .DashboardContentLeft
+      display: flex
+      flex-direction: column
+      width: 60%
+      .DashboardProductivityData
+        display: flex
+        align-items: center
+        justify-content: space-around
+        .DashboardDataBucket
+          display: flex
+          flex-direction: column
+          text-align: center
+      .DashboardScheduledMeetings
+        display: flex
+        flex-direction: column
+        .DashboardScheduledHeader
+          display: flex
+          align-items: center
+          justify-content: space-between
+        .DashboardScheduledMeetingCards
+          display: flex
+          width: 100%
+    .DashboardContentRight
+      display: flex
+      flex-direction: column
+      width: 40%
+      .DashboardHostButtonDiv
+        display: flex
+        align-items: center
+        justify-content: center
+        background-color: $gold
+        color: white
+        button
+          height: 100%
+          width: 100%
+      .DashboardCustomTemplates
+        display: flex
+        flex-direction: column
+        text-align: center
+        .DahboardTemplateCard
+          display: flex
+          width: 100%

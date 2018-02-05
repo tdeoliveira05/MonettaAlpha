@@ -23,6 +23,8 @@ const Codes                = require('./models/codeModel.js')
 const jwt                  = require('jsonwebtoken')
 const fs                   = require('fs')
 const googleCloudSpeechAPI = require('@google-cloud/speech')
+const helmet               = require('helmet')
+
 //------------------------------------------------------------------------------
 // Import entire directory of server logic and tools
 const requireDir    = require('require-dir')
@@ -38,6 +40,7 @@ const speech = new googleCloudSpeechAPI.SpeechClient({
 //Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
+app.use(helmet())
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -199,6 +202,7 @@ app.post('/request/alpha', function(req, res) {
 
 
 app.post('/authenticateMe',  function(req, res) {
+  console.log(req.headers)
   var tokenArray = req.body.token.split(' ')
   var token = tokenArray[1]
   console.log('-------------------------------------------------------------------------')
@@ -561,11 +565,13 @@ io.on('connection', function (socket) {
 //---------------------------UTILITY FUNCTIONS--------------------------------//
 //--------------------------proceed with caution------------------------------//
 //----------------------------------------------------------------------------//
-
-if (true) {
+/*
+if (false) {
   serverUtility.utilityFunction.dropDatabaseCollections()
   serverUtility.utilityFunction.enterDatabaseCodes(codes)
 }
+*/
+
 //serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111', 'qwerty')
 
 // serverUtility.utilityFunction.enterDatabaseTestUser('sunny.p.panchal@gmail.com', '1111', 'qwerty')

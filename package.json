@@ -28,6 +28,7 @@
     "file-loader": "^0.11.2",
     "file-system": "^2.2.2",
     "google-speech-microphone": "^1.0.1",
+    "helmet": "^3.10.0",
     "html-webpack-plugin": "^2.29.0",
     "jsonwebtoken": "^8.1.1",
     "lodash": "^4.17.4",

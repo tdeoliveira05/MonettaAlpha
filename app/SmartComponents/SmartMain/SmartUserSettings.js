@@ -45,6 +45,7 @@ class SmartUserSettings extends React.Component {
           this.props.passUserSettings(resultObj.data.settings)
         } else {
           console.log('no user settings were found')
+          this.setState({})
         }
       })
       .catch((error) => {

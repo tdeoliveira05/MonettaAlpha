@@ -57,6 +57,12 @@ const DumbHomeSignup = ({
           onChange          = {handleOnTempChange}
           value             = {code}
           errorText         = {signupErrors.code}
+          onKeyPress        = {(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault()
+              handleSubmit('signup')
+            }
+          }}
         />
       </div>
 

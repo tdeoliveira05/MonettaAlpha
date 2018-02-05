@@ -1,3 +1,4 @@
+/************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
@@ -8,21 +9,39 @@ class SmartDashboard extends React.Component {
     super(props)
     this.state = {}
 
-    this.redirectToPath = this.redirectToPath.bind(this)
+    this.getAllSavedMeetings = this.getAllSavedMeetings.bind(this)
+    this.getAllMeetingTemplates = this.getAllMeetingTemplates.bind(this)
+
   }
 
-  redirectToPath(urlPath) {
-    this.props.history.push(urlPath)
+  getAllSavedMeetings () {
+
+  }
+
+  getAllMeetingTemplates () {
+
   }
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
 
+    var templateList = [{name: 'Quick Meeting'}]
+
+    var scheduledList = [{name: 'Financial Review'}]
+
+    var dataList = [
+      {header: '17', label: 'meetings held'},
+      {header: '3.9', label: 'hours saved'},
+      {header: '$456', label: 'CAD saved'}
+    ]
     //----------------------------RETURN----------------------------------------
     return(
-      <div>
+      <div style = {{height: '100%', width: '100%'}}>
         <DumbDashboard
-          redirectToPath = {this.redirectToPath}
+          history = {this.props.history}
+          templateList = {templateList}
+          scheduledList = {scheduledList}
+          dataList = {dataList}
         />
       </div>
     )

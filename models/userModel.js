@@ -5,6 +5,7 @@ const config = require('config')
 
 //Create Schema and Model
 const UserSchema = new mongoose.Schema({
+  admin: {type: Boolean, default: false},
   username: {type: String, lowercase: true, unique: true, required: [true, "can't be blank (userModel.js)"], match: [/\S+@\S+\.\S+/, 'is invalid (userModel.js)'], index: true},
   codeUsed: {type: String, unique: true, required: [true, "a sign up code is needed (userModel.js)"]},
   password: String,
@@ -16,12 +17,20 @@ const UserSchema = new mongoose.Schema({
   data: {
     schemaDataVersion: {type: Number, default: 1.0},
     appUsage: {
-      totalMinutes: Number,
-      totalSpeechRecognitionMinutes: Number
+      totalMinutes: {type: Number, default: 0},
+      totalSpeechRecognitionMinutes: {type: Number, default: 0}
     }
   },
   settings: {
-    quickMeeting: Object
+    quickMeeting: {
+      participants: {type: Array, default: [{fullName: '', email: '', guest: false}]},
+      title: {type: String, default: 'Quick Meeting'},
+      location: {type: String, default: 'HQ'},
+      timeElapsed: {
+        expectedDuration: {type: Number, default: 900000},
+        formattedExpectedDuration: {type: String, default: '15 mins'}
+      }
+    }
   }
 }, {timestamps: true});
 

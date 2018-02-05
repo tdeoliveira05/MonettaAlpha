@@ -2,9 +2,9 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import PropTypes    from 'prop-types';
 
-import DumbYourMonetta from '../../DumbComponents/Main/DumbYourMonetta.js';
+import DumbYourVoice from '../../DumbComponents/Main/DumbYourVoice.js';
 
-class SmartYourMonetta extends React.Component {
+class SmartYourVoice extends React.Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -15,16 +15,16 @@ class SmartYourMonetta extends React.Component {
 
     //---------------------------RETURN-----------------------------------------
     return(
-      <div className = "YourMonettaWrapper">
-        <DumbYourMonetta />
+      <div>
+        <DumbYourVoice />
       </div>
     )
   }
 }
 
-export default withRouter(SmartYourMonetta)
+export default withRouter(SmartYourVoice)
 //-------------------------------EXPECTED PROP TYPES----------------------------
-SmartYourMonetta.propTypes = {
+SmartYourVoice.propTypes = {
   propName: PropTypes.type,
   // Example: currentFolder: PropTypes.string.isRequired,
 };
