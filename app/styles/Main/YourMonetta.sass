@@ -1,17 +1,102 @@
 .YourVoiceWrapper
   width: 100%
   height: 100%
+  display: flex
+  flex-direction: column
+  align-items: center
+  color: $grayLetters
   .YourVoiceContent
     display: flex
     flex-direction: column
     align-items: center
     justify-content: center
-    min-height: 400px
-    width: 100%
+    width: 65%
     text-align: center
     .YourVoiceHeader
-      margin-top: 30px
+      width: 100%
+      display: flex
+      flex-direction: column
+      margin-top: 15px
       margin-bottom: 30px
-      color: $gold
       font-size: 1.5em
+      justify-content: center
+      align-items: center
       @include mobileMedia {font-size: 1em}
+      .YourVoiceSuggestionButton
+        display: flex
+        margin-top: 20px
+        text-align: center
+        align-items: center
+        justify-content: center
+        color: $grayLetters
+        font-weight: bold
+        box-shadow: 0px 1px 15px 5px rgba(0, 0, 0, 0.1)
+        transition: all 0.5s ease 0s
+        border-radius: 5px
+        height: 40px
+        width: 80%
+        &:hover
+          background-color: $gold
+          color: white
+    .YourVoiceBody
+      display: flex
+      margin-top: 15px
+      width: 100%
+      flex-direction: column
+      align-items: center
+      justify-content: center
+      h2, h3
+        margin: 0
+        padding: 0
+      .YourVoiceFeatureList
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        width: 100%
+        .YourVoiceFeatureCard
+          display: flex
+          margin: 5px 0px 5px 0px
+          text-align: center
+          align-items: center
+          justify-content: space-between
+          color: $grayLetters
+          font-weight: bold
+          box-shadow: 0px 1px 10px 1px rgba(0, 0, 0, 0.1)
+          transition: all 0.5s ease 0s
+          height: 60px
+          width: 80%
+          .YourVoiceVote
+            display: flex
+            align-items: center
+            justify-content: center
+            background-color: $gray
+            height: 100%
+            width: 40px
+            cursor: pointer
+            .thumbsDown
+              transition: all 0.3s ease 0s
+              &:hover
+                background-color: $redVote
+            .thumbsUp
+              transition: all 0.3s ease 0s
+              &:hover
+                background-color: $greenVote
+            button
+              width: 100%
+              height: 100%
+          .YourVoiceFeatureText
+            h3
+              margin: 0px 0px 8px 0px
+              padding: 0px
+            button
+              color: $gray
+              transition: all 0.3s ease 0s
+              padding: 3px
+              width: 75px
+              &:hover
+                font-weight: bold
+                color: white
+                background-color: $blueMain
+                box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.1)
+                border-radius: 5px

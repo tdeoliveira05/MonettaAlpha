@@ -18,7 +18,8 @@ const UserSchema = new mongoose.Schema({
     schemaDataVersion: {type: Number, default: 1.0},
     appUsage: {
       totalMinutes: {type: Number, default: 0},
-      totalSpeechRecognitionMinutes: {type: Number, default: 0}
+      totalSpeechRecognitionMinutes: {type: Number, default: 0},
+      voteHistory: {type: Array, default: []}
     }
   },
   settings: {
@@ -45,25 +46,17 @@ const User = mongoose.model('user', UserSchema);
 module.exports = User;
 
 /* this is what it currently is in the server
-const UserSchema = new mongoose.Schema({
-  username: String,
-  password: String,
-  codeUsed: String
-});
 
-const User = mongoose.model('user', UserSchema);
+data: {
+  appUsage: {
+    voteHistory: [
+      {
+        featureId: String,
+        featureTitle: String,
+        timestamp: Date,
+        userVote: Number
+      }
+    ]
 
-module.exports = User;
 
-/*
-inputObject = req.body = {
-  username: STRING, // this is the email
-  password: empty,
-  codeUsed: empty,
-  firstName: STRING,
-  lastName: STRING,
-  jobPosition: STRING,
-  organization: STRING,
-  referenceNotes: STRING
-}
 */

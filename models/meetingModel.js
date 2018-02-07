@@ -48,7 +48,7 @@ const MeetingSchema = new Schema({
       formattedExpectedDuration: String
     }
   }
-})
+}, {timestamps: true})
 
 const Meeting = mongoose.model('meeting', MeetingSchema);
 

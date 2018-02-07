@@ -16,14 +16,12 @@ const watson               = require('watson-developer-cloud')
 const config               = require('config')
 const yes                  = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
-const Users                = require('./models/userModel.js')
-const Meetings             = require('./models/meetingModel.js')
-const Feedbacks            = require('./models/feedbackModel.js')
-const Codes                = require('./models/codeModel.js')
 const jwt                  = require('jsonwebtoken')
 const fs                   = require('fs')
 const googleCloudSpeechAPI = require('@google-cloud/speech')
 const helmet               = require('helmet')
+const Feature              = require('./models/featureModel.js')
+const User                 = require('./models/userModel.js')
 
 //------------------------------------------------------------------------------
 // Import entire directory of server logic and tools
@@ -215,7 +213,7 @@ app.post('/authenticateMe',  function(req, res) {
       res.send({success: false, errorText: error})
     } else {
       console.log('User: ' + authData.username + ' was already logged in')
-      Users.findOne({_id: authData.id})
+      User.findOne({_id: authData.id})
       .then((userDoc) => {
         console.log('SUCESSFULLY AUTHENTICATED USER')
         console.log('-------------------------------------------------------------------------')
@@ -348,6 +346,27 @@ outputObject = req.body = {
 
 app.post('/secure/userDocument/getSettings', function(req,res) {
 	serverLogic.getUserSettings(req, res)
+})
+/* -----------------------------------------------------------------------------
+Retrieves user document
+Process =>
+1. finds the user document in database
+2. returns entire doc
+
+-------------------
+
+NO INPUT OBJECT (JSON web token is used for identification)
+
+outputObject = req.body = {
+  sucess: BOOLEAN,
+  errorText: STRING,
+  userDoc: OBJECT
+}
+
+}*/
+
+app.post('/secure/userDocument/getUserDoc', function(req,res) {
+	serverLogic.getUserDoc(req, res)
 })
 /* -----------------------------------------------------------------------------
 Enters a new meeting into the database
@@ -493,8 +512,61 @@ app.post('/secure/feedbackDocument/submit', function(req,res) {
 	serverLogic.submitNewFeedback(req, res)
 })
 
+/* -----------------------------------------------------------------------------
+Enters a new feature document into the database
+Process =>
+1.
+
+-------------------
 
 
+*/
+
+app.post('/secure/featureDocument/submit', function(req,res) {
+	console.log('reached feature submit')
+  res.send()
+})
+
+/* -----------------------------------------------------------------------------
+Retrieves all feature documents
+
+Process =>
+1.
+
+-------------------
+
+
+*/
+
+app.post('/secure/featureDocument/findAll', function(req,res) {
+	console.log('reached get all features')
+  res.send()
+})
+
+/* -----------------------------------------------------------------------------
+Updates the feature document's total votes and the user document's feature vote
+
+Process =>
+1.
+
+-------------------
+
+inputObject = req.body = {
+  featureId: String,
+  userVote: Number  // (-1 || 1)
+}
+
+outputObject = res.data = {
+  sucess: Boolean,
+  errorText: String
+}
+*/
+
+app.post('/secure/featureVoteUpdate', function (req, res) {
+  console.log('reached feature vote update')
+  serverLogic.featureVoteUpdate(req, res)
+
+})
 /* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
 app.get('*', function (request, response) {
@@ -502,11 +574,44 @@ app.get('*', function (request, response) {
     response.sendFile(indexPath)
 })
 
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /* ------------------------------WEB SOCKET-----------------------------------*/
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 io.on('connection', function (socket) {
 // This is where all socket functionality and the socket's lifecyle is built
   console.log('~ Successful web socket connected: ' + socket.id)
+
+  /*---------------------------------------------------------------------------
+  Real time feature document functions
+
+  socket.emit('receiveAllFeatureDocs', featureListObj) will send out an object:
+  featureListObj = {
+  approved: [...],
+  notApproved: [...]
+  }
+
+  Both lists are sorted by descending totalVotes
+  */
+  socket.on('getAllFeatureDocs', function () {
+    console.log('~~~~~~~~~~~~~~~~~~ getAllFeatureDocs')
+    // this command takes a little while to process so it needs to be structure as a promise to act on socket.emit only after query returns
+    serverLogic.returnAllFeatureDocs()
+    .then((featureListObj) => {
+      console.log('sending: ')
+      console.log(featureListObj)
+      socket.emit('receiveAllFeatureDocs', featureListObj)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  })
+
+
+
+  //---------------------VOICE RECOGNITION------------------------------------//
   var recognizeStream = null
 
   socket.on('startGoogleCloudSpeech', function () {
@@ -557,6 +662,8 @@ io.on('connection', function (socket) {
     }
   })
 
+  //--------------------------------------------------------------------------//
+
 
 })
 
@@ -575,6 +682,151 @@ if (false) {
 //serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111', 'qwerty')
 
 // serverUtility.utilityFunction.enterDatabaseTestUser('sunny.p.panchal@gmail.com', '1111', 'qwerty')
+
+var featuresList = [
+  {
+    title: 'Download meeting minutes in PDF',
+    description: 'description goes here',
+    totalVotes: 10,
+    comments: [
+      {
+        timestamp: 0,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 100000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 900000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      }
+    ]
+  },
+  {
+    title: 'Comprehensive productivity statistics',
+    description: 'description goes here',
+    totalVotes: 9,
+    comments: [
+      {
+        timestamp: 0,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 100000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 900000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      }
+    ]
+  },
+  {
+    title: 'Ability to log in through Slack',
+    description: 'description goes here',
+    totalVotes: 7,
+    comments: [
+      {
+        timestamp: 0,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 100000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 900000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      }
+    ]
+  },
+  {
+    title: 'Full transcription of meeting',
+    description: 'description goes here',
+    totalVotes: 6,
+    comments: [
+      {
+        timestamp: 0,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 100000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 900000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      }
+    ]
+  },
+  {
+    title: 'Log in through LinkedIn',
+    description: 'description goes here',
+    totalVotes: 5,
+    comments: [
+      {
+        timestamp: 0,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 100000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      },
+      {
+        timestamp: 0 + 900000,
+        text: 'Hooray for the superbowl',
+        username: 'thiago@monettatech.com'
+      }
+    ]
+  }
+]
+
+// Clears current features
+/*
+mongoose.connection.collections.features.drop(function(){
+  console.log('features droppped');
+});
+*/
+
+// Adds default features to the database manually for testing purposes (NOT FOR PRODUCTION)
+/*
+featuresList.map((item) => {
+  var feature
+
+  feature = new Feature ({
+    title: item.title,
+    description: item.description,
+    approved: true,
+    totalVotes: item.totalVotes,
+    comments: item.comments
+  })
+
+  feature.save()
+  .then((result) => {
+    console.log('sucessful save')
+    console.log(result)
+  })
+  .catch((error) => {
+    console.log('Error')
+    console.log(error)
+  })
+})
+*/
 
 
 //----------------------------------------------------------------------------//

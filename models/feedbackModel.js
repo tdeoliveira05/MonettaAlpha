@@ -9,7 +9,7 @@ const FeedbackSchema = new Schema({
     message: String,
     location: String
   }
-});
+}, {timestamps: true});
 
 const Feedback = mongoose.model('feedback', FeedbackSchema);
 
