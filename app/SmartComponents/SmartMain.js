@@ -262,7 +262,7 @@ class SmartMain extends React.Component {
         <div style = {{display: 'flex', minHeight: '100vh', height: '100%', flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
           <DumbNavigationBar/>
           <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
-            <Route exact path = "/yourvoice" render = {() =>
+            <Route exact path = "/" render = {() =>
                 <SmartDashboard
                 />
             }/>
@@ -285,8 +285,8 @@ class SmartMain extends React.Component {
               <SmartProductivityData
               />
             }/>
-            <Route exact path = "/" render = {() =>
-              <SmartYourVoice 
+            <Route exact path = "/yourvoice" render = {() =>
+              <SmartYourVoice
                 socket = {this.props.socket}
               />
             }/>
