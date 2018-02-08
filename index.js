@@ -203,9 +203,6 @@ app.post('/authenticateMe',  function(req, res) {
   console.log(req.headers)
   var tokenArray = req.body.token.split(' ')
   var token = tokenArray[1]
-  console.log('-------------------------------------------------------------------------')
-  console.log('Token found')
-  console.log('authenticating: ' + token)
 
   jwt.verify(token, secret, (error, authData) => {
     if (error) {
@@ -216,12 +213,10 @@ app.post('/authenticateMe',  function(req, res) {
       User.findOne({_id: authData.id})
       .then((userDoc) => {
         console.log('SUCESSFULLY AUTHENTICATED USER')
-        console.log('-------------------------------------------------------------------------')
         res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
       })
       .catch((error) => {
         console.log(error)
-        console.log('-------------------------------------------------------------------------')
       })
     }
 
@@ -239,10 +234,8 @@ app.use(function (req, res, next) {
     console.log('------------> allowing route')
     next()
   }
-  console.log('--------------------------------')
 
   if (!req.headers.access_token) {
-      console.log('ERROR')
       console.log('no access_token found - route blocked:')
       console.log(req.path)
       res.sendStatus(500)
@@ -251,7 +244,6 @@ app.use(function (req, res, next) {
     const bearerHeader = req.headers.access_token
     const bearer       = bearerHeader.split(' ')
     const token        = bearer[1]
-    console.log('current localStorage bearer token: ' + token)
 
       jwt.verify(token, secret, (error, authData) => {
         if (error) {
@@ -261,7 +253,6 @@ app.use(function (req, res, next) {
         } else {
           console.log('no error found')
           console.log('------------> allowing route')
-          console.log('-------------------------------------------------------------------------')
           next()
         }
       })
@@ -513,21 +504,6 @@ app.post('/secure/feedbackDocument/submit', function(req,res) {
 })
 
 /* -----------------------------------------------------------------------------
-Enters a new feature document into the database
-Process =>
-1.
-
--------------------
-
-
-*/
-
-app.post('/secure/featureDocument/submit', function(req,res) {
-	console.log('reached feature submit')
-  res.send()
-})
-
-/* -----------------------------------------------------------------------------
 Retrieves all feature documents
 
 Process =>
@@ -553,6 +529,55 @@ Process =>
 
 inputObject = req.body = {
   featureId: String,
+  text: Number  // (-1 || 1)
+}
+
+outputObject = res.data = {
+  sucess: Boolean,
+  errorText: String
+}
+*/
+
+app.post('/secure/featureDocument/submitComment', function (req, res) {
+  console.log('reached feature comment submit')
+  serverLogic.submitFeatureComment(req, res)
+
+})
+/* -----------------------------------------------------------------------------
+Submits a new feature
+
+Process =>
+1.
+
+-------------------
+
+inputObject = req.body = {
+  featureId: String,
+  userVote: Number  // (-1 || 1)
+}
+
+outputObject = res.data = {
+  sucess: Boolean,
+  errorText: String
+}
+*/
+
+app.post('/secure/featureDocument/submit', function (req, res) {
+  console.log('reached feature comment submit')
+  serverLogic.submitNewFeature(req, res)
+
+})
+
+/* -----------------------------------------------------------------------------
+Submits a comment to a feature
+
+Process =>
+1.
+
+-------------------
+
+inputObject = req.body = {
+  featureId: String,
   userVote: Number  // (-1 || 1)
 }
 
@@ -567,6 +592,7 @@ app.post('/secure/featureVoteUpdate', function (req, res) {
   serverLogic.featureVoteUpdate(req, res)
 
 })
+
 /* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
 app.get('*', function (request, response) {
@@ -600,8 +626,6 @@ io.on('connection', function (socket) {
     // this command takes a little while to process so it needs to be structure as a promise to act on socket.emit only after query returns
     serverLogic.returnAllFeatureDocs()
     .then((featureListObj) => {
-      console.log('sending: ')
-      console.log(featureListObj)
       socket.emit('receiveAllFeatureDocs', featureListObj)
     })
     .catch((error) => {
@@ -667,6 +691,34 @@ io.on('connection', function (socket) {
 
 })
 
+//----------------------------------------------------------------------------//
+//---------------------------BACKGROUND FUNCTIONS-----------------------------//
+//----------------------------------------------------------------------------//
+//____________________________________________________________________________//
+
+
+//----------------Resetting weekly votes allowed for each user----------------//
+
+function resetWeeklyVotes() {
+
+  User.update(
+    {},
+    {$set: {"data.appUsage.weeklyVotesLeft": config.get('Presets.maximumWeeklyVotes')}},
+    {multi:true}
+  )
+  .catch((error) => {
+    console.log(error)
+  })
+  console.log('refreshed weekly votes')
+}
+
+// 1 week = 6.048e+8 milliseconds = 604,800,000
+// run resetWeeklyVotes() every 7 days or
+setInterval(resetWeeklyVotes, 604800000)
+
+//----------------------------------------------------------------------------//
+
+
 
 //----------------------------------------------------------------------------//
 //---------------------------UTILITY FUNCTIONS--------------------------------//
@@ -690,19 +742,22 @@ var featuresList = [
     totalVotes: 10,
     comments: [
       {
-        timestamp: 0,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 100000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 900000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       }
     ]
   },
@@ -712,19 +767,22 @@ var featuresList = [
     totalVotes: 9,
     comments: [
       {
-        timestamp: 0,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 100000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 900000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       }
     ]
   },
@@ -734,19 +792,22 @@ var featuresList = [
     totalVotes: 7,
     comments: [
       {
-        timestamp: 0,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 100000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 900000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       }
     ]
   },
@@ -756,19 +817,22 @@ var featuresList = [
     totalVotes: 6,
     comments: [
       {
-        timestamp: 0,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 100000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 900000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       }
     ]
   },
@@ -778,19 +842,22 @@ var featuresList = [
     totalVotes: 5,
     comments: [
       {
-        timestamp: 0,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 100000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       },
       {
-        timestamp: 0 + 900000,
+        timestamp: new Date(),
         text: 'Hooray for the superbowl',
-        username: 'thiago@monettatech.com'
+        username: 'thiago@monettatech.com',
+        fullName: 'Thiago De Oliveira'
       }
     ]
   }
@@ -801,10 +868,10 @@ var featuresList = [
 mongoose.connection.collections.features.drop(function(){
   console.log('features droppped');
 });
-*/
+
 
 // Adds default features to the database manually for testing purposes (NOT FOR PRODUCTION)
-/*
+
 featuresList.map((item) => {
   var feature
 
@@ -826,8 +893,8 @@ featuresList.map((item) => {
     console.log(error)
   })
 })
-*/
 
+*/
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//

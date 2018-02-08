@@ -6,7 +6,9 @@ import FontIcon from 'material-ui/FontIcon'
 const DumbYourVoice = ({
   topFeatures,
   featureList,
-  submitVote
+  submitVote,
+  dialogClick,
+  votesLeft
 }) => {
 
   // let propName = props.propName;
@@ -18,9 +20,9 @@ const DumbYourVoice = ({
       <div className = 'YourVoiceContent'>
         <div className = 'YourVoiceHeader'>
           <h1> Vote for what you want us to build! </h1>
-          <p style = {{margin: '0', padding: '0'}}> Weekly votes left: 2 (out of 5) </p>
+          <p style = {{margin: '0', padding: '0'}}> {'Weekly votes left: ' + votesLeft + ' (out of 3)'} </p>
 
-          <button className = 'YourVoiceSuggestionButton'> SUGGEST A FEATURE </button>
+          <button className = 'YourVoiceSuggestionButton' onClick = {() => dialogClick('suggestion')}> SUGGEST A FEATURE </button>
         </div>
         <div className = 'YourVoiceBody'>
           <h2 style = {{margin: '0px 0px 20px 0px'}}> Top 3 suggested features: </h2>
@@ -45,7 +47,7 @@ const DumbYourVoice = ({
                 </div>
                 <div className = 'YourVoiceFeatureText'>
                   <h3> {item.title} </h3>
-                  <button> COMMENT </button>
+                  <button onClick = {() => dialogClick('comment', index)}> COMMENT </button>
                 </div>
                 <div className = 'YourVoiceVote'>
                   <button className = 'thumbsUp' onClick = {() => submitVote(index, item._id, 1)} style = {thumbUpStyle}>
@@ -79,7 +81,7 @@ const DumbYourVoice = ({
                 </div>
                 <div className = 'YourVoiceFeatureText'>
                   <h3> {item.title} </h3>
-                  <button> COMMENT </button>
+                  <button onClick = {() => dialogClick('comment', index + 3)}> COMMENT </button>
                 </div>
                 <div className = 'YourVoiceVote'>
                   <button className = 'thumbsUp' onClick = {() => submitVote(index + 3, item._id, 1)} style = {thumbUpStyle}>
@@ -101,3 +103,15 @@ DumbYourVoice.propTypes = {
 };
 
 export default withRouter(DumbYourVoice)
+
+/*
+console.log(commentItem)
+var monthIndex = commentItem.timestamp.getMonth()
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+var month = months[monthIndex]
+
+var time = commentItem.timestamp.getHours() + ':' + commentItem.timestamp.getMinutes()
+var day = commentItem.timestamp.getDate
+
+var thisDate = time + ' ' + month + ' ' + day
+*/

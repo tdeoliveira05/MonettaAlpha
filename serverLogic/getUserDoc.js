@@ -14,8 +14,6 @@ module.exports = function (userReq, res) {
     return serverTools.find.singleDoc(User, {username: userInfo.username})
   })
   .then((userDocVal) => {
-    console.log('user doc found')
-    console.log(userDocVal)
     userDocVal ? res.send({success: true, errorText: '', userDoc: userDocVal}) : res.send({success: false, errorText: 'no user found', userDoc: null})
   })
   .catch((error) => {

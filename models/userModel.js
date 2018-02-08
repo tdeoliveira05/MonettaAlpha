@@ -19,7 +19,8 @@ const UserSchema = new mongoose.Schema({
     appUsage: {
       totalMinutes: {type: Number, default: 0},
       totalSpeechRecognitionMinutes: {type: Number, default: 0},
-      voteHistory: {type: Array, default: []}
+      voteHistory: {type: Array, default: []},
+      weeklyVotesLeft: {type: Number, default: 3}
     }
   },
   settings: {
@@ -54,7 +55,8 @@ data: {
         featureId: String,
         featureTitle: String,
         timestamp: Date,
-        userVote: Number
+        userVote: Number,
+        voteTimeline: Array
       }
     ]
 

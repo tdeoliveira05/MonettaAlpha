@@ -21,7 +21,8 @@ comments: [
   {
     timestamp: Number,
     text: String,
-    username: String
+    username: String,
+    fullName: String
   }
 ]
 

@@ -17,7 +17,8 @@
       "9999"],
     "port": 8080,
     "secret": "GordonPatrick",
-    "adminAccountSecret": "OHGWR803Y8GN308G04GH3IRGNNW0WER98UT8492THNFEIGYHT284T7"
+    "adminAccountSecret": "OHGWR803Y8GN308G04GH3IRGNNW0WER98UT8492THNFEIGYHT284T7",
+    "maximumWeeklyVotes": 3
   },
   "Mailjet":{
     "publicKey": "e27349f0743f50b01d5104d7d540f035",
