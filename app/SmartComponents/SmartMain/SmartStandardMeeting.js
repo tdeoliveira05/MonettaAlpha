@@ -50,7 +50,6 @@ class SmartStandardMeeting extends React.Component {
         break
 
       case 'finished':
-        console.log('activating sequence')
         this.resetTeamMeeting()
         this.handleFinishedMeeting()
         break
@@ -58,13 +57,8 @@ class SmartStandardMeeting extends React.Component {
   }
 
   handleFinishedMeeting () {
-    console.log('Submitting: ')
-    console.log(this.state.meetingData)
 
     axios.post('http://localhost:8080/secure/meetingDocument/submit', this.state.meetingData)
-    .then((response) => {
-      console.log(response)
-    })
     .catch((errorText) => {
       console.log(errorText)
     })
@@ -74,14 +68,10 @@ class SmartStandardMeeting extends React.Component {
   resetTeamMeeting () {
     var defaultMeetingData = this.props.defaultMeetingData
     this.setState({meetingData: defaultMeetingData, meetingIndex: 0})
-    console.log('reset')
-    console.log(this.state)
   }
 
   render () {
     //---------------------------VARIABLE CREATION------------------------------
-    console.log('SmartStandardMeeting state')
-    console.log(this.state)
 
 
     //---------------------------CONDITIONS-------------------------------------

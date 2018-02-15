@@ -29,12 +29,12 @@ module.exports = function (voteReq, res) {
 
     var userDoc = docObj.userDoc
     var featureDoc = docObj.featureDoc
-    var voteHistory = userDoc.data.appUsage.voteHistory
+    var voteHistory = userDoc.data.userHistory.voteHistory
 
     // find out if the document already has a vote and the user is changing their vote,
     // using a copy variable lets you mutate the original document value right away
     var votedOn = false
-    userDoc.data.appUsage.voteHistory.map((voteItem, index) => {
+    userDoc.data.userHistory.voteHistory.map((voteItem, index) => {
       if (voteReq.body.featureId === voteItem.featureId) {
         console.log('user has voted in the past for: ' + featureDoc.title)
         // if no timeline is detected, initialize it
@@ -103,7 +103,7 @@ module.exports = function (voteReq, res) {
       }
 
       // push a new vote item into the userDoc
-      userDoc.data.appUsage.voteHistory.push(targetVoteItem)
+      userDoc.data.userHistory.voteHistory.push(targetVoteItem)
       userDoc.data.appUsage.weeklyVotesLeft -= 1
 
       // finally update the featureDocument's total votes

@@ -22,6 +22,8 @@ const googleCloudSpeechAPI = require('@google-cloud/speech')
 const helmet               = require('helmet')
 const Feature              = require('./models/featureModel.js')
 const User                 = require('./models/userModel.js')
+const Meeting              = require('./models/meetingModel.js')
+const Code                 = require('./models/codeModel.js')
 
 //------------------------------------------------------------------------------
 // Import entire directory of server logic and tools
@@ -200,7 +202,6 @@ app.post('/request/alpha', function(req, res) {
 
 
 app.post('/authenticateMe',  function(req, res) {
-  console.log(req.headers)
   var tokenArray = req.body.token.split(' ')
   var token = tokenArray[1]
 
@@ -212,8 +213,18 @@ app.post('/authenticateMe',  function(req, res) {
       console.log('User: ' + authData.username + ' was already logged in')
       User.findOne({_id: authData.id})
       .then((userDoc) => {
-        console.log('SUCESSFULLY AUTHENTICATED USER')
-        res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
+        if (!userDoc) {
+          console.log('FAILURE TO AUNTHENTICA - USER DOES NOT EXIST')
+          res.send({success: false, errorText: 'no user found'})
+        }else if (userDoc.admin) {
+          console.log('SUCESSFULLY AUTHENTICATED ADMIN')
+          serverLogic.serverTools.stats.processUserLogin(userDoc.username).catch((error) => console.log(error))
+          res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username, admin: true})
+        } else {
+          console.log('SUCESSFULLY AUTHENTICATED USER')
+          serverLogic.serverTools.stats.processUserLogin(userDoc.username).catch((error) => console.log(error))
+          res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
+        }
       })
       .catch((error) => {
         console.log(error)
@@ -227,20 +238,22 @@ app.post('/authenticateMe',  function(req, res) {
 // all of the routes below NEED a jwt so we are going to authenticate that jwt before it reaches the route
 // if it is wrong we are blocking it, if it is correct we are letting it through
 app.use(function (req, res, next) {
+  console.log(req.headers.cookie)
+  next()
+  /*
   console.log('-------------------- AUTHENTICATION MIDDLEWARE --------------------------')
   console.log('path: ' + req.path)
-  if (!req.path.includes('secure')) {
-    console.log('path does not need secure authorization')
-    console.log('------------> allowing route')
-    next()
-  }
 
-  if (!req.headers.access_token) {
+  if (!req.headers.access_token && req.path.includes('secure')) {
       console.log('no access_token found - route blocked:')
       console.log(req.path)
       res.sendStatus(500)
-  } else {
-
+  } else if (!req.headers.access_token && !req.path.includes('secure') && !req.path.includes('admin')) {
+    console.log('path does not need secure authorization')
+    console.log('------------> allowing route')
+    next()
+  } else if (req.headers.access_token && req.path.includes('secure')) {
+    console.log('header detected')
     const bearerHeader = req.headers.access_token
     const bearer       = bearerHeader.split(' ')
     const token        = bearer[1]
@@ -251,14 +264,42 @@ app.use(function (req, res, next) {
           console.log('------------> redirecting')
           res.sendFile(indexPath)
         } else {
-          console.log('no error found')
-          console.log('------------> allowing route')
-          next()
+          // the token checks out and they are trying to access a secure path
+          // before allowing route, if they are trying to access an admin route, make sure they are actually an admin
+          if (req.path.includes('admin')) {
+            User.findOne({_id: authData.id})
+            .then((userDoc) => {
+              console.log(userDoc)
+              if (userDoc.admin) {
+                //user is admin and wants to access an admin route
+                console.log('hello admin')
+                console.log('no error found')
+                console.log('------------> allowing route')
+                next()
+              } else {
+                // user is not admin and trying to access a restricted route
+                console.log(userDoc.admin)
+                res.send('No admin privileges')
+              }
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+          } else {
+            // user is not trying to access an amdin route and they have already been authenticated, so let them through
+            console.log('no error found')
+            console.log('------------> allowing route')
+            next()
+          }
         }
       })
 
+  } else {
+    console.log('unknown path')
+    res.send(500)
   }
   console.log('-------------------------------------------------------------------------')
+  */
 })
 
 
@@ -569,6 +610,31 @@ app.post('/secure/featureDocument/submit', function (req, res) {
 })
 
 /* -----------------------------------------------------------------------------
+Overwrite feature document
+
+
+-------------------
+
+inputObject = req.body = {
+  featureDoc: Object
+}
+
+outputObject = res.data = {
+  sucess: Boolean,
+  errorText: String
+}
+*/
+
+app.post('/secure/featureDocument/overwrite', function (req, res) {
+  console.log('reached feature document overwrite')
+
+  serverLogic.serverTools.overwrite.thisFeatureDoc(req.body.featureDoc)
+  .then((results) => res.send({success: true, errorText: ''}))
+  .catch((error) => res.send({success: false, errorText: ''}))
+
+})
+
+/* -----------------------------------------------------------------------------
 Submits a comment to a feature
 
 Process =>
@@ -593,6 +659,60 @@ app.post('/secure/featureVoteUpdate', function (req, res) {
 
 })
 
+/*--------------------------------ADMIN ROUTES--------------------------------*/
+
+app.post('/secure/admin/getDocs', function (req, res) {
+  console.log('reached ADMIN getDocs')
+  // REVISE THIS ****************************************************************
+  // begin all promises and use lean() to make query faster
+  var userCursor = User.find().lean()
+  var meetingPromise = Meeting.find().lean()
+  var featurePromise = Feature.find().lean()
+  var codePromise = Code.find().lean()
+
+  // wait for all promises to finish before sending a response
+  Promise.all([userPromise, meetingPromise, featurePromise, codePromise])
+  .then(([userDocsVal, meetingDocsVal, featureDocsVal, codeDocsVal]) => {
+    console.log('retrieved all admin objects')
+    res.send({
+      userDocs: userDocsVal,
+      meetingDocs: meetingDocsVal,
+      featureDocs: featureDocsVal,
+      codeDocs: codeDocsVal
+    })
+  })
+  .catch((error) => {
+    console.log(error)
+    res.send({success: false, errorText: error})
+  })
+
+
+})
+
+app.post('/secure/admin/updateCodeDocs', function (req, res) {
+  console.log('reached ADMIN updateCodeDocs')
+  if (req.body.add) {
+    addDocs = req.body.add
+    req.body.add.map((codeVal) => {
+
+      var newCodeDoc = new Code ({
+        code: codeVal.toLowerCase(),
+        used: false
+      })
+
+      newCodeDoc.save().catch((error) => res.send(error))
+    })
+  }
+
+
+  if (req.body.remove) {
+    Code.remove({_id: req.body.remove}).catch((error) => res.send(error))
+  }
+
+  res.send()
+
+})
+
 /* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
 app.get('*', function (request, response) {
@@ -610,30 +730,49 @@ io.on('connection', function (socket) {
 // This is where all socket functionality and the socket's lifecyle is built
   console.log('~ Successful web socket connected: ' + socket.id)
 
+  console.log(socket)
+
   /*---------------------------------------------------------------------------
   Real time feature document functions
 
   socket.emit('receiveAllFeatureDocs', featureListObj) will send out an object:
   featureListObj = {
   approved: [...],
-  notApproved: [...]
+  notApproved: [...],
+  remove: [...],
+  finished: [...]
   }
 
   Both lists are sorted by descending totalVotes
   */
   socket.on('getAllFeatureDocs', function () {
-    console.log('~~~~~~~~~~~~~~~~~~ getAllFeatureDocs')
     // this command takes a little while to process so it needs to be structure as a promise to act on socket.emit only after query returns
     serverLogic.returnAllFeatureDocs()
     .then((featureListObj) => {
       socket.emit('receiveAllFeatureDocs', featureListObj)
     })
-    .catch((error) => {
-      console.log(error)
-    })
+    .catch((error) => console.log(error))
   })
 
+  /*---------------------------------------------------------------------------
+  Saves one second to the totalTimeInApp of the user
+  */
+  socket.on('saveOneSecond', function (usernameObj) {
+    User.update(
+      {username: usernameObj.username},
+      {
+        $inc: {"data.appUsage.totalTimeInApp": +1000}
+      }
+    )
+    .catch((error) => console.log(error))
+  })
 
+  /*---------------------------------------------------------------------------
+  Updates a user login's history
+  */
+  socket.on('update/userDocument/loginHistory', function (usernameObj) {
+    // write here
+  })
 
   //---------------------VOICE RECOGNITION------------------------------------//
   var recognizeStream = null
@@ -650,7 +789,6 @@ io.on('connection', function (socket) {
       interimResults: true
     }
 
-
     recognizeStream = speech.streamingRecognize(request)
     .on('error', console.error)
     .on('data', function (data) {
@@ -658,23 +796,17 @@ io.on('connection', function (socket) {
       console.log(data.results[0])
       io.sockets.emit('speechData', data);
     });
-
   })
-
   socket.on('audioStream', function (bufferChunk) {
     // If statement is to avoid index.js trigerring an error because reconizeStream is not yet defined and might not have a write() function
     //console.log(recognizeStream)
     //console.log('---------------------------------------')
     if (recognizeStream !== null) {
-
       recognizeStream.write(bufferChunk)
-
-
       // alternatives:
       //fs.createReadStream(bufferChunk).pipe(recognizeStream)
       //recognizeStream.write(bufferChunk)
     }
-
   })
 
   socket.on('stopGoogleCloudSpeech', function () {
@@ -685,7 +817,6 @@ io.on('connection', function (socket) {
       recognizeStream = null
     }
   })
-
   //--------------------------------------------------------------------------//
 
 
@@ -724,16 +855,19 @@ setInterval(resetWeeklyVotes, 604800000)
 //---------------------------UTILITY FUNCTIONS--------------------------------//
 //--------------------------proceed with caution------------------------------//
 //----------------------------------------------------------------------------//
+
 /*
 if (false) {
   serverUtility.utilityFunction.dropDatabaseCollections()
   serverUtility.utilityFunction.enterDatabaseCodes(codes)
 }
-*/
+
 
 //serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111', 'qwerty')
 
 // serverUtility.utilityFunction.enterDatabaseTestUser('sunny.p.panchal@gmail.com', '1111', 'qwerty')
+
+*/
 
 var featuresList = [
   {
@@ -880,7 +1014,12 @@ featuresList.map((item) => {
     description: item.description,
     approved: true,
     totalVotes: item.totalVotes,
-    comments: item.comments
+    comments: item.comments,
+    originalRequester: {
+      fullName: 'Thiago De Oliveira',
+      username: 'thiago@monettatech.com',
+      originalDescription: 'cool'
+    }
   })
 
   feature.save()
@@ -893,8 +1032,8 @@ featuresList.map((item) => {
     console.log(error)
   })
 })
-
 */
+
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//

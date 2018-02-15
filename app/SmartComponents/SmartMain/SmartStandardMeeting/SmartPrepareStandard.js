@@ -66,10 +66,6 @@ class SmartPrepareStandard extends React.Component {
     this.changeParticipantListItem = this.changeParticipantListItem.bind(this)
   }
 
-  componentDidMount () {
-    console.log('SmartPrepareStandard has mounted...')
-  }
-
   componentDidUpdate () {
     // Error Check
     var errorText = this.state.errorText

@@ -76,7 +76,6 @@ class SmartConductCustom extends React.Component {
   }
 
   nextStep () {
-    console.log('nextStep()')
     this.updateMeetingData()
     this.props.handleIndexChange('finished')
   }
@@ -137,7 +136,7 @@ class SmartConductCustom extends React.Component {
     var newNoteItem     = {
                           text: this.state.tempItemText,
                           category: this.state.tempItemCategory,
-                          timeStamp: this.state.timeElapsed.actualDuration,
+                          timestamp: this.state.timeElapsed.actualDuration,
                           formattedTimeStamp: this.state.timeElapsed.formattedActualDuration,
                           meta: {}
                           }
@@ -156,8 +155,6 @@ class SmartConductCustom extends React.Component {
   }
 
   changeItemType (event, key, value, index, noteItem) {
-    console.log(value)
-    console.log(noteItem)
 
     var newNoteList = this.state.notes
     newNoteList[index].category = value

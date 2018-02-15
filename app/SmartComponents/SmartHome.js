@@ -55,7 +55,12 @@ class SmartHome extends React.Component {
     axios.post('http://localhost:8080/request/login', loginData)
     .then((tokenResponse) => {
       if (tokenResponse.data.errors) this.setState({loginErrors: {email: tokenResponse.data.usernameError, password: tokenResponse.data.passwordError}})
-      tokenResponse.data.token ? this.props.submitUserTokenObj(tokenResponse.data) : console.log('no token object returned')
+      console.log(tokenResponse.data)
+      if (tokenResponse.data.token) {
+        this.props.submitUserTokenObj(tokenResponse.data, tokenResponse.data.admin)
+      } else {
+        console.log('no token object returned')
+      }
     })
     .catch((error) => {
       console.log(error)
@@ -175,10 +180,22 @@ class SmartHome extends React.Component {
 
   handleSetDialogCall (target, activate) {
     this.setState({dialogComponentType: target})
-    if (activate && target === 'login' && this.props.isLoggedIn === true) {
+
+    // if they are already authenticated, let them in automatically
+    if (activate && target === 'login' && this.props.isLoggedIn === true && !this.props.admin) {
+      // if the user is not admin give thema regular entry
       console.log('user is already logged in')
       this.props.changeAppLocation('app')
+    } else if (activate && target === 'login' && this.props.isLoggedIn === true && this.props.admin) {
+      // if the user is an admin, change app location to admin
+      console.log('Welcome back admin')
+      this.props.changeAppLocation('app')
+    } else if (activate && target === 'signup') {
+      console.log('reset')
+      this.props.signOut()
+      this.dialogToggleFunction()
     } else if (activate) {
+      this.props.signOut()
       this.dialogToggleFunction()
     }
   }

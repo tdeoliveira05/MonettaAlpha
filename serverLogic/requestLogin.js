@@ -1,11 +1,11 @@
 // This function will process a login request by a user
 const requireDir = require('require-dir')
 const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
-const Users = require('../models/userModel')
+const User = require('../models/userModel')
 
 module.exports = function (req, res) {
 
-  serverTools.find.singleDoc(Users, {username: req.body.username})
+  serverTools.find.singleDoc(User, {username: req.body.username})
   .then((userDoc) => {
     return serverTools.check.thisPassword(userDoc, req.body.password)
   })
@@ -14,11 +14,18 @@ module.exports = function (req, res) {
   })
   .then(({token, userDoc}) => {
     console.log('Current session user token: ' + token)
-    res.status(200).send({
-      token: token,
-      fullName: userDoc.firstName + ' ' + userDoc.lastName,
-      username: userDoc.username
-    })
+
+    var tokenObj = {}
+    tokenObj.token = token
+    tokenObj.fullName = userDoc.firstName + ' ' + userDoc.lastName
+    tokenObj.username = userDoc.username
+    tokenObj.admin = userDoc.admin
+
+    return tokenObj
+  })
+  .then((tokenObj) => {
+    serverTools.stats.processUserLogin(tokenObj.username)
+    res.status(200).send(tokenObj)
   })
   .catch((error) => {
     if (error === 'find.singleDoc') res.send({errors: true, usernameError: 'User not found', passwordError: ''})

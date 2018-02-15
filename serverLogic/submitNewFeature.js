@@ -10,8 +10,11 @@ module.exports = function (featureReq, res) {
     return serverTools.create.featureDoc(featureReq, userInfo)
   })
   .then((newFeatureDoc) => {
-    res.send({success: true, errorText: ''})
-    return serverTools.save.thisDoc(newFeatureDoc)
+    serverTools.save.thisDoc(newFeatureDoc).catch((error) => console.log(error))
+    return serverTools.stats.processNewFeatureDoc(newFeatureDoc).catch((error) => console.log(error))
+  })
+  .then((results) => {
+    results ? res.send({success: true, errorText: ''}) : res.send({success: false, errorText: 'stats not processed'})
   })
   .catch((error) => {
     console.log('[submitNewFeature.js]' + error)

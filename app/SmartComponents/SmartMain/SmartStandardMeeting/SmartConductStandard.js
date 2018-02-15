@@ -50,10 +50,6 @@ class SmartConductStandard extends React.Component {
     this.changeItemType         = this.changeItemType.bind(this)
   }
 
-  componentWillMount () {
-
-  }
-
   componentDidMount () {
     this.interval = setInterval(this.getAndUpdateDuration, 1000)
     if (this.props.meetingData.notes.length > 0) this.setState({hasNotes: true})
@@ -155,7 +151,7 @@ class SmartConductStandard extends React.Component {
     var newNoteItem     = {
                           text: this.state.tempItemText,
                           category: this.state.tempItemCategory,
-                          timeStamp: this.state.timeElapsed.actualDuration,
+                          timestamp: this.state.timeElapsed.actualDuration,
                           formattedTimeStamp: this.state.timeElapsed.formattedActualDuration,
                           meta: {}
                           }
@@ -184,8 +180,6 @@ class SmartConductStandard extends React.Component {
   }
 
   changeItemType (event, key, value, index, noteItem) {
-    console.log(value)
-    console.log(noteItem)
 
     var newNoteList = this.state.notes
     newNoteList[index].category = value

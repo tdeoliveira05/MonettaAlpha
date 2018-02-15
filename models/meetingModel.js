@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const MeetingSchema = new Schema({
   title: String,
+  meetingType: {type: String, default: 'normal'},
   host: {
     fullName: String,
     username: String
@@ -28,7 +29,7 @@ const MeetingSchema = new Schema({
     {
       text: String,
       category: String,
-      timeStamp: Number,
+      timestamp: Number,
       formattedTimeStamp: String,
       metaData: Object
     }

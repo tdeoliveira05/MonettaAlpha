@@ -3,9 +3,15 @@ const Meeting = require('../../../models/meetingModel')
 
 module.exports = function (meetingDataReq) {
   return new Promise (function(resolve, reject) {
+    var meetingTypeVal = 'normal'
+
+    if (typeof(meetingDataReq.body.meetingType) === 'string') {
+      meetingTypeVal = meetingDataReq.body.meetingType
+    }
 
     var newMeetingDoc = new Meeting({
       title: meetingDataReq.body.title,
+      meetingType: meetingTypeVal,
       host: meetingDataReq.body.host,
       participants: meetingDataReq.body.participants,
       date: meetingDataReq.body.date,

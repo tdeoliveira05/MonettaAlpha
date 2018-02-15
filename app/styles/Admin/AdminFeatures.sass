@@ -1,0 +1,70 @@
+.AdminFeaturesNavBar
+  display: flex
+  height: 30px
+  width: 100%
+  margin-bottom: 10px
+  button
+    width: 100%
+    font-weight: bold
+    background-color: $blueMain
+    color: white
+    margin: 1px
+
+.AdminFeaturesWrapper
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-direction: column
+  width: 100%
+  height: 100%
+  .AdminFeaturesContent
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    width: 70%
+    .FeatureCard
+      display: flex
+      flex-direction: column
+      width: 100%
+      align-items: center
+      justify-content: center
+      .FeatureBody
+        display: flex
+        flex-direction: column
+        width: 100%
+        justify-content: center
+        margin-bottom: 20px
+        h3, p
+          margin: 0
+          padding: 0
+        .FeatureBodyDiv
+          display: flex
+          flex-direction: column
+      .FeatureFooter
+        display: flex
+        flex-direction: column
+        width: 100%
+        justify-content: center
+        margin-bottom: 50px
+        input, textarea
+          width: 100%
+        .FeatureFooterDiv
+          display: flex
+        .FeatureFooterButtons
+          display: flex
+          align-items: center
+          justify-content: space-between
+          padding-top: 10px
+          button
+            box-shadow: 0 1px 10px rgba(0,0,0,0.1)
+            color: $blueMain
+            font-weight: bold
+            border-radius: 10px
+            padding: 10px
+            transition: all 0.3s ease 0s
+            &:hover
+              transform: translateY(-20)
+              background-color: $blueMain
+              color: white
+              box-shadow: 0 1px 15px rgba(0,0,0,0.2)

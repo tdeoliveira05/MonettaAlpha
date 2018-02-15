@@ -60,7 +60,8 @@ class SmartMain extends React.Component {
       snackbarOpen: false,
       userSettings: this.props.userSettings,
       quickMeeting: false,
-      transcript: ''
+      transcript: '',
+      timeInApp: 0
     }
 
     this.updateUserDocument       = this.updateUserDocument.bind(this)
@@ -78,8 +79,15 @@ class SmartMain extends React.Component {
   }
 
   componentDidMount () {
+    const self = this
     this.updateMainLocation()
     socket = this.props.socket
+    // Start timer to track total time spent in app and update the state every second
+    var timerInterval = setInterval(function () {
+      self.props.socket.emit('saveOneSecond',{
+        username: localStorage.username
+      })
+    }, 1000)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -298,6 +306,7 @@ class SmartMain extends React.Component {
               <SmartUserSettings
                 userSettings     = {this.state.userSettings}
                 passUserSettings = {this.passUserSettings}
+                signOut          = {this.props.signOut}
               />
             }/>
           </div>

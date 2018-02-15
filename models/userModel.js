@@ -9,6 +9,8 @@ const UserSchema = new mongoose.Schema({
   username: {type: String, lowercase: true, unique: true, required: [true, "can't be blank (userModel.js)"], match: [/\S+@\S+\.\S+/, 'is invalid (userModel.js)'], index: true},
   codeUsed: {type: String, unique: true, required: [true, "a sign up code is needed (userModel.js)"]},
   password: String,
+  lastLoggedIn: {type: Date, default: new Date},
+  createdOn: {type: Date, default: new Date},
   firstName: String,
   lastName: String,
   jobPosition: String,
@@ -17,10 +19,21 @@ const UserSchema = new mongoose.Schema({
   data: {
     schemaDataVersion: {type: Number, default: 1.0},
     appUsage: {
-      totalMinutes: {type: Number, default: 0},
-      totalSpeechRecognitionMinutes: {type: Number, default: 0},
+      totalTimeInApp: {type: Number, default: 0},
+      totalSpeechRecognitionTime: {type: Number, default: 0},
+      timeInMeetingsHeld: {type: Number, default: 0},
+      timeInCustomMeetingsHeld: {type: Number, default: 0},
+      timeInMeetingsParticipatedIn: {type: Number, default: 0},
+      weeklyVotesLeft: {type: Number, default: 3},
+      totalMeetingsHeld: {type: Number, default: 0},
+      totalCustomMeetingsHeld: {type: Number, default: 0},
+      totalMeetingsParticipatedIn: {type: Number, default: 0}
+    },
+    userHistory: {
       voteHistory: {type: Array, default: []},
-      weeklyVotesLeft: {type: Number, default: 3}
+      featureRequestHistory: {type: Array, default: []},
+      feedbackHistory: {type: Array, default: []},
+      loginHistory: {type: Array, default: [new Date]}
     }
   },
   settings: {
@@ -46,10 +59,10 @@ const User = mongoose.model('user', UserSchema);
 
 module.exports = User;
 
-/* this is what it currently is in the server
+/* hidden arrays
 
 data: {
-  appUsage: {
+  userHistory: {
     voteHistory: [
       {
         featureId: String,
@@ -57,6 +70,22 @@ data: {
         timestamp: Date,
         userVote: Number,
         voteTimeline: Array
+      }
+    ],
+    featureRequestHistory: [
+      {
+        featureId: String,
+        title: String,
+        description: String,
+        requestedOn: Date
+      }
+    ],
+    feedbackHistory: [
+      {
+        feedbackId: String,
+        createdAt: Date,
+        message: String,
+        location: String
       }
     ]
 

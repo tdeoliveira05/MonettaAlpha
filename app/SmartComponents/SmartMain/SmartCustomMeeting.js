@@ -19,6 +19,7 @@ class SmartCustomMeeting extends React.Component {
       categoryList: defaultCategoryList,
       meetingData: {
         title: '',
+        meetingType: 'quick meeting',
         host: {
           fullName: localStorage.fullName,
           username: localStorage.username

@@ -1,0 +1,105 @@
+.AdminUsersNavBar
+  display: flex
+  height: 30px
+  width: 100%
+  margin-bottom: 10px
+  button
+    width: 100%
+    font-weight: bold
+    background-color: $blueMain
+    color: white
+    margin: 1px
+
+.AdminUsersWrapper
+  width: 100%
+  height: 100%
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  .AdminUsersContent
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    width: 70%
+    input
+      display: flex
+      width: 60%
+      height: 25px
+      border: none
+      border-bottom: 3px solid $grayLetters
+      box-shadow: 0px 1px 15px rgba(0,0,0,0.2)
+      padding: 0px 10px 0px 10px
+      &:focus
+        outline: none
+    h1, h2, h3, p
+      margin: 2px
+      padding: 0
+      color: $grayLetters
+    h1
+      color: black
+    .AdminUsersCard
+      display: flex
+      flex-direction: column
+      margin: 5px 0px 5px 0px
+      width: 100%
+      border: 1px solid $grayTop
+      box-shadow: 0px 1px 15px rgba(0,0,0,0.1)
+      padding: 10px
+      .UserHeading
+        display: flex
+        align-items: flex-end
+        justify-content: space-between
+        width: 100%
+        .UserHeadingDiv
+          display: flex
+          flex-direction: column
+          align-items: center
+          justify-content: center
+          height: 100%
+          width: 100%
+      .UserInfoSnippets
+        display: flex
+        width: 100%
+        flex-wrap: wrap
+        justify-content: space-between
+        .InfoSnippet
+          display: flex
+          flex-direction: column
+          align-items: center
+          justify-content: center
+          text-align: center
+          padding: 10px
+          width: 25%
+          h2
+            font-weight: bold
+      .UserFooter
+        display: flex
+        flex-direction: column
+        align-items: center
+        justify-content: center
+        width: 100%
+        .FooterCardUnit
+          display: flex
+          flex-direction: column
+          width: 100%
+          align-items: center
+          justify-content: center
+          transition: all 0.5s ease 0s
+          overflow: hidden
+          background-color: $grayTop
+          border-radius: 5px
+          .ExpandedCardList
+            display: flex
+            flex-direction: column
+            align-items: center
+            justify-content: center
+            width: 100%
+            overflow: hidden
+            height: 100%
+            .FooterCard
+              display: flex
+              flex-direction: column
+              overflow: hidden
+              width: 100%

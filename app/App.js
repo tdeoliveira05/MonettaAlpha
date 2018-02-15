@@ -5,6 +5,7 @@ import {withRouter} from 'react-router-dom'
 
 import SmartHome from './SmartComponents/SmartHome.js'
 import SmartMain from './SmartComponents/SmartMain.js'
+import SmartAdmin from './SmartComponents/SmartAdmin.js'
 
 //------------------------- Initialize web socket ----------------------------//
 
@@ -16,6 +17,7 @@ class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
+      admin: false,
       appLocation: 'home',
       userTokenObj: {
         username: localStorage.username,
@@ -47,7 +49,14 @@ class App extends React.Component {
     this.signOut                = this.signOut.bind(this)
     this.initializeUserSettings = this.initializeUserSettings.bind(this)
     this.initializeWebSocket    = this.initializeWebSocket.bind(this)
+    this.checkIfAdmin           = this.checkIfAdmin.bind(this)
+    this.resetLocalStorage      = this.resetLocalStorage.bind(this)
 	}
+
+  componentWillReceiveProps () {
+    console.log('component will receive props')
+
+  }
 
   componentWillMount () {
     if (localStorage.access_token && this.state.isLoggedIn === false) {
@@ -65,8 +74,9 @@ class App extends React.Component {
     })
     .then((successObj) => {
       if (!successObj.data.success) {
-        console.log(successObj.data.errorText)
+        console.log('user not identified.')
         this.setState({isLoggedIn: false})
+        this.resetLocalStorage()
       } else {
         console.log('Welcome back!')
         localStorage.username = successObj.data.username
@@ -74,6 +84,7 @@ class App extends React.Component {
         this.initializeUserSettings()
         this.initializeWebSocket()
         this.setState({isLoggedIn: true})
+        if (successObj.data.admin) this.setState({admin: true})
       }
     })
     .catch((error) => {
@@ -104,7 +115,7 @@ class App extends React.Component {
     socketInit = io('http://localhost:8080')
   }
 
-  submitUserTokenObj (userTokenObjVal) {
+  submitUserTokenObj (userTokenObjVal, admin) {
     localStorage.access_token    = 'bearer ' + userTokenObjVal.token
     localStorage.username        = userTokenObjVal.username
     localStorage.fullName        = userTokenObjVal.fullName
@@ -113,7 +124,12 @@ class App extends React.Component {
     axios.defaults.headers.common['access_token'] = localStorage.access_token
     this.initializeWebSocket()
 
-    this.setState({appLocation: 'app'})
+
+    if (admin) {
+      this.setState({appLocation: 'admin', admin: true})
+    } else {
+      this.setState({appLocation: 'app'})
+    }
   }
 
   changeAppLocation (direction) {
@@ -121,19 +137,40 @@ class App extends React.Component {
   }
 
   signOut () {
-    console.log('Signing out...')
+    this.resetLocalStorage()
+    this.setState({appLocation: 'home'})
+  }
+
+  resetLocalStorage () {
     localStorage.removeItem('access_token')
     localStorage.removeItem('username')
     localStorage.removeItem('fullName')
-    this.setState({appLocation: 'home', isLoggedIn: false})
+    this.setState({isLoggedIn: false, admin: false})
+  }
+
+  checkIfAdmin () {
+    if (this.state.admin) {
+      return (
+        <div style = {{width: '100%', display: 'flex', height: '40px'}}>
+          <button onClick = {() => this.changeAppLocation('app')} style = {{width: '50%', height: '100%', backgroundColor: 'gray', color: 'white', fontWeight: 'bold', marginRight: '1px'}}> User view </button>
+          <button onClick = {() => this.changeAppLocation('admin')} style = {{width: '50%', height: '100%', backgroundColor: 'gray', color: 'white', fontWeight: 'bold', marginLeft: '1px'}}> Admin Panel </button>
+        </div>
+      )
+    } else {
+      return (<div></div>)
+    }
   }
 
 
 
   render() {
     //---------------------------CONDITIONS-------------------------------------
+
+    console.log(this.props)
+
     var socket
     if (socketInit) socket = socketInit
+    var adminControls = this.checkIfAdmin()
     //----------------------------RETURN----------------------------------------
     switch(this.state.appLocation) {
       case 'home':
@@ -142,12 +179,16 @@ class App extends React.Component {
           submitUserTokenObj   = {this.submitUserTokenObj}
           changeAppLocation    = {this.changeAppLocation}
           isLoggedIn           = {this.state.isLoggedIn}
+          admin                = {this.state.admin}
+          resetLocalStorage    = {this.resetLocalStorage}
+          signOut              = {this.signOut}
         />
       )
 
       case 'app':
       return (
         <div>
+          {adminControls}
           <SmartMain
             userTokenObj       = {this.state.userTokenObj}
             submitUserTokenObj = {this.submitUserTokenObj}
@@ -155,9 +196,26 @@ class App extends React.Component {
             signOut            = {this.signOut}
             userSettings       = {this.state.userSettings}
             socket             = {socket}
+            admin              = {this.state.admin}
           />
         </div>
       )
+
+      case 'admin':
+        return (
+          <div>
+            {adminControls}
+            <SmartAdmin
+              userTokenObj       = {this.state.userTokenObj}
+              submitUserTokenObj = {this.submitUserTokenObj}
+              changeAppLocation  = {this.changeAppLocation}
+              signOut            = {this.signOut}
+              userSettings       = {this.state.userSettings}
+              socket             = {socket}
+              admin              = {this.state.admin}
+            />
+          </div>
+        )
     }
   }
 }

@@ -16,7 +16,9 @@ class SmartYourVoice extends React.Component {
     this.state = {
       featureListObj: {
         approved: [],
-        notApproved: []
+        notApproved: [],
+        finished: [],
+        removed: []
       },
       userFeatureVotes: [],
       dialogToggle: false,
@@ -64,7 +66,7 @@ class SmartYourVoice extends React.Component {
     axios.post('http://localhost:8080/secure/userDocument/getUserDoc')
     .then((resultsObj) => {
       if (resultsObj.data.success) {
-        var voteHistory = resultsObj.data.userDoc.data.appUsage.voteHistory
+        var voteHistory = resultsObj.data.userDoc.data.userHistory.voteHistory
         var votesLeftVal = resultsObj.data.userDoc.data.appUsage.weeklyVotesLeft
         this.setState({userFeatureVotes: voteHistory, votesLeft: votesLeftVal})
       } else {
@@ -109,14 +111,10 @@ class SmartYourVoice extends React.Component {
     //Check if used has already voted for this feature, if so block him from it
     var featureList = this.createFeatureList()
     var allow = true
-    console.log(featureList)
 
     // if there are no more votes left to give out
     if (this.state.votesLeft === 0) {
       // first check if they are just trying to change their vote or if they are trying to vote for an entirely new feature
-      console.log('in ===0')
-      console.log(index)
-      console.log(featureList.approved[index])
       if (featureList.approved[index].voted === 0 || featureList.approved[index].voted === undefined) {
         alert('You are currently out of votes, please wait until next week to receive more votes!')
         return
@@ -160,14 +158,12 @@ class SmartYourVoice extends React.Component {
       this.setState({commentError: 'Please fill in your comment before posting'})
       return
     }
-    console.log('submit comment')
     const self = this
     axios.post('http://localhost:8080/secure/featureDocument/submitComment', {
       featureId: targetFeatureItem._id,
       text: this.state.tempComment
     })
     .then((results) => {
-      console.log(results)
       this.setState({tempComment: ''})
       results.data.success ? this.props.socket.emit('getAllFeatureDocs') : alert(results.body.errorText)
       this.popUpSnackbar('Thanks for submitting your comment!')
@@ -188,7 +184,6 @@ class SmartYourVoice extends React.Component {
       description: this.state.tempFeatureDescription
     })
     .then((results) => {
-      console.log(results)
       this.dialogToggleFunction()
       this.popUpSnackbar('Thanks for submitting a suggestion!')
     })

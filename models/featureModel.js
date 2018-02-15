@@ -3,11 +3,17 @@ const Schema = mongoose.Schema;
 
 const FeatureSchema = new Schema({
   title: {type: String, default: ''},
+  originalRequester: {
+    fullName: {type: String, required: true},
+    username: {type: String, required: true},
+    originalDescription: {type: String, default: ''}
+  },
   description: {type: String, default: ''},
-  approved: {type: Boolean, default: false},
+  status: {type: String, default: 'notApproved'},
   totalVotes: {type: Number, default: 0},
-  comments: {type: Array, default: []}
-}, {timeStamp: true});
+  comments: {type: Array, default: []},
+  requestedOn: {type: Date, default: new Date}
+}, {timestamps: true});
 
 const Feature = mongoose.model('feature', FeatureSchema);
 

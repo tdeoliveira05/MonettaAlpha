@@ -4,18 +4,23 @@ const serverTools = requireDir('./serverTools', {recurse: true}) // special node
 
 module.exports = function (meetingData, res) {
 
+
+
   serverTools.create.meetingDoc(meetingData)
-  .then((newDoc) => {
-    return serverTools.save.thisDoc(newDoc) 
+  .then((newMeetingDoc) => {
+    return serverTools.save.thisDoc(newMeetingDoc)
   })
-  .then((newDoc) => {
+  .then((meetingDoc) => {
     console.log('successfully saved meeting document')
-    console.log(newDoc)
-  	res.send({success: true, errorText: ''})
+    console.log(meetingDoc)
+    return serverTools.stats.processNewMeetingDoc(meetingDoc).catch((error) => console.log(error))
+  })
+  .then((results) => {
+    res.send({success: true, errorText: ''})
   })
   .catch((error) => {
     console.log('reached logic function - entered .catch')
-    console.log('[enterNewMeeting.js]' + error)
+    console.log('[submitNewMeeting.js]' + error)
     res.send({success: false, errorText: error})
   })
 }

@@ -1,0 +1,58 @@
+.AdminCodesWrapper
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  width: 100%
+  height: 100%
+  .AdminCodesContent
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    width: 80%
+    button
+      transition: all 0.5s ease 0s
+      display: flex
+      flex-direction: column
+      align-items: center
+      justify-content: center
+      color: $blueMain
+      padding: 5px
+      border-radius: 2px
+      &:hover
+        background-color: $blueMain
+        color: white
+        box-shadow: 0px 1px 15px rgba(0,0,0,0.2)
+    .AdminCodesInputDiv
+      display: flex
+      flex-direction: column
+      width: 100%
+      .AdminCodesInputButtons
+        display: flex
+        width: 80%
+        align-items: center
+        justify-content: space-between
+    .AdminCodesList
+      display: flex
+      justify-content: space-around
+      width: 100%
+      .AdminCodesListDiv
+        display: flex
+        flex-direction: column
+        width: 40%
+        .UsedCodePaper
+          display: flex
+          flex-direction: column
+          box-shadow: 0px 1px 20px rgba(0,0,0,0.2)
+          margin: 2px
+          padding: 10px
+          h3, p
+            margin: 2px
+            padding: 0
+        .AvailableCodePaper
+          display: flex
+          align-items: center
+          justify-content: space-between
+          padding: 10px
+          margin: 0

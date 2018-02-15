@@ -13,15 +13,13 @@ module.exports = function () {
 
       var featureListObj = {
         approved: [],
-        notApproved: []
+        notApproved: [],
+        finished: [],
+        removed: []
       }
 
       featureDocArray.map((item) => {
-        if (item.approved) {
-          featureListObj.approved.push(item)
-        } else {
-          featureListObj.notApproved.push(item)
-        }
+        featureListObj[item.status].push(item)
       })
       resolve(featureListObj)
     })

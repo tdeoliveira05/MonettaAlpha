@@ -194,31 +194,33 @@ class SmartUserSettings extends React.Component {
   }
 
   render () {
-    console.log(this.props.userSettings)
     //---------------------------CONDITIONS-------------------------------------
     var participantsList = this.createParticipantList()
     //----------------------------RETURN----------------------------------------
     return(
-      <DumbUserSettings
-        participantsList       = {participantsList}
-        tempMins               = {this.state.userSettings.quickMeeting.timeElapsed.formattedExpectedDuration.split(' ')[0]}
-        defaultTitle           = {this.state.userSettings.quickMeeting.title}
-        defaultLocation        = {this.state.userSettings.quickMeeting.location}
-        snackbarOpen           = {this.state.snackbarOpen}
-        automaticEmails        = {this.state.automaticEmails}
-        onChange               = {this.onQuickMeetingChange}
-        onCheck                = {this.onCheck}
-        changeExpectedDuration = {this.changeExpectedDuration}
-        onSave                 = {this.onSave}
-        onDelete               = {this.onDelete}
-        onReset                = {this.onReset}
-        onAdd                  = {this.onAdd}
-        onParticipantChange    = {this.onParticipantChange}
-        handleSnackbarOpen     = {this.handleSnackbarOpen}
-        titleError             = {this.state.errorText.title}
-        locationError          = {this.state.errorText.location}
-        participantError       = {this.state.errorText.participants}
-      />
+      <div>
+        <button style = {{width: '100%', color: 'white', backgroundColor: 'gray', height: '40px'}} onClick = {this.props.signOut}> Sign Out </button>
+        <DumbUserSettings
+          participantsList       = {participantsList}
+          tempMins               = {this.state.userSettings.quickMeeting.timeElapsed.formattedExpectedDuration.split(' ')[0]}
+          defaultTitle           = {this.state.userSettings.quickMeeting.title}
+          defaultLocation        = {this.state.userSettings.quickMeeting.location}
+          snackbarOpen           = {this.state.snackbarOpen}
+          automaticEmails        = {this.state.automaticEmails}
+          onChange               = {this.onQuickMeetingChange}
+          onCheck                = {this.onCheck}
+          changeExpectedDuration = {this.changeExpectedDuration}
+          onSave                 = {this.onSave}
+          onDelete               = {this.onDelete}
+          onReset                = {this.onReset}
+          onAdd                  = {this.onAdd}
+          onParticipantChange    = {this.onParticipantChange}
+          handleSnackbarOpen     = {this.handleSnackbarOpen}
+          titleError             = {this.state.errorText.title}
+          locationError          = {this.state.errorText.location}
+          participantError       = {this.state.errorText.participants}
+        />
+      </div>
     )
   }
 }

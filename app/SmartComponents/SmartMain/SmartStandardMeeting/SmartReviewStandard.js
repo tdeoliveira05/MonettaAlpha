@@ -42,7 +42,6 @@ class SmartReviewStandard extends React.Component {
   }
 
   finishMeeting () {
-    console.log('finished meeting')
     this.updateParentMeetingData()
     this.props.handleIndexChange('finished')
     this.redirectToPath('storage')
@@ -74,7 +73,6 @@ class SmartReviewStandard extends React.Component {
   }
 
   handleNoteItemDelete (targetIndex) {
-    console.log(targetIndex)
     var newNoteList = this.state.notes
     newNoteList.splice(targetIndex, 1)
     this.setState({notes: newNoteList})
