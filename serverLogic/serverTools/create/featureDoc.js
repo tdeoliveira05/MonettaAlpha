@@ -8,9 +8,9 @@ module.exports = function (featureReq, userInfo) {
       title: featureReq.body.title,
       originalRequester: {
         fullName: userInfo.fullName,
-        username: userInfo.username
-      },
-      description: featureReq.body.description
+        username: userInfo.username,
+        originalDescription: featureReq.body.description
+      }
     });
 
     if (newFeatureDoc) {

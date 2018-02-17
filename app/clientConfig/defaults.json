@@ -15,5 +15,6 @@
       "color": "rgb(70,153,255)",
       "category": "decision"
     }
-  }
+  },
+  "serverLocation": "http://localhost:8080"
 }

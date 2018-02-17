@@ -24,6 +24,7 @@ const Feature              = require('./models/featureModel.js')
 const User                 = require('./models/userModel.js')
 const Meeting              = require('./models/meetingModel.js')
 const Code                 = require('./models/codeModel.js')
+const cookie               = require('cookie')
 
 //------------------------------------------------------------------------------
 // Import entire directory of server logic and tools
@@ -87,13 +88,8 @@ if(process.env.NODE_ENV=='production') app.use(yes());;
 //--------------------------------SERVER ROUTES-------------------------------//
 //--------------------------------LOGIN/SIGNUP--------------------------------//
 /* -----------------------------------------------------------------------------
-Processes a login request
-Process =>
-1. Checks the database for a username matching the one typed by the username
-2. Compares the attempted password to the password in the retrieved user document
-3. Allows login if sucessful
-
-SECURITY RISK - server only needs to send a username to front-end to force a login
+PURPOSE:
+This route processes a request to login
 
 -------------------
 
@@ -126,13 +122,8 @@ app.post('/request/login',function(req, res){
 })
 
 /* -----------------------------------------------------------------------------
-Processes a signup request
-Process =>
-1. Check if username is taken up
-2. Validate the attempted signup code
-3. Create a new user document with the input data
-4. Save the user document to the database
-5. Update the code document correspondent to the new user document
+PURPOSE:
+This route processes a request to sign up
 
 -------------------
 
@@ -165,10 +156,8 @@ app.post('/request/signup', function(req, res) {
 })
 
 /* -----------------------------------------------------------------------------
-Processes an alpha trial request
-Process =>
-1. parses data into an email
-2. sends to team@monettatech.com
+PURPOSE:
+This route processes a request to join the alpha user base
 
 -------------------
 
@@ -196,121 +185,23 @@ app.post('/request/alpha', function(req, res) {
 
 //--------------------------AUTHENTICATION MIDDLEWARE-------------------------//
 // This function will authenticate every user looking to use any post/get route
-// that follows underneath using the protectRoute router
-// token always needs to be sent with the request if the client-side is making
-// a request
+// cookies are used for authentication
 
 
-app.post('/authenticateMe',  function(req, res) {
-  var tokenArray = req.body.token.split(' ')
-  var token = tokenArray[1]
-
-  jwt.verify(token, secret, (error, authData) => {
-    if (error) {
-      console.log('could not authenticate user - ' + error)
-      res.send({success: false, errorText: error})
-    } else {
-      console.log('User: ' + authData.username + ' was already logged in')
-      User.findOne({_id: authData.id})
-      .then((userDoc) => {
-        if (!userDoc) {
-          console.log('FAILURE TO AUNTHENTICA - USER DOES NOT EXIST')
-          res.send({success: false, errorText: 'no user found'})
-        }else if (userDoc.admin) {
-          console.log('SUCESSFULLY AUTHENTICATED ADMIN')
-          serverLogic.serverTools.stats.processUserLogin(userDoc.username).catch((error) => console.log(error))
-          res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username, admin: true})
-        } else {
-          console.log('SUCESSFULLY AUTHENTICATED USER')
-          serverLogic.serverTools.stats.processUserLogin(userDoc.username).catch((error) => console.log(error))
-          res.send({success: true, errorText: '', fullName: userDoc.firstName + ' ' + userDoc.lastName, username: userDoc.username})
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    }
-
-  })
+app.post('/authenticate',  function(req, res, next) {
+  serverLogic.authenticate (req, res, next)
 })
 
 // this must be after the request routes. those three routes do not need a jwt to user
 // all of the routes below NEED a jwt so we are going to authenticate that jwt before it reaches the route
 // if it is wrong we are blocking it, if it is correct we are letting it through
-app.use(function (req, res, next) {
-  console.log(req.headers.cookie)
-  next()
-  /*
-  console.log('-------------------- AUTHENTICATION MIDDLEWARE --------------------------')
-  console.log('path: ' + req.path)
-
-  if (!req.headers.access_token && req.path.includes('secure')) {
-      console.log('no access_token found - route blocked:')
-      console.log(req.path)
-      res.sendStatus(500)
-  } else if (!req.headers.access_token && !req.path.includes('secure') && !req.path.includes('admin')) {
-    console.log('path does not need secure authorization')
-    console.log('------------> allowing route')
-    next()
-  } else if (req.headers.access_token && req.path.includes('secure')) {
-    console.log('header detected')
-    const bearerHeader = req.headers.access_token
-    const bearer       = bearerHeader.split(' ')
-    const token        = bearer[1]
-
-      jwt.verify(token, secret, (error, authData) => {
-        if (error) {
-          console.log('error was found: ' + error)
-          console.log('------------> redirecting')
-          res.sendFile(indexPath)
-        } else {
-          // the token checks out and they are trying to access a secure path
-          // before allowing route, if they are trying to access an admin route, make sure they are actually an admin
-          if (req.path.includes('admin')) {
-            User.findOne({_id: authData.id})
-            .then((userDoc) => {
-              console.log(userDoc)
-              if (userDoc.admin) {
-                //user is admin and wants to access an admin route
-                console.log('hello admin')
-                console.log('no error found')
-                console.log('------------> allowing route')
-                next()
-              } else {
-                // user is not admin and trying to access a restricted route
-                console.log(userDoc.admin)
-                res.send('No admin privileges')
-              }
-            })
-            .catch((error) => {
-              console.log(error)
-            })
-          } else {
-            // user is not trying to access an amdin route and they have already been authenticated, so let them through
-            console.log('no error found')
-            console.log('------------> allowing route')
-            next()
-          }
-        }
-      })
-
-  } else {
-    console.log('unknown path')
-    res.send(500)
-  }
-  console.log('-------------------------------------------------------------------------')
-  */
-})
-
-
 
 
 //-----------------------------ROUTES CONTINUED-------------------------------//
 /* -----------------------------------------------------------------------------
-Updates user document with additional information
-Process =>
-1. finds the user document in database
-2. updates relevant fields
+PURPOSE:
+This route updates the information of a user who has logged in for the first time
+updating their first/last name and adding an organization + job position field
 
 -------------------
 
@@ -323,22 +214,20 @@ inputObject = req.body = {
   }
 }
 
-outputObject = req.body = {
+outputObject = successObj = req.body = {
   sucess: BOOLEAN,
   errorText: STRING
 }
 
-}*/
+*/
 
 app.post('/secure/userDocument/updateInfo', function(req,res) {
 	serverLogic.updateUserDocInfo(req, res)
 })
 
 /* -----------------------------------------------------------------------------
-Updates a user's settings and preferences based on a new settings object
-Process =>
-1. finds the user document in database
-2. updates relevant fields
+PURPOSE:
+This route overwrites the logged in user's settings in their user document
 
 -------------------
 
@@ -348,7 +237,7 @@ inputObject = req.body = {
   }
 }
 
-outputObject = req.body = {
+outputObject = successObj = req.body = {
   sucess: BOOLEAN,
   errorText: STRING
 }
@@ -358,12 +247,10 @@ outputObject = req.body = {
 app.post('/secure/userDocument/updateSettings', function(req,res) {
 	serverLogic.updateUserSettings(req, res)
 })
-/* -----------------------------------------------------------------------------
-Retrieves user settings and preferences
-Process =>
-1. finds the user document in database
-2. returns settings object
 
+/* -----------------------------------------------------------------------------
+PURPOSE:
+This route returns the logged in user's settings from their document
 -------------------
 
 NO INPUT OBJECT (JSON web token is used for identification)
@@ -380,10 +267,8 @@ app.post('/secure/userDocument/getSettings', function(req,res) {
 	serverLogic.getUserSettings(req, res)
 })
 /* -----------------------------------------------------------------------------
-Retrieves user document
-Process =>
-1. finds the user document in database
-2. returns entire doc
+PURPOSE:
+This route returns the logged in user's entire document
 
 -------------------
 
@@ -401,45 +286,15 @@ app.post('/secure/userDocument/getUserDoc', function(req,res) {
 	serverLogic.getUserDoc(req, res)
 })
 /* -----------------------------------------------------------------------------
-Enters a new meeting into the database
-Process =>
-1. Creates a new meeting document using the meeting schema
-2. Saves the resultant meeting document to database
+PURPOSE:
+This route submits a new meeting document to the database
 
 -------------------
 
 inputObject = req.body = {
-  title: String,
-  host: { fullName: String, email: String},
-  participants: [{
-    fullName: String,
-    email: String,
-    guest: Boolean
-  }],
-  date: {type: String, default: Date.now()},
-  location: String,
-  goals: [{
-    text: String,
-    completed: Boolean,
-    completionTimeStamp: Number,
-    metaData: Object
-  }],
-  notes: [{
-      text: String,
-      category: String,
-      timeStamp: Number,
-      formattedTimeStamp: String,
-      metaData: Object
-  }],
-  metaData: {starred: Boolean, category: String},
-  meetingStats: {
-    timeElapsed: {
-      actualDuration: Number,
-      formattedActualDuration: String,
-      expectedDuration: Number,
-      formattedExpectedDuration: String
-    }
-  }
+  title: ...,
+  etc...
+  see meetingModel.js for structure
 }
 
 outputObject = req.body = {
@@ -454,10 +309,9 @@ app.post('/secure/meetingDocument/submit', function(req,res) {
 })
 
 /* -----------------------------------------------------------------------------
-Finds and returns ALL meeting documents belonging to a host according to sorting and filtering options
-Process =>
-1. search DB for all meeting documents matching the host user
-2. return a JSON.stringify(docArray) which is an array of meeting documents owned by the host user
+PURPOSE:
+This route returns all of the meeting documents pertaining to the logged in user
+the documents can be sorted or filtered depending on client requirements
 
 -------------------
 
@@ -473,8 +327,6 @@ inputObject = req.body = {
 
   }
 }
-- no username needed since it is extracted from the authentication token
-- use lowercase for field name and uppercase for sorting order
 
 outputObject = res = {
 data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
@@ -485,12 +337,8 @@ app.post('/secure/meetingDocument/findByUser',function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
-Finds and permanently deletes a meeting document from DB
-Process =>
-1. Finds the document in the database using the received _id
-2. Deletes the found document from the database
-
-SECURITY RISK - the user is requesting PERMANENT deletion of the chosen document
+PURPOSE:
+This route deletes a meeting document using its _id
 
 -------------------
 
@@ -506,11 +354,8 @@ app.post('/secure/meetingDocument/deleteById',function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
-Finds and updates a meeting document by overwriting it in the DB
-Process =>
-1.
-
-SECURITY RISK - the user is requesting PERMANENT update of the chosen document
+PURPOSE:
+This route overwrites an entire meeting document
 
 -------------------
 
@@ -529,48 +374,39 @@ app.post('/secure/meetingDocument/overwriteThisDocument', function(req,res){
 })
 
 /* -----------------------------------------------------------------------------
-Enters a new meeting into the database
-Process =>
-1. Creates a new feedback document using the feedback schema
-2. Saves the resultant feedback document to database
-3. Sends message to Slack channel
+PURPOSE:
+This route submits a new feedback document to the database
 
 -------------------
 
+inputObject = req.body = {
+  feedback: {
+    message: String,
+    location: String
+  }
+}
 
+outputObject = successObj = res.data = {
+  success: Boolean,
+  errorText: String
+}
 */
 
 app.post('/secure/feedbackDocument/submit', function(req,res) {
 	serverLogic.submitNewFeedback(req, res)
 })
 
-/* -----------------------------------------------------------------------------
-Retrieves all feature documents
-
-Process =>
-1.
-
--------------------
-
-
-*/
-
-app.post('/secure/featureDocument/findAll', function(req,res) {
-	console.log('reached get all features')
-  res.send()
-})
 
 /* -----------------------------------------------------------------------------
-Updates the feature document's total votes and the user document's feature vote
-
-Process =>
-1.
+PURPOSE:
+This route updates a feature document with a new comment made by the logged in
+user.
 
 -------------------
 
 inputObject = req.body = {
   featureId: String,
-  text: Number  // (-1 || 1)
+  text: String
 }
 
 outputObject = res.data = {
@@ -585,16 +421,15 @@ app.post('/secure/featureDocument/submitComment', function (req, res) {
 
 })
 /* -----------------------------------------------------------------------------
-Submits a new feature
-
-Process =>
-1.
+PURPOSE:
+This route submis a new requested feature document into the database
+which is automatically assigned to "notApproved"
 
 -------------------
 
 inputObject = req.body = {
-  featureId: String,
-  userVote: Number  // (-1 || 1)
+  title: String,
+  description: String
 }
 
 outputObject = res.data = {
@@ -610,9 +445,8 @@ app.post('/secure/featureDocument/submit', function (req, res) {
 })
 
 /* -----------------------------------------------------------------------------
-Overwrite feature document
-
-
+PURPOSE:
+This route will overwrite an old feature document with the new feature document
 -------------------
 
 inputObject = req.body = {
@@ -635,10 +469,8 @@ app.post('/secure/featureDocument/overwrite', function (req, res) {
 })
 
 /* -----------------------------------------------------------------------------
-Submits a comment to a feature
-
-Process =>
-1.
+PURPOSE:
+This route will update a feature document's total votes based on the logged in user's input
 
 -------------------
 
@@ -726,11 +558,25 @@ app.get('*', function (request, response) {
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 
+
+
+io.use(function (socket, next) {
+  console.log('-')
+  console.log('*******************************************************')
+  console.log('HANDSHAKE MIDDLEWARE (AUTHENTICATION)')
+  console.log('-')
+
+  console.log(socket.handshake)
+  next()
+
+  console.log('-')
+  console.log('*******************************************************')
+  console.log('-')
+})
+
 io.on('connection', function (socket) {
 // This is where all socket functionality and the socket's lifecyle is built
-  console.log('~ Successful web socket connected: ' + socket.id)
-
-  console.log(socket)
+  console.log('ONE USER CONNECTED' + socket.id)
 
   /*---------------------------------------------------------------------------
   Real time feature document functions
@@ -745,7 +591,7 @@ io.on('connection', function (socket) {
 
   Both lists are sorted by descending totalVotes
   */
-  socket.on('getAllFeatureDocs', function () {
+  socket.on('getAllFeatureDocs', function returnAllFeatureDocs(socket, data) {
     // this command takes a little while to process so it needs to be structure as a promise to act on socket.emit only after query returns
     serverLogic.returnAllFeatureDocs()
     .then((featureListObj) => {

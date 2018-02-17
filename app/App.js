@@ -2,10 +2,12 @@
 import React from 'react'
 import axios from 'axios'
 import {withRouter} from 'react-router-dom'
+import Cookies from 'js-cookie'
 
 import SmartHome from './SmartComponents/SmartHome.js'
 import SmartMain from './SmartComponents/SmartMain.js'
 import SmartAdmin from './SmartComponents/SmartAdmin.js'
+import config from './clientConfig/defaults.json'
 
 //------------------------- Initialize web socket ----------------------------//
 
@@ -21,8 +23,7 @@ class App extends React.Component {
       appLocation: 'home',
       userTokenObj: {
         username: localStorage.username,
-        fullName: localStorage.fullName,
-        token: localStorage.token
+        fullName: localStorage.fullName
       },
       isLoggedIn: false,
       userSettings: {
@@ -45,7 +46,7 @@ class App extends React.Component {
 
     this.submitUserTokenObj     = this.submitUserTokenObj.bind(this)
     this.changeAppLocation      = this.changeAppLocation.bind(this)
-    this.authenticateMe         = this.authenticateMe.bind(this)
+    this.authenticate           = this.authenticate.bind(this)
     this.signOut                = this.signOut.bind(this)
     this.initializeUserSettings = this.initializeUserSettings.bind(this)
     this.initializeWebSocket    = this.initializeWebSocket.bind(this)
@@ -53,44 +54,53 @@ class App extends React.Component {
     this.resetLocalStorage      = this.resetLocalStorage.bind(this)
 	}
 
-  componentWillReceiveProps () {
-    console.log('component will receive props')
-
-  }
-
   componentWillMount () {
-    if (localStorage.access_token && this.state.isLoggedIn === false) {
+    console.log(Cookies.get())
+    if (Cookies.get('access_token') && this.state.isLoggedIn === false) {
       console.log('authenticating...')
-      this.authenticateMe(localStorage.access_token)
-    } else if (!localStorage.access_token) {
-      localStorage.removeItem('username')
-      localStorage.removeItem('fullName')
+
+      // run first authentication http route
+      this.authenticate()
+
+    } else if (!Cookies.get('access_token')) {
+      // reset local storage of erroneous information
+      this.resetLocalStorage()
+
     }
   }
 
-  authenticateMe (tokenVal) {
-    axios.post('http://localhost:8080/authenticateMe', {
-      token: tokenVal
-    })
+  authenticate () {
+    const self = this
+
+    // send initial authentication HTTP route to open web socket
+    axios.post(config.serverLocation + '/authenticate')
     .then((successObj) => {
       if (!successObj.data.success) {
-        console.log('user not identified.')
+        // null out their ability to log in with a single click
         this.setState({isLoggedIn: false})
+
+        // reset localStorage of username and fullname
         this.resetLocalStorage()
+
       } else {
-        console.log('Welcome back!')
+        // refresh local storage in case of any changes
         localStorage.username = successObj.data.username
         localStorage.fullName = successObj.data.fullName
+
+        // initializeUserSettings for SmartUserSettings component
         this.initializeUserSettings()
+
+        //Open an authenticated connection to the web socket (hadnshake will take place)
         this.initializeWebSocket()
+
+        // Let the user in without having to log in
         this.setState({isLoggedIn: true})
+
+        // enter admin flag into state
         if (successObj.data.admin) this.setState({admin: true})
       }
     })
-    .catch((error) => {
-      console.log(error)
-    })
-
+    .catch((error) => {console.log(error)})
     return this.state.isLoggedIn
   }
 
@@ -112,16 +122,15 @@ class App extends React.Component {
 
   initializeWebSocket () {
     console.log('initializing operations...')
-    socketInit = io('http://localhost:8080')
+    socket = io(config.serverLocation)
   }
 
   submitUserTokenObj (userTokenObjVal, admin) {
-    localStorage.access_token    = 'bearer ' + userTokenObjVal.token
-    localStorage.username        = userTokenObjVal.username
-    localStorage.fullName        = userTokenObjVal.fullName
+    Cookies.set('access_token', 'bearer ' + userTokenObjVal.token)
 
+    localStorage.username = userTokenObjVal.username
+    localStorage.fullName = userTokenObjVal.fullName
 
-    axios.defaults.headers.common['access_token'] = localStorage.access_token
     this.initializeWebSocket()
 
 
@@ -142,7 +151,7 @@ class App extends React.Component {
   }
 
   resetLocalStorage () {
-    localStorage.removeItem('access_token')
+    Cookies.remove('access_token')
     localStorage.removeItem('username')
     localStorage.removeItem('fullName')
     this.setState({isLoggedIn: false, admin: false})
@@ -165,8 +174,6 @@ class App extends React.Component {
 
   render() {
     //---------------------------CONDITIONS-------------------------------------
-
-    console.log(this.props)
 
     var socket
     if (socketInit) socket = socketInit
@@ -221,8 +228,3 @@ class App extends React.Component {
 }
 
 export default withRouter(App)
-
-/*
-
-
-*/
