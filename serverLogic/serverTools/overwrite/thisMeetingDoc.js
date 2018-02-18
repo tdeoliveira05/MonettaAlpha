@@ -5,11 +5,11 @@ module.exports = function (newMeetingDoc) {
   return new Promise (function(resolve, reject) {
 
     Meeting.replaceOne({_id: newMeetingDoc._id}, newMeetingDoc)
-    .then((returnObj) => {
-      resolve(returnObj)
+    .then(() => {
+      resolve({success: true, errorText: ''})
     })
     .catch((error) => {
-      reject(error)
+      reject({success: false, errorText: error})
     })
   })
 }

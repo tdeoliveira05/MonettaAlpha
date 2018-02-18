@@ -9,10 +9,10 @@ module.exports = function (Schema, paramObj) {
     Schema.remove(paramObj)
     .then(() => {
       console.log('sucess deleting doc matching: ' + paramObj)
-      resolve()
+      resolve({success: true, errorText: ''})
     })
     .catch((error) => {
-      reject('ERROR(delete/singleDoc.js):' + error)
+      reject({success: true, errorText: error})
     })
   })
 }

@@ -50,7 +50,7 @@ export default class SmartDocumentMain extends React.Component {
 
     this.handleTempChange               = this.handleTempChange.bind(this)
 
-    this.intializeStateVariables        = this.intializeStateVariables.bind(this)
+    this.initializeStateVariables        = this.initializeStateVariables.bind(this)
     this.handleSearchTextChange         = this.handleSearchTextChange.bind(this)
     this.handleFilterButtonClick        = this.handleFilterButtonClick.bind(this)
     this.handleLocationFilterChange     = this.handleLocationFilterChange.bind(this)
@@ -310,7 +310,7 @@ export default class SmartDocumentMain extends React.Component {
     }
   }
 
-  intializeStateVariables(docArrayVal) {
+  initializeStateVariables(docArrayVal) {
     // Getting all unique locations for filter menu
     let allPossibleLocations = [...new Set(docArrayVal.map((meeting) =>{
       return meeting.location;
@@ -368,6 +368,7 @@ export default class SmartDocumentMain extends React.Component {
       meetingCardEditEnabled[meeting._id] = false
     })
 
+    //TODO: this does not need to be 7 different calls (-Thiago)
     this.setState({meetingCardExpanded})
     this.setState({meetingCardSelected})
     this.setState({meetingCardEditEnabled})
@@ -381,67 +382,42 @@ export default class SmartDocumentMain extends React.Component {
   //----------------------------------------------------------------------------
   getAllMeetingDocs (sortObjVal) {
     const self = this
-    axios.post('http://localhost:8080/secure/meetingDocument/findByUser', {
-      sortObj: sortObjVal
-    })
 
-    .then((docArrayResponse) => {
-      var docArrayVal = docArrayResponse.data;
-      // Reordered the meetings to display most recent first
-      // docArrayVal.sort((a, b) => {
-      //   return new Date(b.date) - new Date(a.date)
-      // });
+    socket.emit('/secure/meetingDocument/findByUser', {sortObj: sortObjVal})
 
-      this.intializeStateVariables(docArrayVal);
-      this.setState({docArray: docArrayVal});
-
-    })
-
-    .catch((error) => {
-      console.log('ERROR(getAllMeetingDocs): ' + error)
+    socket.on('response/secure/meetingDocument/findByUser', function (data) {
+      self.initializeStateVariables(data)
+      self.setState({docArray: data})
     })
   }
 
   deleteThisMeetingDoc (targetDocumentIdVal) {
     const self = this
-    // Initialize the axios post route
-    axios.post('http://localhost:8080/secure/meetingDocument/deleteById', {
-      // include the target document's id
-      targetDocumentId: targetDocumentIdVal
-    })
-    .then((successObject) => {
-      // if the axios route isnt trying to retrieve an actual piece of data and
-      // just sending a command, the server will return a
-      // successObject = { success: Boolean, errorText: String}
-      console.log(successObject)
-      // a simple ternary expression that checks the success boolean in
-      // successObject just to make sure everything went okay, if not it prints the error message
-      successObject.data.success ? console.log('success') : console.log('something is up: ' + successObject.data.errorText)
-    })
-    .catch((error) => {
-      // cant forget to print out the error of course in case things go south
-      console.log('ERROR(deleteThisMeetingDoc): ' + error)
+    console.log('deleting..')
+    socket.emit('/secure/meetingDocument/deleteById', {targetDocumentId: targetDocumentIdVal})
+
+    socket.on('response/secure/meetingDocument/deleteById', function (data) {
+      console.log('hey there')
+      console.log(data)
+      if (data.success) {
+        console.log('successful deletion')
+      } else {
+        console.log('faulty deletion')
+        console.log(data.errorText)
+      }
     })
   }
 
   overwriteThisMeetingDoc (targetDocumentVal) {
     const self = this
-    // console.log(targetDocumentVal);
-    axios.post('http://localhost:8080/secure/meetingDocument/overwriteThisDocument', {
-      // AGAIN, BECAREFUL - this needs to be an EXACT replica of the document
-      // with the update
-      targetDocument: targetDocumentVal
-    })
-    .then((successObject) => {
-      // axios.post() routes that do not return a piece of data, will once again
-      // return a successObject for checking
-      console.log(successObject.data)
-      successObject.data.success ? console.log('success') : console.log('something is up: ' + successObject.data.errorText)
-    })
-    .catch((error) => {
-      // can't forget the console.log(error) to know if something is up -
-      // how can you put out a fire without knowing its there right? lol
-      console.log('ERROR(overwriteThisMeetingDoc): ' + error)
+
+    socket.emit('/secure/meetingDocument/overwriteThisDocument', {targetDocument: targetDocumentVal})
+
+    socket.on('response/secure/meetingDocument/overwriteThisDocument', function (data) {
+      if (!data.success) {
+        console.log('error')
+        console.log(data.errorText)
+      }
     })
   }
 

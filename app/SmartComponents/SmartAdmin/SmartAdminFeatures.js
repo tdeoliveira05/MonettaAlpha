@@ -77,15 +77,17 @@ class SmartAdminFeatures extends React.Component {
   replaceFeatureDocument (featureDocVal) {
     const self = this
 
-    // send for replacement and upon sucess (.then block) force a refresh of  the state by calling this.setState()
-    axios.post('http://localhost:8080/secure/featureDocument/overwrite', {
-      featureDoc: featureDocVal
+    socket.emit('/secure/featureDocument/overwrite', {featureDoc: featureDocVal})
+
+    socket.on('response/secure/featureDocument/overwrite', function (data) {
+      if (data.success) {
+        //force a refresh of the component
+        self.setState()
+      } else {
+        console.log('error')
+        console.log(data.errorText)
+      }
     })
-    .then((results) => {
-      // if successful, force a component refresh by calling this.setState()
-      results.data.success ? this.setState() : alert('ERROR: ' + results.data.errorText)
-    })
-    .catch((error) => console.log(error))
   }
 
 

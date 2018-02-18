@@ -9,10 +9,6 @@ import SmartMain from './SmartComponents/SmartMain.js'
 import SmartAdmin from './SmartComponents/SmartAdmin.js'
 import config from './clientConfig/defaults.json'
 
-//------------------------- Initialize web socket ----------------------------//
-
-var socketInit
-
 //----------------------------------------------------------------------------//
 
 class App extends React.Component {
@@ -52,15 +48,17 @@ class App extends React.Component {
     this.initializeWebSocket    = this.initializeWebSocket.bind(this)
     this.checkIfAdmin           = this.checkIfAdmin.bind(this)
     this.resetLocalStorage      = this.resetLocalStorage.bind(this)
+
 	}
 
   componentWillMount () {
-    console.log(Cookies.get())
     if (Cookies.get('access_token') && this.state.isLoggedIn === false) {
       console.log('authenticating...')
 
       // run first authentication http route
       this.authenticate()
+
+
 
     } else if (!Cookies.get('access_token')) {
       // reset local storage of erroneous information
@@ -86,10 +84,7 @@ class App extends React.Component {
         // refresh local storage in case of any changes
         localStorage.username = successObj.data.username
         localStorage.fullName = successObj.data.fullName
-
-        // initializeUserSettings for SmartUserSettings component
-        this.initializeUserSettings()
-
+        
         //Open an authenticated connection to the web socket (hadnshake will take place)
         this.initializeWebSocket()
 
@@ -106,23 +101,26 @@ class App extends React.Component {
 
   initializeUserSettings () {
       const self = this
-      axios.post('http://localhost:8080/secure/userDocument/getSettings')
-      .then((resultObj) => {
-        if (resultObj.data.settings) {
+
+      socket.emit('/secure/userDocument/getSettings')
+
+      socket.on('response/secure/userDocument/getSettings', function (data) {
+        if (data.settings) {
           console.log('User settings successfully loaded')
-          this.setState({userSettings: resultObj.data.settings})
+          self.setState({userSettings: data.settings})
         } else {
           console.log('no user settings were found')
         }
-      })
-      .catch((error) => {
-        console.log(error)
       })
   }
 
   initializeWebSocket () {
     console.log('initializing operations...')
     socket = io(config.serverLocation)
+    socket.on('errorCustom', function (error) {
+      console.log(error || 'no error message sent but error event triggered in client')
+    })
+    this.initializeUserSettings()
   }
 
   submitUserTokenObj (userTokenObjVal, admin) {
@@ -174,9 +172,6 @@ class App extends React.Component {
 
   render() {
     //---------------------------CONDITIONS-------------------------------------
-
-    var socket
-    if (socketInit) socket = socketInit
     var adminControls = this.checkIfAdmin()
     //----------------------------RETURN----------------------------------------
     switch(this.state.appLocation) {
@@ -202,8 +197,8 @@ class App extends React.Component {
             changeAppLocation  = {this.changeAppLocation}
             signOut            = {this.signOut}
             userSettings       = {this.state.userSettings}
-            socket             = {socket}
             admin              = {this.state.admin}
+            appLocation        = {this.state.appLocation}
           />
         </div>
       )
@@ -218,7 +213,6 @@ class App extends React.Component {
               changeAppLocation  = {this.changeAppLocation}
               signOut            = {this.signOut}
               userSettings       = {this.state.userSettings}
-              socket             = {socket}
               admin              = {this.state.admin}
             />
           </div>

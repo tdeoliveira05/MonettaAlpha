@@ -5,11 +5,11 @@ module.exports = function (newFeatureDoc) {
   return new Promise (function(resolve, reject) {
 
     Feature.replaceOne({_id: newFeatureDoc._id}, newFeatureDoc)
-    .then((returnObj) => {
-      resolve(returnObj)
+    .then(() => {
+      resolve({success: true, errorText: ''})
     })
     .catch((error) => {
-      reject(error)
+      reject({success: false, errorText: error})
     })
   })
 }

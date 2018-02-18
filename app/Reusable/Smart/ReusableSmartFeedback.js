@@ -21,20 +21,17 @@ class ReusableSmartFeedback extends React.Component {
 
   submitFeedback () {
     const self = this
-    axios.post('http://localhost:8080/secure/feedbackDocument/submit', {
-      feedback: {
-        message: this.state.feedbackVal,
-        location: this.props.location.pathname
-      }
+
+    socket.emit('/secure/feedbackDocument/submit', {
+      message: self.state.feedbackVal,
+      location: self.props.location.pathname
     })
-    .then((successObj) => {
-      console.log(successObj)
-      successObj.data.success ? this.setState({snackOpen: true}) : console.log(successObj.data.errorText)
-      if (this.props.successFunction) this.props.successFunction()
+
+    socket.on('response/secure/feedbackDocument/submit', function (data) {
+      console.log(data)
+      if (self.props.successFunction) self.props.successFunction()
     })
-    .catch((error) => {
-      console.log(error)
-    })
+
   }
 
   checkForError () {

@@ -10,6 +10,7 @@ module.exports = function (signupData, res) {
     return serverTools.create.userDoc(signupData)
   })
   .then((newUserDoc) => {
+    console.log(newUserDoc)
     return serverTools.save.thisDoc(newUserDoc)
   })
   .then((newUserDoc) => {

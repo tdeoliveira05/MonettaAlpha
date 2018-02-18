@@ -11,7 +11,7 @@ class SmartAdminUsers extends React.Component {
       listType: 'normal'
     }
 
-    this.createUserList              = this.createUserList.bind(this)
+    this.createUserList = this.createUserList.bind(this)
   }
 
   createUserList () {

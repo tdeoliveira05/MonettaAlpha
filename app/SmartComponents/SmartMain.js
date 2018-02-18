@@ -24,7 +24,6 @@ import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
 import getUserMedia from 'get-user-media-promise'
 import MicrophoneStream from 'microphone-stream'
-var socket
 var context, processor, input
 var AudioContext = window.AudioContext || window.webkitAudioContext
 
@@ -81,12 +80,14 @@ class SmartMain extends React.Component {
   componentDidMount () {
     const self = this
     this.updateMainLocation()
-    socket = this.props.socket
     // Start timer to track total time spent in app and update the state every second
     var timerInterval = setInterval(function () {
-      self.props.socket.emit('saveOneSecond',{
-        username: localStorage.username
-      })
+      if (self.props.appLocation !== 'home') {
+        socket.emit('saveOneSecond',{
+          username: localStorage.username
+        })
+      }
+
     }, 1000)
   }
 
@@ -110,22 +111,20 @@ class SmartMain extends React.Component {
 
   updateUserDocument(updateObjVal) {
     const self = this
-    axios.post('http://localhost:8080/secure/userDocument/updateInfo', {
-      updateObj: updateObjVal
-    })
-    .then((successObj) => {
+
+    socket.emit('/secure/userDocument/updateInfo', {updateObj: updateObjVal})
+
+    socket.on('response/secure/userDocument/updateInfo', function (successObj) {
       console.log(successObj)
 
-      if (successObj.data.success) {
-        localStorage.username = successObj.data.username
-        localStorage.fullName = successObj.data.fullName
-        this.setState({mainLocation: 'internal'})
+      if (successObj.success) {
+        localStorage.username = successObj.username
+        localStorage.fullName = successObj.fullName
+        self.setState({mainLocation: 'internal'})
       } else {
-        console.log(successObj.data.errorText)
+        console.log(successObj.errorText)
       }
-    })
-    .catch((error) => {
-      console.log(error)
+
     })
   }
 
@@ -155,7 +154,7 @@ class SmartMain extends React.Component {
     console.log('Starting voice recognition...')
 
     //initialize speech api and broaden global scope
-    this.props.socket.emit('startGoogleCloudSpeech')
+    socket.emit('startGoogleCloudSpeech')
 
     const self = this
 
@@ -233,7 +232,7 @@ class SmartMain extends React.Component {
 
   stopSpeechStream () {
     console.log('Stopping voice recognition...')
-    this.props.socket.emit('stopGoogleCloudSpeech')
+    socket.emit('stopGoogleCloudSpeech')
     context.close()
     processor.disconnect(context.destination)
     input.disconnect(processor)
@@ -295,7 +294,6 @@ class SmartMain extends React.Component {
             }/>
             <Route exact path = "/yourvoice" render = {() =>
               <SmartYourVoice
-                socket = {this.props.socket}
               />
             }/>
             <Route exact path = "/help" render = {() =>

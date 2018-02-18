@@ -48,7 +48,6 @@ class SmartYourVoice extends React.Component {
   }
 
   componentDidMount () {
-    var socket = this.props.socket
     const self = this
     // retrieve user votes
     this.getUserDoc()
@@ -62,30 +61,30 @@ class SmartYourVoice extends React.Component {
   }
 
   getUserDoc () {
+    console.log('getUserDocs')
     const self = this
-    axios.post('http://localhost:8080/secure/userDocument/getUserDoc')
-    .then((resultsObj) => {
-      if (resultsObj.data.success) {
-        var voteHistory = resultsObj.data.userDoc.data.userHistory.voteHistory
-        var votesLeftVal = resultsObj.data.userDoc.data.appUsage.weeklyVotesLeft
-        this.setState({userFeatureVotes: voteHistory, votesLeft: votesLeftVal})
+
+    socket.emit('/secure/userDocument/getUserDoc')
+
+    socket.on('response/secure/userDocument/getUserDoc', function (data) {
+      console.log(data)
+      if (data.userDoc) {
+        var voteHistory = data.userDoc.data.userHistory.voteHistory
+        var votesLeftVal = data.userDoc.data.appUsage.weeklyVotesLeft
+        self.setState({userFeatureVotes: voteHistory, votesLeft: votesLeftVal})
       } else {
         console.log('error')
         console.log(resultsObj)
       }
     })
-    .catch((error) => {
-      console.log(error)
-    })
   }
 
   createFeatureList () {
     // will create a list with the "voted" property for the features the user has voted on
-
     var userFeatureVotes = this.state.userFeatureVotes
-
-    if (userFeatureVotes.length === 0) return userFeatureVotes// if user has no votes yet, quit this function
     var featureListObj = this.state.featureListObj
+
+    if (userFeatureVotes.length === 0) return featureListObj// if user has not spent votes yet, quit this function
     if (!featureListObj.approved) return null
 
     // loop through to see which features the user has voted for
@@ -104,7 +103,7 @@ class SmartYourVoice extends React.Component {
     return featureListObj
   }
 
-  submitVote (index, featureId, userVoteVal) {
+  submitVote (index, featureIdVal, userVoteVal) {
     const self = this
     // will submit a vote to the server, updating the user document with their vote AND the feature document with its total votes
 
@@ -122,22 +121,19 @@ class SmartYourVoice extends React.Component {
     }
 
 
-    axios.post('http://localhost:8080/secure/featureVoteUpdate', {
-      featureId: featureId,
+    socket.emit('/secure/featureVoteUpdate', {
+      featureId: featureIdVal,
       userVote: userVoteVal
     })
-    .then((resultsObj) => {
-      if (resultsObj.data.success) {
-        this.props.socket.emit('getAllFeatureDocs')
-        this.getUserDoc()
-      }  else {
 
-        console.log('error: ' + resultsObj.data.errorText)
+    socket.on('response/secure/featureVoteUpdate', function (data) {
+      if (data.success) {
+        socket.emit('getAllFeatureDocs')
+        self.getUserDoc()
+      } else {
+        console.log('error')
+        console.log(error)
       }
-    })
-    .catch((error) => {
-      console.log(error)
-      alert(error)
     })
 
 
@@ -159,18 +155,25 @@ class SmartYourVoice extends React.Component {
       return
     }
     const self = this
-    axios.post('http://localhost:8080/secure/featureDocument/submitComment', {
+
+    socket.emit('/secure/featureDocument/submitComment', {
       featureId: targetFeatureItem._id,
-      text: this.state.tempComment
+      text: self.state.tempComment
     })
-    .then((results) => {
-      this.setState({tempComment: ''})
-      results.data.success ? this.props.socket.emit('getAllFeatureDocs') : alert(results.body.errorText)
-      this.popUpSnackbar('Thanks for submitting your comment!')
+
+    socket.on('response/secure/featureDocument/submitComment', function (data) {
+      console.log(data)
+      if (data.success) {
+        self.setState({tempComment: ''})
+        socket.emit('getAllFeatureDocs')
+        self.popUpSnackbar('Thanks for submitting your comment!')
+      } else {
+        console.log('error')
+        console.log(data.errorText)
+      }
     })
-    .catch((error) => {
-      console.log(error)
-    })
+
+
   }
 
   submitFeature () {
@@ -179,16 +182,20 @@ class SmartYourVoice extends React.Component {
       return
     }
     const self = this
-    axios.post('http://localhost:8080/secure/featureDocument/submit', {
+
+    socket.emit('/secure/featureDocument/submit', {
       title: this.state.tempFeatureTitle,
       description: this.state.tempFeatureDescription
     })
-    .then((results) => {
-      this.dialogToggleFunction()
-      this.popUpSnackbar('Thanks for submitting a suggestion!')
-    })
-    .catch((error) => {
-      console.log(error)
+
+    socket.on('response/secure/featureDocument/submit', function (data) {
+      if (data.success) {
+        self.dialogToggleFunction()
+        self.popUpSnackbar('Thanks for submitting a suggestion!')
+      } else {
+        console.log('error')
+        console.log(data.errorText)
+      }
     })
   }
 

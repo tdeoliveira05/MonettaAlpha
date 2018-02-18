@@ -3,7 +3,7 @@ const User = require('../../../models/userModel.js')
 
 module.exports = function (usernameVal) {
   return new Promise (function(resolve, reject) {
-    console.log('processing user login')
+    //console.log('processing user login')
 
     // refresh the lastLoggedIn date upon user login
     User.update(
@@ -14,8 +14,8 @@ module.exports = function (usernameVal) {
       }
     )
     .then((results) => {
-      console.log('log in data updated')
-      console.log(results)
+      //console.log('log in data updated')
+      //console.log(results)
       resolve(results)
     })
     .catch((error) => {

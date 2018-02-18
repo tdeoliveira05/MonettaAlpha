@@ -100,11 +100,13 @@ class SmartAdminCodes extends React.Component {
     */
     this.setState({errorText: ''})
 
-    axios.post('http://localhost:8080/secure/admin/updateCodeDocs', options)
-    .then((results) => {
-      this.props.getAllAdminDocs()
+    const self = this
+
+    socket.emit('/secure/admin/updateCodeDocs', options)
+
+    socket.on('response/secure/admin/updateCodeDocs', function () {
+      self.props.getAllAdminDocs()
     })
-    .catch((error) => console.log(error))
   }
 
   render () {

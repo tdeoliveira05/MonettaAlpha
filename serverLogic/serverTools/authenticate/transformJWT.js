@@ -1,12 +1,14 @@
 // This function will validate a passed token to authenticate the proposed user route call
-const Users = require('../../../models/userModel')
-const jwt = require('jsonwebtoken')
+const Users  = require('../../../models/userModel')
+const jwt    = require('jsonwebtoken')
 const config = require('config')
+const cookie = require('cookie')
 
 module.exports = function (reqObj) {
   return new Promise (function(resolve, reject) {
     //console.log(reqObj.headers)
-    jwt.verify(reqObj.headers.access_token.split(' ')[1], config.get('Presets.secret'), function (error, authData) {
+    var cookies = cookie.parse(reqObj.headers.cookie)
+    jwt.verify(cookies.access_token.split(' ')[1], config.get('Presets.secret'), function (error, authData) {
       if (error) {
         console.log('verify JWT ERROR - ' + error)
         reject(error)

@@ -1,7 +1,6 @@
 /************************** SERVER CALLS PRESENT*****************************/
 import React from 'react'
 import {withRouter} from 'react-router-dom'
-import axios from 'axios'
 
 import DumbUserSettings from '../../DumbComponents/Main/DumbUserSettings.js'
 
@@ -37,19 +36,18 @@ class SmartUserSettings extends React.Component {
 
   getUserSettings () {
       const self = this
-      axios.post('http://localhost:8080/secure/userDocument/getSettings')
-      .then((resultObj) => {
-        if (resultObj.data.settings) {
-          console.log(resultObj.data.settings)
-          this.setState({userSettings: resultObj.data.settings})
-          this.props.passUserSettings(resultObj.data.settings)
+
+      socket.emit('/secure/userDocument/getSettings')
+
+      socket.on('response/secure/userDocument/getSettings', function (data) {
+        if (data.settings) {
+          console.log(data.settings)
+          self.setState({userSettings: data.settings})
+          self.props.passUserSettings(data.settings)
         } else {
           console.log('no user settings were found')
-          this.setState({})
+          self.setState({})
         }
-      })
-      .catch((error) => {
-        console.log(error)
       })
   }
 
@@ -60,18 +58,21 @@ class SmartUserSettings extends React.Component {
 
     // send updated user settings to overwrite outdated user settings in the server
     const self = this
-    axios.post('http://localhost:8080/secure/userDocument/updateSettings',{
+
+    socket.emit('/secure/userDocument/updateSettings', {
       updateObj: {
         settings: newSettings
       }
     })
-    .then((successObj) => {
-      console.log(successObj)
-      if (successObj.data.success) this.getUserSettings()
+
+    socket.on('response/secure/userDocument/updateSettings', function (data) {
+      if (data.success) {
+        self.getUserSettings()
+      } else {
+        console.log(error)
+      }
     })
-    .catch((error) => {
-      console.log(error)
-    })
+
   }
 
   checkForQuickMeetingErrors () {

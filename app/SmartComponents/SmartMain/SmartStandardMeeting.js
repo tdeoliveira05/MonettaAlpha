@@ -50,17 +50,21 @@ class SmartStandardMeeting extends React.Component {
         break
 
       case 'finished':
-        this.resetTeamMeeting()
         this.handleFinishedMeeting()
         break
     }
   }
 
   handleFinishedMeeting () {
+    console.log('finished')
+    socket.emit('/secure/meetingDocument/submit', this.state.meetingData)
 
-    axios.post('http://localhost:8080/secure/meetingDocument/submit', this.state.meetingData)
-    .catch((errorText) => {
-      console.log(errorText)
+    socket.on('response/secure/meetingDocument/submit', function (data) {
+      if (!data.success) {
+        console.log(data.errorText)
+        this.resetTeamMeeting()
+
+      }
     })
 
   }

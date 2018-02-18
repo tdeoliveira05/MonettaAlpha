@@ -31,21 +31,11 @@ class SmartAdmin extends React.Component {
   }
 
   getAllAdminDocs () {
+    const self = this
+    socket.emit('/secure/admin/getDocs')
 
-    axios.post('http://localhost:8080/secure/admin/getDocs')
-    .then((docObject) => {
-      /*
-        docObject.body = {
-          userDocs: [...],
-          featureDocs: [...],
-          meetingDocs: [...]
-        }
-      */
-      this.setState({adminDocs: docObject.data})
-
-    })
-    .catch((error) => {
-      console.log(error)
+    socket.on('response/secure/admin/getDocs', function (data) {
+      self.setState({adminDocs: data})
     })
 
   }

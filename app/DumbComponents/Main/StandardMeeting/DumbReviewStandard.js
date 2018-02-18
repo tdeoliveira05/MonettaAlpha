@@ -122,7 +122,7 @@ const DumbReviewStandard = ({
 
       </div>
 
-      <div className = 'ReviewMeetingRating'>
+      <div className = 'ReviewMeetingRating'> 
         <h2> How was your experience? </h2>
         <div className = 'ReviewMeetingStepperButtons'>
           <Rating

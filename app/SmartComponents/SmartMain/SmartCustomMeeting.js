@@ -101,17 +101,19 @@ class SmartCustomMeeting extends React.Component {
   handleFinishedMeeting () {
     console.log('Submitting: ')
     console.log(this.state.meetingData)
+    const self = this
     var meetingData = this.state.meetingData
     meetingData.metaData.meetingType = this.props.match.params.id
 
-    axios.post('http://localhost:8080/secure/meetingDocument/submit', this.state.meetingData)
-    .then((response) => {
-      console.log(response)
-      this.props.history.push('/storage')
+    console.log('finished')
+    socket.emit('/secure/meetingDocument/submit', this.state.meetingData)
+
+    socket.on('response/secure/meetingDocument/submit', function (data) {
+      if (data) {
+        self.props.history.push('/storage')
+      }
     })
-    .catch((errorText) => {
-      console.log(errorText)
-    })
+
 
   }
 

@@ -4,8 +4,8 @@ const Meeting = require('../../../models/meetingModel.js')
 
 module.exports = function (hostUsernameObj, filterAndSortObj) {
   return new Promise (function(resolve, reject) {
-    console.log('hostUsernameObj: ')
-    console.log(hostUsernameObj)
+    //console.log('hostUsernameObj: ')
+    //console.log(hostUsernameObj)
 
 
     var sortObj = filterAndSortObj.sortObj
@@ -16,8 +16,8 @@ module.exports = function (hostUsernameObj, filterAndSortObj) {
 
 
     if (sortObj) {
-      console.log('Sorting object found - ')
-      console.log(sortObj)
+      //console.log('Sorting object found - ')
+      //console.log(sortObj)
       var fieldVal = sortObj.type
       var orderVal = sortObj.order
 
@@ -32,31 +32,31 @@ module.exports = function (hostUsernameObj, filterAndSortObj) {
     }
 
     if (filterObj) {
-      console.log('Filtering object found - ')
-      console.log(filterObj)
+      //console.log('Filtering object found - ')
+      //console.log(filterObj)
       var filterDateObj         = filterObj.date
       var filterParticipantsObj = filterObj.participants
       var filterLocationObj     = filterObj.location
       var filterTitleObj        = filterObj.title
 
       if (filterLocationObj) {
-        console.log('filterLocationObj engaged')
+        //console.log('filterLocationObj engaged')
         totalDocs = totalDocs.where('location').equals(filterLocationObj.equals)
       }
 
       if (filterTitleObj) {
-        console.log('filterTitleObj engaged')
+        //console.log('filterTitleObj engaged')
         totalDocs = totalDocs.where('title').equals(filterTitleObj.equals)
       }
 
       if (filterParticipantsObj) {
         // not sure if this works
-        console.log('filterParticipantsObj engaged')
+        //console.log('filterParticipantsObj engaged')
         totalDocs = totalDocs.and({participants: {$elemMatch: {fullName: filterParticipantsObj.equals}}})
       }
 
       if (filterDateObj) {
-        console.log('filterDateObj engaged')
+        //console.log('filterDateObj engaged')
         if (filterDateObj.greaterThan) {
           totalDocs = totalDocs.where('date').gt(filterDateObj.greaterThan)
         }
@@ -69,8 +69,10 @@ module.exports = function (hostUsernameObj, filterAndSortObj) {
     }
 
     if (totalDocs) {
+      //console.log('dddddfilter')
       resolve(totalDocs)
     } else {
+      //console.log('filter')
       reject('Error(findAndSort.multipleMeetingDocs.js): totalDocs is undefined')
     }
 

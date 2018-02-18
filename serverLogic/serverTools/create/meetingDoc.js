@@ -1,25 +1,25 @@
 // This function will create a new meeting document
 const Meeting = require('../../../models/meetingModel')
 
-module.exports = function (meetingDataReq) {
+module.exports = function (data) {
   return new Promise (function(resolve, reject) {
     var meetingTypeVal = 'normal'
 
-    if (typeof(meetingDataReq.body.meetingType) === 'string') {
-      meetingTypeVal = meetingDataReq.body.meetingType
+    if (typeof(data.meetingType) === 'string') {
+      meetingTypeVal = data.meetingType
     }
 
     var newMeetingDoc = new Meeting({
-      title: meetingDataReq.body.title,
+      title: data.title,
       meetingType: meetingTypeVal,
-      host: meetingDataReq.body.host,
-      participants: meetingDataReq.body.participants,
-      date: meetingDataReq.body.date,
-      location: meetingDataReq.body.location,
-      goals: meetingDataReq.body.goals,
-      notes: meetingDataReq.body.notes,
-      metaData: meetingDataReq.body.metaData,
-      meetingStats: meetingDataReq.body.meetingStats
+      host: data.host,
+      participants: data.participants,
+      date: data.date,
+      location: data.location,
+      goals: data.goals,
+      notes: data.notes,
+      metaData: data.metaData,
+      meetingStats: data.meetingStats
     });
 
     if (newMeetingDoc) {

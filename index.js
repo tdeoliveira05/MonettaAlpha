@@ -82,7 +82,7 @@ mongoose.connection.once('open',function(){
 //-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
 //----------------------------------------------------------------------------//
 
-if(process.env.NODE_ENV=='production') app.use(yes());;
+if(process.env.NODE_ENV=='production') app.use(yes());
 
 //----------------------------------------------------------------------------//
 //--------------------------------SERVER ROUTES-------------------------------//
@@ -189,361 +189,13 @@ app.post('/request/alpha', function(req, res) {
 
 
 app.post('/authenticate',  function(req, res, next) {
-  serverLogic.authenticate (req, res, next)
+  serverLogic.authenticate(req, res, next)
 })
 
 // this must be after the request routes. those three routes do not need a jwt to user
 // all of the routes below NEED a jwt so we are going to authenticate that jwt before it reaches the route
 // if it is wrong we are blocking it, if it is correct we are letting it through
 
-
-//-----------------------------ROUTES CONTINUED-------------------------------//
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route updates the information of a user who has logged in for the first time
-updating their first/last name and adding an organization + job position field
-
--------------------
-
-inputObject = req.body = {
-  updateObj: {
-    firstName: STRING
-    lastName: STRING
-    organization: STRING
-    jobPosition: STRING
-  }
-}
-
-outputObject = successObj = req.body = {
-  sucess: BOOLEAN,
-  errorText: STRING
-}
-
-*/
-
-app.post('/secure/userDocument/updateInfo', function(req,res) {
-	serverLogic.updateUserDocInfo(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route overwrites the logged in user's settings in their user document
-
--------------------
-
-inputObject = req.body = {
-  updateObj: {
-    settings: Object
-  }
-}
-
-outputObject = successObj = req.body = {
-  sucess: BOOLEAN,
-  errorText: STRING
-}
-
-}*/
-
-app.post('/secure/userDocument/updateSettings', function(req,res) {
-	serverLogic.updateUserSettings(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route returns the logged in user's settings from their document
--------------------
-
-NO INPUT OBJECT (JSON web token is used for identification)
-
-outputObject = req.body = {
-  sucess: BOOLEAN,
-  errorText: STRING,
-  settings: OBJECT
-}
-
-}*/
-
-app.post('/secure/userDocument/getSettings', function(req,res) {
-	serverLogic.getUserSettings(req, res)
-})
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route returns the logged in user's entire document
-
--------------------
-
-NO INPUT OBJECT (JSON web token is used for identification)
-
-outputObject = req.body = {
-  sucess: BOOLEAN,
-  errorText: STRING,
-  userDoc: OBJECT
-}
-
-}*/
-
-app.post('/secure/userDocument/getUserDoc', function(req,res) {
-	serverLogic.getUserDoc(req, res)
-})
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route submits a new meeting document to the database
-
--------------------
-
-inputObject = req.body = {
-  title: ...,
-  etc...
-  see meetingModel.js for structure
-}
-
-outputObject = req.body = {
-  sucess: Boolean,
-  errorText: String
-}
-
-}*/
-
-app.post('/secure/meetingDocument/submit', function(req,res) {
-	serverLogic.submitNewMeeting(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route returns all of the meeting documents pertaining to the logged in user
-the documents can be sorted or filtered depending on client requirements
-
--------------------
-
-inputObject = req.body = {
-  sortObj: {
-    type: 'title' || 'location' || 'date',    <------ only these keys are able to be used for now
-    order: 'asc' || 'desc'
-  },
-  filterObj: {
-    date: {greaterThan: NUMBER, lessThan: NUMBER},
-    participants: {equals: name},
-    location: {equals: name},
-
-  }
-}
-
-outputObject = res = {
-data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
-}*/
-
-app.post('/secure/meetingDocument/findByUser',function(req,res){
-	serverLogic.findAllMeetingDocs(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route deletes a meeting document using its _id
-
--------------------
-
-inputObject = req.body = {
-	targetDocumentId: String,        // id to delete
-}
-
-NO OUTPUT OBJECT
-*/
-
-app.post('/secure/meetingDocument/deleteById',function(req,res){
-	serverLogic.deleteMeetingDocById(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route overwrites an entire meeting document
-
--------------------
-
-inputObject = req.body = {
-	targetDocument: Object,  // this is the ENTIRE target document, not just the updated piece
-}
-
-outputObject = res.data = sucessObject = {
-  success: Boolean,
-  errorText: String
-}
-*/
-
-app.post('/secure/meetingDocument/overwriteThisDocument', function(req,res){
-	serverLogic.overwriteThisMeetingDoc(req, res)
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route submits a new feedback document to the database
-
--------------------
-
-inputObject = req.body = {
-  feedback: {
-    message: String,
-    location: String
-  }
-}
-
-outputObject = successObj = res.data = {
-  success: Boolean,
-  errorText: String
-}
-*/
-
-app.post('/secure/feedbackDocument/submit', function(req,res) {
-	serverLogic.submitNewFeedback(req, res)
-})
-
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route updates a feature document with a new comment made by the logged in
-user.
-
--------------------
-
-inputObject = req.body = {
-  featureId: String,
-  text: String
-}
-
-outputObject = res.data = {
-  sucess: Boolean,
-  errorText: String
-}
-*/
-
-app.post('/secure/featureDocument/submitComment', function (req, res) {
-  console.log('reached feature comment submit')
-  serverLogic.submitFeatureComment(req, res)
-
-})
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route submis a new requested feature document into the database
-which is automatically assigned to "notApproved"
-
--------------------
-
-inputObject = req.body = {
-  title: String,
-  description: String
-}
-
-outputObject = res.data = {
-  sucess: Boolean,
-  errorText: String
-}
-*/
-
-app.post('/secure/featureDocument/submit', function (req, res) {
-  console.log('reached feature comment submit')
-  serverLogic.submitNewFeature(req, res)
-
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route will overwrite an old feature document with the new feature document
--------------------
-
-inputObject = req.body = {
-  featureDoc: Object
-}
-
-outputObject = res.data = {
-  sucess: Boolean,
-  errorText: String
-}
-*/
-
-app.post('/secure/featureDocument/overwrite', function (req, res) {
-  console.log('reached feature document overwrite')
-
-  serverLogic.serverTools.overwrite.thisFeatureDoc(req.body.featureDoc)
-  .then((results) => res.send({success: true, errorText: ''}))
-  .catch((error) => res.send({success: false, errorText: ''}))
-
-})
-
-/* -----------------------------------------------------------------------------
-PURPOSE:
-This route will update a feature document's total votes based on the logged in user's input
-
--------------------
-
-inputObject = req.body = {
-  featureId: String,
-  userVote: Number  // (-1 || 1)
-}
-
-outputObject = res.data = {
-  sucess: Boolean,
-  errorText: String
-}
-*/
-
-app.post('/secure/featureVoteUpdate', function (req, res) {
-  console.log('reached feature vote update')
-  serverLogic.featureVoteUpdate(req, res)
-
-})
-
-/*--------------------------------ADMIN ROUTES--------------------------------*/
-
-app.post('/secure/admin/getDocs', function (req, res) {
-  console.log('reached ADMIN getDocs')
-  // REVISE THIS ****************************************************************
-  // begin all promises and use lean() to make query faster
-  var userCursor = User.find().lean()
-  var meetingPromise = Meeting.find().lean()
-  var featurePromise = Feature.find().lean()
-  var codePromise = Code.find().lean()
-
-  // wait for all promises to finish before sending a response
-  Promise.all([userPromise, meetingPromise, featurePromise, codePromise])
-  .then(([userDocsVal, meetingDocsVal, featureDocsVal, codeDocsVal]) => {
-    console.log('retrieved all admin objects')
-    res.send({
-      userDocs: userDocsVal,
-      meetingDocs: meetingDocsVal,
-      featureDocs: featureDocsVal,
-      codeDocs: codeDocsVal
-    })
-  })
-  .catch((error) => {
-    console.log(error)
-    res.send({success: false, errorText: error})
-  })
-
-
-})
-
-app.post('/secure/admin/updateCodeDocs', function (req, res) {
-  console.log('reached ADMIN updateCodeDocs')
-  if (req.body.add) {
-    addDocs = req.body.add
-    req.body.add.map((codeVal) => {
-
-      var newCodeDoc = new Code ({
-        code: codeVal.toLowerCase(),
-        used: false
-      })
-
-      newCodeDoc.save().catch((error) => res.send(error))
-    })
-  }
-
-
-  if (req.body.remove) {
-    Code.remove({_id: req.body.remove}).catch((error) => res.send(error))
-  }
-
-  res.send()
-
-})
 
 /* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
@@ -561,6 +213,12 @@ app.get('*', function (request, response) {
 
 
 io.use(function (socket, next) {
+  console.log('io middleware prior to connection')
+  var cookies = cookie.parse(socket.handshake.headers.cookie)
+  if (cookies.access_token) {
+    next()
+  }
+  /*
   console.log('-')
   console.log('*******************************************************')
   console.log('HANDSHAKE MIDDLEWARE (AUTHENTICATION)')
@@ -572,55 +230,533 @@ io.use(function (socket, next) {
   console.log('-')
   console.log('*******************************************************')
   console.log('-')
+  */
 })
 
-io.on('connection', function (socket) {
-// This is where all socket functionality and the socket's lifecyle is built
-  console.log('ONE USER CONNECTED' + socket.id)
 
-  /*---------------------------------------------------------------------------
-  Real time feature document functions
+// Declare a visitors list
+var visitors = []
 
-  socket.emit('receiveAllFeatureDocs', featureListObj) will send out an object:
-  featureListObj = {
-  approved: [...],
-  notApproved: [...],
-  remove: [...],
-  finished: [...]
+//Declare a logged in users list
+var usersOnline = []
+
+io.sockets.on('connection', async function (socket) {
+  // This is where all socket functionality and the socket's lifecyle is built
+  // update visitors list
+  socket.userDoc = await serverLogic.authenticateSocket(socket)
+  visitors.push(socket)
+
+  socket.use(async function (data, next) {
+    // continuously update the user's doc
+    try  {
+      var currentUserDoc = await User.findOne({username: socket.userDoc.username}).lean()
+      socket.userDoc = currentUserDoc
+      next()
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  console.log('Connected: %s socket(s) connected', visitors.length)
+
+
+
+  // Process event listener to prevent server from crashing upon an error
+  process.on('uncaughtException', (error) => {
+    console.log('uncaught exception (socket)')
+    socket.emit('errorCustom', '(ERROR 500) INTERNAL SERVER ERROR')
+    console.log(error)
+  })
+
+
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route updates the information of a user who has logged in for the first time
+  updating their first/last name and adding an organization + job position field
+
+  -------------------
+
+  inputObject = data = {
+    updateObj: {
+      firstName: STRING
+      lastName: STRING
+      organization: STRING
+      jobPosition: STRING
+    }
   }
 
-  Both lists are sorted by descending totalVotes
   */
-  socket.on('getAllFeatureDocs', function returnAllFeatureDocs(socket, data) {
-    // this command takes a little while to process so it needs to be structure as a promise to act on socket.emit only after query returns
-    serverLogic.returnAllFeatureDocs()
-    .then((featureListObj) => {
-      socket.emit('receiveAllFeatureDocs', featureListObj)
-    })
-    .catch((error) => console.log(error))
+
+  socket.on('/secure/userDocument/updateInfo', async function(data) {
+    try {
+      var successObj = await serverLogic.updateUserDocInfo(data, socket.userDoc)
+      //socket.emit('response/secure/userDocument/updateInfo', successObj)
+    } catch (error) {
+      console.log(error)
+    }
   })
 
-  /*---------------------------------------------------------------------------
-  Saves one second to the totalTimeInApp of the user
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route overwrites the logged in user's settings in their user document
+
+  -------------------
+
+  inputObject = data = {
+    updateObj: {
+      settings: Object
+    }
+  }
+
+  outputObject = successObj  = {
+    sucess: BOOLEAN,
+    errorText: STRING
+  }
+
+  }*/
+
+  socket.on('/secure/userDocument/updateSettings', async function(data) {
+    try {
+      var successObj = await serverLogic.updateUserSettings(data, socket.userDoc)
+      console.log(successObj)
+      //socket.emit('response/secure/userDocument/updateSettings', successObj)
+
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route returns the logged in user's settings from their document
+  -------------------
+
+  NO INPUT OBJECT (JSON web token is used for identification)
+
+  outputObject = data = {
+    settings: OBJECT
+  }
+
+  }*/
+
+  socket.on('/secure/userDocument/getSettings', async function(data) {
+  	try {
+      var outputObj = await serverLogic.getUserSettings(data, socket.userDoc)
+      //socket.emit('response/secure/userDocument/getSettings', outputObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route returns the logged in user's entire document
+
+  -------------------
+
+  NO INPUT OBJECT
+
+  outputObject = data = {
+    ...entire user document...
+  }
+
+  }*/
+
+  socket.on('/secure/userDocument/getUserDoc', function(data) {
+  	try {
+      socket.emit('response/secure/userDocument/getUserDoc', {userDoc: socket.userDoc})
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route submits a new meeting document to the database
+
+  -------------------
+
+  inputObject = req.body = {
+    title: ...,
+    etc...
+    see meetingModel.js for structure
+  }
+
+  outputObject = sucessObject = {
+    sucess: Boolean,
+    errorText: String
+  }
+
+  }*/
+
+  socket.on('/secure/meetingDocument/submit', async function(data) {
+  	try {
+      var successObj = await serverLogic.submitNewMeeting(data)
+      socket.emit('response/secure/meetingDocument/submit', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route returns all of the meeting documents pertaining to the logged in user
+  the documents can be sorted or filtered depending on client requirements
+
+  -------------------
+
+  inputObject = data = {
+    sortObj: {
+      type: 'title' || 'location' || 'date',    <------ only these keys are able to be used for now
+      order: 'asc' || 'desc'
+    },
+    filterObj: {
+      date: {greaterThan: NUMBER, lessThan: NUMBER},
+      participants: {equals: name},
+      location: {equals: name},
+
+    }
+  }
+
+  outputObject = res = {
+  data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
+  }*/
+
+  socket.on('/secure/meetingDocument/findByUser', async function(data){
+  	try {
+      var outputObj = await serverLogic.findAllMeetingDocs(data, socket.userDoc)
+      socket.emit('response/secure/meetingDocument/findByUser', outputObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route deletes a meeting document using its _id
+
+  -------------------
+
+  inputObject = data = {
+  	targetDocumentId: String,        // id to delete
+  }
+
+  NO OUTPUT OBJECT
+  */
+
+  socket.on('/secure/meetingDocument/deleteById', async function(data){
+  	try {
+      var successObj = await serverLogic.deleteMeetingDocById(data)
+      socket.emit('response/secure/meetingDocument/deleteById', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route overwrites an entire meeting document
+
+  -------------------
+
+  inputObject = data = {
+  	targetDocument: Object,  // this is the ENTIRE target document, not just the updated piece
+  }
+
+  outputObject = sucessObject = {
+    success: Boolean,
+    errorText: String
+  }
+  */
+
+  socket.on('/secure/meetingDocument/overwriteThisDocument', async function(data){
+  	try {
+      var successObj = await serverLogic.overwriteThisMeetingDoc(data)
+      socket.emit('response/secure/meetingDocument/overwriteThisDocument', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route submits a new feedback document to the database
+
+  -------------------
+
+  inputObject = data = {
+    feedback: {
+      message: String,
+      location: String
+    }
+  }
+
+  outputObject = successObj = {
+    success: Boolean,
+    errorText: String
+  }
+  */
+
+  socket.on('/secure/feedbackDocument/submit', async function(data) {
+  	try {
+      var successObj = await serverLogic.submitNewFeedback(data, socket.userDoc)
+      socket.emit('response/secure/feedbackDocument/submit', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route updates a feature document with a new comment made by the logged in
+  user.
+
+  -------------------
+
+  inputObject = data = {
+    featureId: String,
+    text: String
+  }
+
+  outputObject = successObj = {
+    sucess: Boolean,
+    errorText: String,
+    misc: Object (from successful replacement)
+  }
+  */
+
+  socket.on('/secure/featureDocument/submitComment', async function (data) {
+    try {
+      var successObj = await serverLogic.submitFeatureComment(data, socket.userDoc)
+      socket.emit('response/secure/featureDocument/submitComment', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route submis a new requested feature document into the database
+  which is automatically assigned to "notApproved"
+
+  -------------------
+
+  inputObject = data = {
+    title: String,
+    description: String
+  }
+
+  outputObject = successObj = {
+    sucess: Boolean,
+    errorText: String
+  }
+  */
+
+  socket.on('/secure/featureDocument/submit', async function (data) {
+    try {
+      var successObj = await serverLogic.submitNewFeature(data, socket.userDoc)
+      socket.emit('response/secure/featureDocument/submit', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route will overwrite an old feature document with the new feature document
+  -------------------
+
+  inputObject = data = {
+    featureDoc: Object
+  }
+
+  outputObject = successObj = {
+    sucess: Boolean,
+    errorText: String
+  }
+  */
+
+  socket.on('/secure/featureDocument/overwrite', async function (data) {
+    try {
+      var successObj = await serverLogic.serverTools.overwrite.thisFeatureDoc(data.featureDoc)
+      socket.emit('response/secure/featureDocument/overwrite', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route will update a feature document's total votes based on the logged in user's input
+
+  -------------------
+
+  inputObject = data = {
+    featureId: String,
+    userVote: Number  // (-1 || 1)
+  }
+
+  outputObject = successObj = {
+    sucess: Boolean,
+    errorText: String
+  }
+  */
+
+  socket.on('/secure/featureVoteUpdate', async function (data) {
+    try {
+      var successObj = await serverLogic.featureVoteUpdate(data, socket.userDoc)
+      socket.emit('response/secure/featureVoteUpdate', successObj)
+    } catch (error) {
+      console.log(error)
+    }
+
+  })
+
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This socket route will return all feature documents to the user who emitted a
+  request
+
+  -------------------
+
+  INPUT:
+  none
+
+  OUTPUT:
+  returned to origin of event
+
+  featureListObj = {
+    approved: [...],
+    notApproved: [...],
+    remove: [...],
+    finished: [...]
+  }
+
+  note - the arrays are sorted by descending total votes
+  */
+
+  socket.on('getAllFeatureDocs', async function(data) {
+    var featureListObj = await serverLogic.returnAllFeatureDocs()
+    socket.emit('receiveAllFeatureDocs', featureListObj)
+  })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This socket route will save one second to a user's total login time
+
+  -------------------
+
+  INPUT:
+  none
+
+  OUTPUT:
+  none
   */
   socket.on('saveOneSecond', function (usernameObj) {
-    User.update(
-      {username: usernameObj.username},
-      {
-        $inc: {"data.appUsage.totalTimeInApp": +1000}
-      }
-    )
-    .catch((error) => console.log(error))
+    console.log('saved')
+    serverLogic.serverTools.stats.processLoginTimer(usernameObj)
   })
 
-  /*---------------------------------------------------------------------------
-  Updates a user login's history
+  //==========================================================================//
+  //===============================ADMIN SOCKET ROUTES========================//
+  //==========================================================================//
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This socket route will return all feature, code, meeting and user documents in mongo
+
+  -------------------
+
+  INPUT:
+  none
+
+  OUTPUT:
+  returned to origin of event
+
+  outputObject = featureListObj = {
+    approved: [...],
+    notApproved: [...],
+    remove: [...],
+    finished: [...]
+  }
+
+  note - the arrays are sorted by descending total votes
   */
-  socket.on('update/userDocument/loginHistory', function (usernameObj) {
-    // write here
+  socket.on('/secure/admin/getDocs', async function (data) {
+
+    // this is 4 mongo queries so we use Promise.all instead of async/await
+    // async/await would make the entire event loop wait and do the 4 promises consecutively
+    // Promise.all allows node to make use of its asynchronous nature and enjoy a performance boost
+
+    var userDocPromise = User.find().lean()
+    var meetingDocPromise = Meeting.find().lean()
+    var featureDocPromise = Feature.find().lean()
+    var codePromise = Code.find().lean()
+
+    Promise.all([userDocPromise, meetingDocPromise, featureDocPromise, codePromise])
+    .then(([userDocsVal, meetingDocsVal, featureDocsVal, codeDocsVal]) => {
+
+      socket.emit('response/secure/admin/getDocs', {
+        userDocs: userDocsVal,
+        meetingDocs: meetingDocsVal,
+        featureDocs: featureDocsVal,
+        codeDocs: codeDocsVal
+      })
+
+    })
+    .catch((error) => {
+      console.log(error)
+      res.send({success: false, errorText: error})
+    })
+
+  })
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This socket route will update the code documents in mongo when adding/removing/updating
+
+  -------------------
+
+  inputObject = data = {
+    add: Array of Strings (the codes you wish to add),
+    remove: String (a singular _id tag for the target doucment to be removed)
+  }
+
+  outputObject = successObj = {
+    sucess: Boolean,
+    errorText: String
+  }
+
+
+  */
+
+  socket.on('/secure/admin/updateCodeDocs', async function (data) {
+    if (data.add) {
+      var addDocs = data.add
+      data.add.map((codeVal) => {
+        var newCodeDoc = new Code ({
+          code: codeVal.toLowerCase(),
+          used: false
+        })
+
+        newCodeDoc.save().catch((error) => console.log(error))
+      })
+    }
+
+    if (data.remove) {
+      Code.remove({_id: data.remove}).catch((error) => console.log(error))
+    }
+
+    socket.emit('response/secure/admin/updateCodeDocs')
+
   })
 
+
+  //--------------------------------------------------------------------------//
   //---------------------VOICE RECOGNITION------------------------------------//
+  //--------------------------------------------------------------------------//
   var recognizeStream = null
 
   socket.on('startGoogleCloudSpeech', function () {
@@ -640,13 +776,12 @@ io.on('connection', function (socket) {
     .on('data', function (data) {
       console.log('data received')
       console.log(data.results[0])
-      io.sockets.emit('speechData', data);
-    });
+      io.sockets.emit('speechData', data)
+    })
   })
   socket.on('audioStream', function (bufferChunk) {
     // If statement is to avoid index.js trigerring an error because reconizeStream is not yet defined and might not have a write() function
     //console.log(recognizeStream)
-    //console.log('---------------------------------------')
     if (recognizeStream !== null) {
       recognizeStream.write(bufferChunk)
       // alternatives:
@@ -665,13 +800,20 @@ io.on('connection', function (socket) {
   })
   //--------------------------------------------------------------------------//
 
+  socket.on('disconnect', function (data) {
+    visitors.splice(visitors.indexOf(socket), 1)
+    console.log('Disconnected: %s socket(s) connected', visitors.length)
+  })
 
 })
-
+// End of socket
+//____________________________________________________________________________//
 //----------------------------------------------------------------------------//
 //---------------------------BACKGROUND FUNCTIONS-----------------------------//
 //----------------------------------------------------------------------------//
 //____________________________________________________________________________//
+
+
 
 
 //----------------Resetting weekly votes allowed for each user----------------//

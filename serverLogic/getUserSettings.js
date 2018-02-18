@@ -5,22 +5,31 @@ const User = require('../models/userModel.js')
 
 
 
-module.exports = function (userReq, res) {
+module.exports = function (data, userDoc) {
+  return new Promise (function (resolve, reject) {
+    User.findOne({username: userDoc.username})
+    .then((userDoc) => {
+      var outputObj = {
+        success: true,
+        errorText: ''
+      }
 
-  // retrieve the userInfo from the token header
-  serverTools.authenticate.transformJWT(userReq)
-  .then((userInfo) => {
-    // find the doc
-    return serverTools.find.singleDoc(User, {username: userInfo.username})
+      if (!userDoc.settings) {
+        outputObj.errorText = 'no settings ever set'
+        outputObj.success = false
+      } else {
+        outputObj.settings = userDoc.settings
+      }
+
+      resolve(outputObj)
+    })
+    .catch((error) => {
+      var successObj = {
+        success: false,
+        errorText: error
+      }
+      reject(successObj)
+    })
   })
-  .then((userDoc) => {
-    // extract settings from userDoc
-    // console.log(userDoc)
-    var settingsObj = userDoc.settings
-    settingsObj ? res.send({success: true, errorText: '', settings: settingsObj}) : res.send({success: true, errorText: 'no settings ever set', settings: false})
-  })
-  .catch((error) => {
-    res.send({success: false, errorText: error})
-    console.log(error)
-  })
+
 }

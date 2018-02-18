@@ -1,15 +1,16 @@
 // This function will create a new feedback document
 const Feature = require('../../../models/featureModel')
 
-module.exports = function (featureReq, userInfo) {
+module.exports = function (data, userDoc) {
   return new Promise (function(resolve, reject) {
-
+    console.log(data)
+    console.log(userDoc)
     var newFeatureDoc = new Feature({
-      title: featureReq.body.title,
+      title: data.title,
       originalRequester: {
-        fullName: userInfo.fullName,
-        username: userInfo.username,
-        originalDescription: featureReq.body.description
+        fullName: userDoc.firstName + ' ' + userDoc.lastName,
+        username: userDoc.username,
+        originalDescription: data.description
       }
     });
 

@@ -3,28 +3,28 @@ const requireDir = require('require-dir')
 const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
 const User = require('../models/userModel.js')
 
-module.exports = function (userUpdateReq, res) {
+module.exports = function (data, userDoc) {
+  return new Promise (function (resolve, reject) {
 
-  serverTools.authenticate.transformJWT(userUpdateReq)
-  .then((userInfo) => {
-    console.log(userInfo)
-    return serverTools.update.thisUserDocSettings({username: userInfo.username, updateParam: userUpdateReq.body.updateObj})
-  })
-  .then((oldUserDoc) => {
-    return serverTools.find.singleDoc(User, {username: oldUserDoc.username})
-  })
-  .then((newUserDoc) => {
-    console.log('done update')
-    console.log(newUserDoc)
-    res.status(200).send({
-      success: true,
-      errorText: ''
+    serverTools.update.thisUserDocSettings({username: userDoc.username, updateParam: data.updateObj})
+    .then((oldUserDoc) => {
+      return serverTools.find.singleDoc(User, {username: userDoc.username})
+    })
+    .then((newUserDoc) => {
+      var successObj = {
+        success: true,
+        errorText: ''
+      }
+      resolve(successObj)
+    })
+    .catch((error) => {
+      console.log('updateUserSettings.js')
+      var successObj = {
+        success: false,
+        errorText: error
+      }
+      reject(successObj)
     })
 
   })
-  .catch((error) => {
-    console.log(error)
-    res.send({ success: false, errorText: error})
-  })
-
 }
