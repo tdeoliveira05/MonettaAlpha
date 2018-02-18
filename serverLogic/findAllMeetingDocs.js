@@ -6,7 +6,11 @@ const Meeting = require('../models/meetingModel.js')
 
 module.exports = function (data, userDoc) {
   return new Promise (async function (resolve, reject) {
-    if (data.sortObj || data.filterObj) {
+    console.log('inside')
+
+    if (data) {
+      reject('piece of shit')
+    } else if (data.sortObj || data.filterObj) {
       var docArray = await serverTools.filterAndSort.multipleMeetingDocs({'host.username': userDoc.username}, data)
       if (!docArray) reject({success: false, errorText: 'No array of documents found'})
       resolve(docArray)

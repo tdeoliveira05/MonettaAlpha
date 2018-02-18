@@ -247,7 +247,7 @@ io.sockets.on('connection', async function (socket) {
   visitors.push(socket)
 
   socket.use(async function (data, next) {
-    // continuously update the user's doc
+    // continuously update the user's doc embedded in the socket object
     try  {
       var currentUserDoc = await User.findOne({username: socket.userDoc.username}).lean()
       socket.userDoc = currentUserDoc
@@ -268,7 +268,20 @@ io.sockets.on('connection', async function (socket) {
     console.log(error)
   })
 
+  /*------------------------ASYNC MIDDLEWARE FUNCTION-------------------------*/
 
+  // this will be a middleware function called on every socket.on event listener and
+  // the sole purpose for it is to catch silent errors by forcing a promise.resolve
+  // on the event handler in socket.on and if that promise fails with a reject() then
+  // this catch block would catch it and submit it to express to prevent silent breakages
+  const asyncMiddleware = fn =>
+    (data) => {
+      Promise.resolve(fn(data))
+      .catch((error) => {
+        console.log('ASYNCMIDDLEWARE ERROR')
+        console.log('ERROR CODE: ' + error)
+      })
+    }
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -288,14 +301,10 @@ io.sockets.on('connection', async function (socket) {
 
   */
 
-  socket.on('/secure/userDocument/updateInfo', async function(data) {
-    try {
-      var successObj = await serverLogic.updateUserDocInfo(data, socket.userDoc)
-      //socket.emit('response/secure/userDocument/updateInfo', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/userDocument/updateInfo', asyncMiddleware(async function (data) {
+    var successObj = await serverLogic.updateUserDocInfo(data, socket.userDoc)
+    socket.emit('response/secure/userDocument/updateInfo', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -316,16 +325,10 @@ io.sockets.on('connection', async function (socket) {
 
   }*/
 
-  socket.on('/secure/userDocument/updateSettings', async function(data) {
-    try {
-      var successObj = await serverLogic.updateUserSettings(data, socket.userDoc)
-      console.log(successObj)
-      //socket.emit('response/secure/userDocument/updateSettings', successObj)
-
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/userDocument/updateSettings', asyncMiddleware (async function (data) {
+    var successObj = await serverLogic.updateUserSettings(data, socket.userDoc)
+    socket.emit('response/secure/userDocument/updateSettings', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -340,14 +343,10 @@ io.sockets.on('connection', async function (socket) {
 
   }*/
 
-  socket.on('/secure/userDocument/getSettings', async function(data) {
-  	try {
-      var outputObj = await serverLogic.getUserSettings(data, socket.userDoc)
-      //socket.emit('response/secure/userDocument/getSettings', outputObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/userDocument/getSettings', asyncMiddleware (async function (data) {
+    var outputObj = await serverLogic.getUserSettings(data, socket.userDoc)
+    socket.emit('response/secure/userDocument/getSettings', outputObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -364,11 +363,7 @@ io.sockets.on('connection', async function (socket) {
   }*/
 
   socket.on('/secure/userDocument/getUserDoc', function(data) {
-  	try {
-      socket.emit('response/secure/userDocument/getUserDoc', {userDoc: socket.userDoc})
-    } catch (error) {
-      console.log(error)
-    }
+  	socket.emit('response/secure/userDocument/getUserDoc', {userDoc: socket.userDoc})
   })
 
   /* -----------------------------------------------------------------------------
@@ -390,14 +385,10 @@ io.sockets.on('connection', async function (socket) {
 
   }*/
 
-  socket.on('/secure/meetingDocument/submit', async function(data) {
-  	try {
-      var successObj = await serverLogic.submitNewMeeting(data)
-      socket.emit('response/secure/meetingDocument/submit', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/meetingDocument/submit', asyncMiddleware (async function (data) {
+    var successObj = await serverLogic.submitNewMeeting(data)
+    socket.emit('response/secure/meetingDocument/submit', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -423,14 +414,11 @@ io.sockets.on('connection', async function (socket) {
   data: meetingDocumentArray // sends back 'res.send(JSON.stringify(docArray))'
   }*/
 
-  socket.on('/secure/meetingDocument/findByUser', async function(data){
-  	try {
+  socket.on('/secure/meetingDocument/findByUser', asyncMiddleware (async (data) => {
       var outputObj = await serverLogic.findAllMeetingDocs(data, socket.userDoc)
       socket.emit('response/secure/meetingDocument/findByUser', outputObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+    })
+  )
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -445,14 +433,10 @@ io.sockets.on('connection', async function (socket) {
   NO OUTPUT OBJECT
   */
 
-  socket.on('/secure/meetingDocument/deleteById', async function(data){
-  	try {
-      var successObj = await serverLogic.deleteMeetingDocById(data)
-      socket.emit('response/secure/meetingDocument/deleteById', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/meetingDocument/deleteById', asyncMiddleware(async function (data) {
+    var successObj = await serverLogic.deleteMeetingDocById(data)
+    socket.emit('response/secure/meetingDocument/deleteById', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -470,14 +454,10 @@ io.sockets.on('connection', async function (socket) {
   }
   */
 
-  socket.on('/secure/meetingDocument/overwriteThisDocument', async function(data){
-  	try {
-      var successObj = await serverLogic.overwriteThisMeetingDoc(data)
-      socket.emit('response/secure/meetingDocument/overwriteThisDocument', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/meetingDocument/overwriteThisDocument', asyncMiddleware (async function (data) {
+    var successObj = await serverLogic.overwriteThisMeetingDoc(data)
+    socket.emit('response/secure/meetingDocument/overwriteThisDocument', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -498,14 +478,10 @@ io.sockets.on('connection', async function (socket) {
   }
   */
 
-  socket.on('/secure/feedbackDocument/submit', async function(data) {
-  	try {
-      var successObj = await serverLogic.submitNewFeedback(data, socket.userDoc)
-      socket.emit('response/secure/feedbackDocument/submit', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/feedbackDocument/submit', asyncMiddleware (async function (data) {
+    var successObj = await serverLogic.submitNewFeedback(data, socket.userDoc)
+    socket.emit('response/secure/feedbackDocument/submit', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -526,14 +502,10 @@ io.sockets.on('connection', async function (socket) {
   }
   */
 
-  socket.on('/secure/featureDocument/submitComment', async function (data) {
-    try {
-      var successObj = await serverLogic.submitFeatureComment(data, socket.userDoc)
-      socket.emit('response/secure/featureDocument/submitComment', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  socket.on('/secure/featureDocument/submitComment', asyncMiddleware (async function (data) {
+    var successObj = await serverLogic.submitFeatureComment(data, socket.userDoc)
+    socket.emit('response/secure/featureDocument/submitComment', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -553,15 +525,10 @@ io.sockets.on('connection', async function (socket) {
   }
   */
 
-  socket.on('/secure/featureDocument/submit', async function (data) {
-    try {
-      var successObj = await serverLogic.submitNewFeature(data, socket.userDoc)
-      socket.emit('response/secure/featureDocument/submit', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-
-  })
+  socket.on('/secure/featureDocument/submit', asyncMiddleware( async function (data) {
+    var successObj = await serverLogic.submitNewFeature(data, socket.userDoc)
+    socket.emit('response/secure/featureDocument/submit', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -578,15 +545,10 @@ io.sockets.on('connection', async function (socket) {
   }
   */
 
-  socket.on('/secure/featureDocument/overwrite', async function (data) {
-    try {
-      var successObj = await serverLogic.serverTools.overwrite.thisFeatureDoc(data.featureDoc)
-      socket.emit('response/secure/featureDocument/overwrite', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-
-  })
+  socket.on('/secure/featureDocument/overwrite', asyncMiddleware (async function (data) {
+    var successObj = await serverLogic.serverTools.overwrite.thisFeatureDoc(data.featureDoc)
+    socket.emit('response/secure/featureDocument/overwrite', successObj)
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -605,15 +567,10 @@ io.sockets.on('connection', async function (socket) {
   }
   */
 
-  socket.on('/secure/featureVoteUpdate', async function (data) {
-    try {
-      var successObj = await serverLogic.featureVoteUpdate(data, socket.userDoc)
-      socket.emit('response/secure/featureVoteUpdate', successObj)
-    } catch (error) {
-      console.log(error)
-    }
-
-  })
+  socket.on('/secure/featureVoteUpdate', asyncMiddleware(async function (data) {
+    var successObj = await serverLogic.featureVoteUpdate(data, socket.userDoc)
+    socket.emit('response/secure/featureVoteUpdate', successObj)
+  }))
 
 
   /* -----------------------------------------------------------------------------
@@ -639,10 +596,10 @@ io.sockets.on('connection', async function (socket) {
   note - the arrays are sorted by descending total votes
   */
 
-  socket.on('getAllFeatureDocs', async function(data) {
+  socket.on('getAllFeatureDocs', asyncMiddleware( async function (data) {
     var featureListObj = await serverLogic.returnAllFeatureDocs()
     socket.emit('receiveAllFeatureDocs', featureListObj)
-  })
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -656,10 +613,9 @@ io.sockets.on('connection', async function (socket) {
   OUTPUT:
   none
   */
-  socket.on('saveOneSecond', function (usernameObj) {
-    console.log('saved')
-    serverLogic.serverTools.stats.processLoginTimer(usernameObj)
-  })
+  socket.on('saveOneSecond', asyncMiddleware(async function (data) {
+    await serverLogic.serverTools.stats.processLoginTimer(data)
+  }))
 
   //==========================================================================//
   //===============================ADMIN SOCKET ROUTES========================//
