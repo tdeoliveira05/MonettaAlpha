@@ -200,8 +200,8 @@ app.post('/authenticate',  function(req, res, next) {
 /* --------------------ALL PURPOSE ROUTING (NON-SECURE ROUTEs)----------------*/
 
 app.get('*', function (request, response) {
-    console.log('--ALL PURPOSE ROUTING--')
-    response.sendFile(indexPath)
+  console.log('--ALL PURPOSE ROUTING--')
+  response.sendFile(indexPath)
 })
 
 //----------------------------------------------------------------------------//

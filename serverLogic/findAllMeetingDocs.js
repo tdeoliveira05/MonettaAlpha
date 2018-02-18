@@ -8,9 +8,7 @@ module.exports = function (data, userDoc) {
   return new Promise (async function (resolve, reject) {
     console.log('inside')
 
-    if (data) {
-      reject('piece of shit')
-    } else if (data.sortObj || data.filterObj) {
+    if (data.sortObj || data.filterObj) {
       var docArray = await serverTools.filterAndSort.multipleMeetingDocs({'host.username': userDoc.username}, data)
       if (!docArray) reject({success: false, errorText: 'No array of documents found'})
       resolve(docArray)
