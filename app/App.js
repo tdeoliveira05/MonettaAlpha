@@ -84,7 +84,7 @@ class App extends React.Component {
         // refresh local storage in case of any changes
         localStorage.username = successObj.data.username
         localStorage.fullName = successObj.data.fullName
-        
+
         //Open an authenticated connection to the web socket (hadnshake will take place)
         this.initializeWebSocket()
 
@@ -146,6 +146,7 @@ class App extends React.Component {
   signOut () {
     this.resetLocalStorage()
     this.setState({appLocation: 'home'})
+    if (socket) socket.emit('userLogoutProtocols')
   }
 
   resetLocalStorage () {

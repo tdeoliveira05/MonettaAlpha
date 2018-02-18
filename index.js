@@ -1,13 +1,44 @@
 // THIS IS THE SERVER [ROUTER FILE] //------------------------------------------
 // initializing express app + http server + web socket-----------------------
+
+//-------------------------PURE HTTP------------------------------------------//
+
 const express = require('express')
+const path    = require('path')
+const fs      = require('fs')
 const app     = express()                      // APP
 const server  = require('http').Server(app)    // SERVER
 const io      = require('socket.io')(server)   // WEBSOCKET
+
+
+//-----------------------HTTPS------------------------------------------------//
+/*
+const https   = require('https')
+const path    = require('path')
+const fs      = require('fs')
+
+
+const express = require('express')
+const app     = express()                           // APP
+
+// SSL Certificate information
+var options = {
+  key: fs.readFileSync(path.join(__dirname, './ssl/monetta_ai.key')),
+  cert: fs.readFileSync(path.join(__dirname, './ssl/monetta_ai.crt')),
+  ca: [
+        fs.readFileSync(path.join(__dirname, './ssl/COMODORSADomainValidationSecureServerCA.crt')),
+        fs.readFileSync(path.join(__dirname, './ssl/COMODORSAAddTrustCA.crt')),
+        fs.readFileSync(path.join(__dirname, './ssl/AddTrustExternalCARoot.crt'))
+      ]
+}
+
+const server  = https.createServer(options)         // SERVER
+const io      = require('socket.io')(server)        // WEBSOCKET
+*/
+
 //------------------------------------------------------------------------------
 const cors                 = require('cors')
 const axios                = require('axios')
-const path                 = require('path')
 const bodyParser           = require('body-parser')
 const mongoose             = require('mongoose')
 const assert               = require('assert')
@@ -17,7 +48,6 @@ const config               = require('config')
 const yes                  = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
 const jwt                  = require('jsonwebtoken')
-const fs                   = require('fs')
 const googleCloudSpeechAPI = require('@google-cloud/speech')
 const helmet               = require('helmet')
 const Feature              = require('./models/featureModel.js')
@@ -39,9 +69,9 @@ const speech = new googleCloudSpeechAPI.SpeechClient({
 })
 
 //Establishing middleware
-app.use(cors())
-app.use(bodyParser.json())
-app.use(helmet())
+//app.use(cors())
+//app.use(bodyParser.json())
+//app.use(helmet())
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -244,7 +274,10 @@ io.sockets.on('connection', async function (socket) {
   // This is where all socket functionality and the socket's lifecyle is built
   // update visitors list
   socket.userDoc = await serverLogic.authenticateSocket(socket)
-  visitors.push(socket)
+  if (!visitors.includes(socket)) visitors.push(socket)
+
+  console.log('Visitor connected:')
+  console.log(visitors.length + ' visitors on the website')
 
   socket.use(async function (data, next) {
     // continuously update the user's doc embedded in the socket object
@@ -257,11 +290,9 @@ io.sockets.on('connection', async function (socket) {
     }
   })
 
-  console.log('Connected: %s socket(s) connected', visitors.length)
 
 
-
-  // Process event listener to prevent server from crashing upon an error
+  // Process event listener to prevent server from crashing upon an uncaught error
   process.on('uncaughtException', (error) => {
     console.log('uncaught exception (socket)')
     socket.emit('errorCustom', '(ERROR 500) INTERNAL SERVER ERROR')
@@ -282,6 +313,35 @@ io.sockets.on('connection', async function (socket) {
         console.log('ERROR CODE: ' + error)
       })
     }
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This socket route will go through certain protocol functions like:
+  - updating time spent inside the app for the user
+  - updating the usersOnline list here in the io.connection
+
+  -------------------
+  */
+  socket.on('userLoginProtocols', asyncMiddleware(async function (data) {
+    // if this user is not currently logged as an online user, log them
+    if (!usersOnline.includes(socket)) {
+      usersOnline.push(socket)
+      console.log('User connected:')
+      console.log(usersOnline.length + ' users online')
+    }
+
+    // process the stats pertaining to length of log in for the user
+    await serverLogic.serverTools.stats.processLoginTimer({username: socket.userDoc.username})
+  }))
+
+  socket.on('userLogoutProtocols', asyncMiddleware(async function(data) {
+    if (usersOnline.includes(socket)) {
+      usersOnline.splice(usersOnline.indexOf(socket), 1)
+      console.log('User disconnected:')
+      console.log(usersOnline.length + ' users online')
+    }
+
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -601,26 +661,12 @@ io.sockets.on('connection', async function (socket) {
     socket.emit('receiveAllFeatureDocs', featureListObj)
   }))
 
-  /* -----------------------------------------------------------------------------
-  PURPOSE:
-  This socket route will save one second to a user's total login time
 
-  -------------------
-
-  INPUT:
-  none
-
-  OUTPUT:
-  none
-  */
-  socket.on('saveOneSecond', asyncMiddleware(async function (data) {
-    await serverLogic.serverTools.stats.processLoginTimer(data)
-  }))
 
   //==========================================================================//
   //===============================ADMIN SOCKET ROUTES========================//
   //==========================================================================//
-  /* -----------------------------------------------------------------------------
+  /* ---------------------------------------------------------------------------
   PURPOSE:
   This socket route will return all feature, code, meeting and user documents in mongo
 
@@ -689,23 +735,28 @@ io.sockets.on('connection', async function (socket) {
   */
 
   socket.on('/secure/admin/updateCodeDocs', async function (data) {
-    if (data.add) {
-      var addDocs = data.add
-      data.add.map((codeVal) => {
-        var newCodeDoc = new Code ({
-          code: codeVal.toLowerCase(),
-          used: false
+    try {
+      if (data.add) {
+        var addDocs = data.add
+        data.add.map((codeVal) => {
+          var newCodeDoc = new Code ({
+            code: codeVal.toLowerCase(),
+            used: false
+          })
+
+          newCodeDoc.save().catch((error) => console.log(error))
         })
+      }
 
-        newCodeDoc.save().catch((error) => console.log(error))
-      })
+      if (data.remove) {
+        Code.remove({_id: data.remove}).catch((error) => console.log(error))
+      }
+
+      socket.emit('response/secure/admin/updateCodeDocs')
+    } catch (error) {
+      console.log('error')
+      console.log(error)
     }
-
-    if (data.remove) {
-      Code.remove({_id: data.remove}).catch((error) => console.log(error))
-    }
-
-    socket.emit('response/secure/admin/updateCodeDocs')
 
   })
 
@@ -758,7 +809,10 @@ io.sockets.on('connection', async function (socket) {
 
   socket.on('disconnect', function (data) {
     visitors.splice(visitors.indexOf(socket), 1)
-    console.log('Disconnected: %s socket(s) connected', visitors.length)
+    usersOnline.splice(usersOnline.indexOf(socket), 1)
+    console.log('Disconnected:')
+    console.log(visitors.length + ' visitors on the website')
+    console.log(usersOnline.length + ' users online')
   })
 
 })
