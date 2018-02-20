@@ -9,31 +9,6 @@ const fs      = require('fs')
 const app     = express()                      // APP
 const server  = require('http').Server(app)    // SERVER
 const io      = require('socket.io')(server)   // WEBSOCKET
-
-
-//-----------------------HTTPS------------------------------------------------//
-/*
-const https   = require('https')
-const path    = require('path')
-const fs      = require('fs')
-const express = require('express')
-const app     = express()                           // APP
-
-// SSL Certificate information
-var options = {
-  key: fs.readFileSync(path.join(__dirname, './ssl/monetta_ai.key')),
-  cert: fs.readFileSync(path.join(__dirname, './ssl/monetta_ai.crt')),
-  ca: [
-        fs.readFileSync(path.join(__dirname, './ssl/COMODORSADomainValidationSecureServerCA.crt')),
-        fs.readFileSync(path.join(__dirname, './ssl/COMODORSAAddTrustCA.crt')),
-        fs.readFileSync(path.join(__dirname, './ssl/AddTrustExternalCARoot.crt'))
-      ]
-}
-
-const server  = https.createServer(options, app)         // SERVER
-const io      = require('socket.io')(server)        // WEBSOCKET
-*/
-
 //------------------------------------------------------------------------------
 const cors                 = require('cors')
 const axios                = require('axios')
@@ -69,6 +44,18 @@ const speech = new googleCloudSpeechAPI.SpeechClient({
 //Establishing middleware
 app.use(cors())
 app.use(bodyParser.json())
+
+// SSL Secure Certification redirect
+app.use((req, res, next) => {
+	if (process.env.NODE_ENV === 'production' && req.header('X-Forwarded-Proto') !== 'https') {
+		// If the request coming in is http (req.header('X-Forwarded-Proto')), redirect it to https
+		res.redirect('https://' + req.host + req.url)
+
+	} else {
+		// If we are NOT in production mode, it doesnt matter what the type of request coming in is
+		next()
+	}
+})
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
