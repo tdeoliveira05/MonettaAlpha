@@ -16,8 +16,6 @@ const io      = require('socket.io')(server)   // WEBSOCKET
 const https   = require('https')
 const path    = require('path')
 const fs      = require('fs')
-
-
 const express = require('express')
 const app     = express()                           // APP
 
@@ -32,7 +30,7 @@ var options = {
       ]
 }
 
-const server  = https.createServer(options)         // SERVER
+const server  = https.createServer(options, app)         // SERVER
 const io      = require('socket.io')(server)        // WEBSOCKET
 */
 
@@ -69,9 +67,8 @@ const speech = new googleCloudSpeechAPI.SpeechClient({
 })
 
 //Establishing middleware
-//app.use(cors())
-//app.use(bodyParser.json())
-//app.use(helmet())
+app.use(cors())
+app.use(bodyParser.json())
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
@@ -112,7 +109,7 @@ mongoose.connection.once('open',function(){
 //-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
 //----------------------------------------------------------------------------//
 
-if(process.env.NODE_ENV=='production') app.use(yes());
+// if(process.env.NODE_ENV=='production') app.use(yes());
 
 //----------------------------------------------------------------------------//
 //--------------------------------SERVER ROUTES-------------------------------//
@@ -182,7 +179,21 @@ outputObject = res.data = {
 
 app.post('/request/signup', function(req, res) {
   console.log('requested signup')
-  serverLogic.requestSignup(req, res)
+
+	// check if this user is registering as an admin
+	if (req.body.username.includes('@monetta.ai') && req.body.codeUsed.includes('ADMIN_' + config.get('Presets.secret'))) {
+		// if username being registered is @monetta.ai email and uses the secret ADMIN_${SECRET} code, then run a different route
+		console.log('REGISTERING ADMIN: ' + req.body.username)
+
+		// remove the secret so it is not stored in the database and
+		var newReq = req
+
+		newReq.body.codeUsed = newReq.body.codeUsed.replace('GordonPatrick', '')
+
+		serverLogic.requestSignupAdmin(newReq, res)
+	} else {
+		serverLogic.requestSignup(req, res)
+	}
 })
 
 /* -----------------------------------------------------------------------------
@@ -314,11 +325,12 @@ io.sockets.on('connection', async function (socket) {
       })
     }
 
-  /* -----------------------------------------------------------------------------
-  PURPOSE:
+  /* ---------------------------------------------------------------------------
+  ** _____________ PROTOCOLS _____________ **
   This socket route will go through certain protocol functions like:
   - updating time spent inside the app for the user
   - updating the usersOnline list here in the io.connection
+  - updating the activity of the login session of the user
 
   -------------------
   */
@@ -341,6 +353,10 @@ io.sockets.on('connection', async function (socket) {
       console.log(usersOnline.length + ' users online')
     }
 
+  }))
+
+  socket.on('userURLActivityProtocols', asyncMiddleware (async function (data) {
+    await serverLogic.serverTools.stats.processUserURLActivity(data, socket.userDoc)
   }))
 
   /* -----------------------------------------------------------------------------
@@ -515,7 +531,7 @@ io.sockets.on('connection', async function (socket) {
   */
 
   socket.on('/secure/meetingDocument/overwriteThisDocument', asyncMiddleware (async function (data) {
-    var successObj = await serverLogic.overwriteThisMeetingDoc(data)
+    var successObj = await serverLogic.serverTools.overwrite.thisMeetingDoc(data.targetDocument)
     socket.emit('response/secure/meetingDocument/overwriteThisDocument', successObj)
   }))
 

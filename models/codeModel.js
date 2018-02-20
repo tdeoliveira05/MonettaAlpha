@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const CodeSchema = new Schema({
   code: {type: String, unique: true},
-  used:Boolean
+  used: Boolean
 }, {timestamps: true});
 
 

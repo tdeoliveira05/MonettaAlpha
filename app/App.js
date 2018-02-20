@@ -123,7 +123,8 @@ class App extends React.Component {
     this.initializeUserSettings()
   }
 
-  submitUserTokenObj (userTokenObjVal, admin) {
+  submitUserTokenObj (userTokenObjVal) {
+    console.log(userTokenObjVal)
     Cookies.set('access_token', 'bearer ' + userTokenObjVal.token)
 
     localStorage.username = userTokenObjVal.username
@@ -132,8 +133,8 @@ class App extends React.Component {
     this.initializeWebSocket()
 
 
-    if (admin) {
-      this.setState({appLocation: 'admin', admin: true})
+    if (userTokenObjVal.admin) {
+      this.setState({appLocation: 'app', admin: true})
     } else {
       this.setState({appLocation: 'app'})
     }

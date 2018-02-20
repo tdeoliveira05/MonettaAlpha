@@ -33,7 +33,13 @@ const UserSchema = new mongoose.Schema({
       voteHistory: {type: Array, default: []},
       featureRequestHistory: {type: Array, default: []},
       feedbackHistory: {type: Array, default: []},
-      loginHistory: {type: Array, default: [new Date]}
+      loginHistory: {type: Array, default: [
+                                              {
+                                                date: new Date,
+                                                browserActivity: []
+                                              }
+                                            ]
+                    }
     }
   },
   settings: {

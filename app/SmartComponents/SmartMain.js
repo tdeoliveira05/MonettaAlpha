@@ -101,6 +101,13 @@ class SmartMain extends React.Component {
     if (nextProps.userSettings !== this.props.userSettings) this.setState({userSettings: nextProps.userSettings})
   }
 
+  componentDidUpdate () {
+
+    const self = this
+
+    socket.emit('userURLActivityProtocols', {props: self.props})
+  }
+
   passUserSettings (userSettingsVal) {
     this.setState({userSettings: userSettingsVal})
   }

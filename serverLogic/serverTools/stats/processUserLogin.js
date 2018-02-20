@@ -5,11 +5,21 @@ module.exports = function (usernameVal) {
   return new Promise (function(resolve, reject) {
     //console.log('processing user login')
 
+    var loginHistoryItem = {
+      loginDate: new Date,
+      browserHistory: [
+        {
+          location: '/',
+          timeOfAccess: new Date
+        }
+      ]
+    }
+
     // refresh the lastLoggedIn date upon user login
     User.update(
       {username: usernameVal},
       {
-        $push: {"data.userHistory.loginHistory": new Date},
+        $push: {"data.userHistory.loginHistory": loginHistoryItem},
         $set: {lastLoggedIn: new Date}
       }
     )
