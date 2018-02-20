@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const axios = require('axios')
-const app = express()
 const path = require('path')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
@@ -16,32 +15,55 @@ const config = require('config')
 const yes = require('yes-https')
 const { SlackOAuthClient } = require('messaging-api-slack')
 const createMinutesEmail = require('./app/containers/Email/MonettaMinutes/templates.js')
+const app = express()
 
-// Setting up snedgrid connection to send out email
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey('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')
+/*
+A word on https (SSL encryption)
+
+This NodeJS server does not need to include its own certificate and keys due to
+certain reasons.
+
+Primarily, this server is hosted on Elastic Beanstalk (AWS) which makes use of a
+load balance that fields the requests to our domain. This load balancer has the
+correct certificates set up, such that it allows the client (browser) to talk to
+it using both https and http, rather than the default http-only.
+
+Because the elastic load balancer handles the ancrypted communication, then talks
+to the server in http (not https), the node server doesnt actually ever have to deal
+with https.
+
+However, to prevent users from ever being able to use http to talk to the load
+balancer, the http domain URL should always be redirected to the https domain URL
+Ex:
+
+http://monetta.ai --> https://monetta.ai
+
+This is done through the DNS system, not through the load balancer. Whenever people
+try to access monetta.ai, Namecheap (our DNS) will redirect to https://monetta.ai
+
+
+*/
+
 
 //Middleware
 app.use(cors())
 app.use(bodyParser.json())
 
-//Redirecting to https
-if(process.env.NODE_ENV=='production') app.use(yes());;
+
+// Setting up snedgrid connection to send out email
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey('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')
+
 
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
 const publicPath = express.static(path.join(__dirname, './dist'));
 
-const sslPath = path.join(__dirname, './dist/well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8');
-const sslPath1 = path.join(__dirname, './dist/well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E');
-
 app.use('/', publicPath);
 
 app.get('/', function(_,res){ res.sendFile(indexPath) });
 
-app.get('/.well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8', function(_,res){ res.sendFile(sslPath) });
-app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E', function(_,res){ res.sendFile(sslPath1) });
 //OAuth
 const slack = SlackOAuthClient.connect(
 	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
