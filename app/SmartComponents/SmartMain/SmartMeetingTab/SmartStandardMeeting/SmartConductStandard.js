@@ -1,9 +1,9 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
-import DumbConductCustom from '../../../DumbComponents/Main/CustomMeeting/DumbConductCustom.js'
+import DumbConductStandard from '../../../../DumbComponents/Main/MeetingTab/StandardMeeting/DumbConductStandard.js'
 
-class SmartConductCustom extends React.Component {
+class SmartConductStandard extends React.Component {
   constructor(props) {
     super(props)
     /*-------------------------------------------------------------------------
@@ -41,9 +41,11 @@ class SmartConductCustom extends React.Component {
     this.handleTypeClick        = this.handleTypeClick.bind(this)
     this.deleteNoteItem         = this.deleteNoteItem.bind(this)
     this.nextStep               = this.nextStep.bind(this)
+    this.previousStep           = this.previousStep.bind(this)
     this.getAndUpdateDuration   = this.getAndUpdateDuration.bind(this)
     this.formatDuration         = this.formatDuration.bind(this)
     this.setRef                 = this.setRef.bind(this)
+    this.setRefTextField        = this.setRefTextField.bind(this)
     this.updateMeetingData      = this.updateMeetingData.bind(this)
     this.changeItemType         = this.changeItemType.bind(this)
   }
@@ -66,6 +68,10 @@ class SmartConductCustom extends React.Component {
       targetBottomScrollElement.scrollTop = targetBottomScrollElement.scrollHeight
       this.setState({scrollToBottom: false})
     }
+    //autoFocuses the text field
+    if (!this.textFieldRef.state.isFocused) {
+      this.textFieldRef.focus()
+    }
 
   }
 
@@ -75,9 +81,18 @@ class SmartConductCustom extends React.Component {
     this.scrollRef = ref
   }
 
+  setRefTextField (ref) {
+    this.textFieldRef = ref
+  }
+
   nextStep () {
     this.updateMeetingData()
-    this.props.handleIndexChange('finished')
+    this.props.handleIndexChange('forward')
+  }
+
+  previousStep () {
+    this.updateMeetingData()
+    this.props.handleIndexChange('backward')
   }
 
   updateMeetingData () {
@@ -154,6 +169,16 @@ class SmartConductCustom extends React.Component {
     this.setState({tempItemColor: newItemColor, tempItemCategory: targetCategory})
   }
 
+  createGoalList () {
+    var tempGoalList = this.state.goals
+    var goalList = []
+
+    tempGoalList.map((goalItem) => {
+      goalList.push(goalItem.text)
+    })
+    return goalList
+  }
+
   changeItemType (event, key, value, index, noteItem) {
 
     var newNoteList = this.state.notes
@@ -163,13 +188,25 @@ class SmartConductCustom extends React.Component {
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
+    var goalList = this.createGoalList()
+
+    var meetingInfoHeading = (
+      <div style = {{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0', padding: '0'}}>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {localStorage.fullName + this.props.meetingData.participants.map((participantsItem) => (', '+ participantsItem.fullName))} </p>
+        <p style = {{color: 'gray', margin: '0', padding: '0'}}> {this.props.meetingData.location} </p>
+      </div>
+    )
+
 
     //----------------------------RETURN----------------------------------------
     return(
       <div>
-        <DumbConductCustom
+        <DumbConductStandard
           noteList               = {this.state.notes}
+          meetingInfoHeading     = {meetingInfoHeading}
           setRef                 = {this.setRef}
+          setRefTextField        = {this.setRefTextField}
+          goalList               = {goalList}
           categoryList           = {this.props.categoryList} /**************************************NEEDS FIX*****/
           selectedIndex          = {this.state.selectedIndex}
           tempItemText           = {this.state.tempItemText}
@@ -180,6 +217,7 @@ class SmartConductCustom extends React.Component {
           handleTypeClick        = {this.handleTypeClick}  /**************************************NEEDS FIX*****/
           deleteNoteItem         = {this.deleteNoteItem}
           nextStep               = {this.nextStep}
+          previousStep           = {this.previousStep}
           errorText              = {this.state.errorText}
           formattedDuration      = {this.state.timeElapsed.formattedActualDuration}
           changeItemType         = {this.changeItemType}
@@ -190,4 +228,4 @@ class SmartConductCustom extends React.Component {
   }
 }
 
-export default withRouter(SmartConductCustom)
+export default withRouter(SmartConductStandard)

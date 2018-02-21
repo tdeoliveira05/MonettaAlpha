@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import axios from 'axios'
 
 import SmartConductCustom from './SmartCustomMeeting/SmartConductCustom.js'
-const defaultSettings = require('../../clientConfig/defaults.json')
+const defaultSettings = require('../../../clientConfig/defaults.json')
 const defaultCategoryList = defaultSettings.defaultCategoryList
 
 

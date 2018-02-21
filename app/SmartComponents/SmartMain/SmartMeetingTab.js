@@ -1,9 +1,9 @@
 import React from 'react'
 import {Route, indexRoute, withRouter} from 'react-router-dom'
 // import PropTypes    from 'prop-types';
-import SmartStandardMeeting from './SmartStandardMeeting.js'
-import SmartCustomMeeting from './SmartCustomMeeting.js'
-import DumbMeetingTabChoice from '../../DumbComponents/Main/DumbMeetingTabChoice.js'
+import SmartStandardMeeting from './SmartMeetingTab/SmartStandardMeeting.js'
+import SmartCustomMeeting from './SmartMeetingTab/SmartCustomMeeting.js'
+import DumbMeetingTab from '../../DumbComponents/Main/DumbMeetingTab.js'
 
 class SmartMeetingTab extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class SmartMeetingTab extends React.Component {
     if (this.props.location.pathname === '/meeting') {
       return (
         <div style = {{height: '100%'}}>
-          <DumbMeetingTabChoice
+          <DumbMeetingTab
             history = {this.props.history}
           />
         </div>

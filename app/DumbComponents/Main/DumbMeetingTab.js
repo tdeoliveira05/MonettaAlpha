@@ -1,7 +1,7 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
-const DumbMeetingTabChoice = ({
+const DumbMeetingTab = ({
   history
 }) => (
   <div className = 'MeetingTabChoiceWrapper'>
@@ -21,7 +21,7 @@ const DumbMeetingTabChoice = ({
 import React        from 'react';
 import PropTypes    from 'prop-types';
 
-const DumbMeetingTabChoice = (props) => {
+const DumbMeetingTab = (props) => {
 
   let propName = props.propName;
 
@@ -32,10 +32,10 @@ const DumbMeetingTabChoice = (props) => {
   );
 };
 
-DumbMeetingTabChoice.propTypes = {
+DumbMeetingTab.propTypes = {
   propName:     PropTypes.type.isRequired,
 };
 
 */
 
-export default withRouter(DumbMeetingTabChoice)
+export default withRouter(DumbMeetingTab)

@@ -9,7 +9,7 @@ import axios from 'axios'
 import SmartPrepareStandard from './SmartStandardMeeting/SmartPrepareStandard.js'
 import SmartConductStandard from './SmartStandardMeeting/SmartConductStandard.js'
 import SmartReviewStandard from './SmartStandardMeeting/SmartReviewStandard.js'
-const defaultSettings = require('../../clientConfig/defaults.json')
+const defaultSettings = require('../../../clientConfig/defaults.json')
 const defaultCategoryList = defaultSettings.defaultCategoryList
 
 

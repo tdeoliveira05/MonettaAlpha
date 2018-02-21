@@ -1,7 +1,7 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
-import DumbReviewStandard from '../../../DumbComponents/Main/StandardMeeting/DumbReviewStandard.js'
+import DumbReviewStandard from '../../../../DumbComponents/Main/MeetingTab/StandardMeeting/DumbReviewStandard.js'
 
 class SmartReviewStandard extends React.Component {
   constructor(props) {
