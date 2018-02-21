@@ -50,7 +50,7 @@ const DumbDashboard = ({
 
       <div className = 'DashboardContentRight'>
         <div className = 'DashboardHostButtonDiv'>
-          <button> Host a meeting </button>
+          <button onClick = {() => history.push('/meeting')}> Host a meeting </button>
         </div>
         <div className = 'DashboardCustomTemplates'>
           <h3> Custom Meeting Templates </h3>

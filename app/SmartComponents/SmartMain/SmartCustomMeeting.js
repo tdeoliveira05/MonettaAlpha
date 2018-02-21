@@ -53,20 +53,38 @@ class SmartCustomMeeting extends React.Component {
     var defaults = this.props.defaultMeetingData
     this.setState({meetingData: defaults})
 
-    switch (this.props.match.params.id) {
-      case 'quick':
-        console.log(this.props)
-        var meetingDataVal       = this.state.meetingData
-        var quickMeetingSettings = this.props.userSettings.quickMeeting
+    if (this.props.match.params.templateId && this.props.userPreferences.customTemplates.length > 0) {
+        // if the URL contains an id in it to ask for a custom template, AND if the user actually HAS a custom template then let the requrest through
+        // may have to put this in the update function too
+        var meetingDataVal = this.state.meetingData
+        var templateSubDoc = {}
 
-        meetingDataVal.title                                              = quickMeetingSettings.title
-        meetingDataVal.location                                           = quickMeetingSettings.location
-        meetingDataVal.participants                                       = quickMeetingSettings.participants
-        meetingDataVal.meetingStats.timeElapsed.expectedDuration          = quickMeetingSettings.timeElapsed.expectedDuration
-        meetingDataVal.meetingStats.timeElapsed.formattedExpectedDuration = quickMeetingSettings.timeElapsed.formattedExpectedDuration
+
+        this.props.userPreferences.customTemplates.map((templateItem, templateIndex) => {
+          if (templateItem._id === this.props.match.params.templateId) {
+            templateSubDoc = templateId
+          }
+        })
+
+        if (Object.keys(templateSubDoc).length === 0) {
+          // if no template sub document was found
+          console.log('Wrong template id, redirecting to dashboard...')
+          this.props.history.push('/')
+        }
+
+
+        meetingDataVal.title                                              = templateSubDoc.title
+        meetingDataVal.location                                           = templateSubDoc.location
+        meetingDataVal.participants                                       = templateSubDoc.participants
+        meetingDataVal.meetingStats.timeElapsed.expectedDuration          = templateSubDoc.timeElapsed.expectedDuration
+        meetingDataVal.meetingStats.timeElapsed.formattedExpectedDuration = templateSubDoc.timeElapsed.formattedExpectedDuration
 
         this.setState({meetingData: meetingDataVal})
+    } else if (!this.props.match.params.templateId) {
+      // if for whatever reason someone
+      this.props.history.push('/')
     }
+
   }
 
   getMeetingData () {

@@ -5,8 +5,6 @@ import axios from 'axios'
 import Snackbar from 'material-ui/Snackbar'
 import { Route, withRouter} from 'react-router-dom'
 
-import SmartStandardMeeting from './SmartMain/SmartStandardMeeting.js'
-import SmartCustomMeeting from './SmartMain/SmartCustomMeeting.js'
 import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
 import SmartProductivityData from './SmartMain/SmartProductivityData.js'
 import SmartUserSettings from './SmartMain/SmartUserSettings.js'
@@ -15,6 +13,7 @@ import DumbNavigationBar from '../DumbComponents/Main/DumbNavigationBar'
 import SmartDashboard from './SmartMain/SmartDashboard.js'
 import SmartHelp from './SmartMain/SmartHelp.js'
 import SmartYourVoice from './SmartMain/SmartYourVoice.js'
+import SmartMeetingTab from './SmartMain/SmartMeetingTab.js'
 
 import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
 import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
@@ -57,7 +56,7 @@ class SmartMain extends React.Component {
       },
       openFeedback: false,
       snackbarOpen: false,
-      userSettings: this.props.userSettings,
+      userPreferences: this.props.userPreferences,
       quickMeeting: false,
       transcript: '',
       timeInApp: 0,
@@ -103,8 +102,8 @@ class SmartMain extends React.Component {
   componentWillReceiveProps (nextProps) {
     // App.js needs more time to initialize user settings due to the asynchronous nature of the code
     // this line of code will ensure that once App.js re-sets its own state with the initial version of the user's settings, the
-    // change will pass down through a new userSettings prop and smartMain.js will update its own state accordingly to propagate the user settings
-    if (nextProps.userSettings !== this.props.userSettings) this.setState({userSettings: nextProps.userSettings})
+    // change will pass down through a new userPreferences prop and smartMain.js will update its own state accordingly to propagate the user settings
+    if (nextProps.userPreferences !== this.props.userPreferences) this.setState({userPreferences: nextProps.userPreferences})
   }
 
   componentDidUpdate () {
@@ -114,8 +113,8 @@ class SmartMain extends React.Component {
     socket.emit('userURLActivityProtocols', {props: self.props})
   }
 
-  passUserSettings (userSettingsVal) {
-    this.setState({userSettings: userSettingsVal})
+  passUserSettings (userPreferencesVal) {
+    this.setState({userPreferences: userPreferencesVal})
   }
 
   updateMainLocation () {
@@ -291,15 +290,10 @@ class SmartMain extends React.Component {
                   userDoc = {this.state.userDoc}
                 />
             }/>
-            <Route exact path = "/meeting" render = {() =>
-              <SmartStandardMeeting
+            <Route path = "/meeting" render = {() =>
+              <SmartMeetingTab
                 defaultMeetingData = {this.state.defaultMeetingData}
-              />
-            }/>
-            <Route exact path = "/meeting/custom-:id" render = {() =>
-              <SmartCustomMeeting
-                defaultMeetingData = {this.state.defaultMeetingData}
-                userSettings       = {this.state.userSettings}
+                userPreferences    = {this.state.userPreferences}
               />
             }/>
             <Route exact path = "/storage" render = {() =>
@@ -320,7 +314,7 @@ class SmartMain extends React.Component {
             }/>
             <Route  exact path = "/settings" render = {() =>
               <SmartUserSettings
-                userSettings     = {this.state.userSettings}
+                userPreferences  = {this.state.userPreferences}
                 passUserSettings = {this.passUserSettings}
                 signOut          = {this.props.signOut}
               />

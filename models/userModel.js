@@ -33,24 +33,21 @@ const UserSchema = new mongoose.Schema({
       voteHistory: {type: Array, default: []},
       featureRequestHistory: {type: Array, default: []},
       feedbackHistory: {type: Array, default: []},
-      loginHistory: {type: Array, default: [
-                                              {
-                                                date: new Date,
-                                                browserActivity: []
-                                              }
-                                            ]
-                    }
+      loginHistory: {type: Array, default: [{date: new Date, browserActivity: []}]}
     }
   },
-  settings: {
-    quickMeeting: {
-      participants: {type: Array, default: [{fullName: '', email: '', guest: false}]},
-      title: {type: String, default: 'Quick Meeting'},
+  userPreferences: {
+    settings: {type: Object, default: {}},
+    customTemplates: {type: Array, default: [{
+      _id: {type: mongoose.Schema.ObjectId},
+      participants: {type: Array, default: []},
+      title: {type: String, default: '30 min - Quick Meeting'},
       location: {type: String, default: 'HQ'},
       timeElapsed: {
-        expectedDuration: {type: Number, default: 900000},
-        formattedExpectedDuration: {type: String, default: '15 mins'}
-      }
+          expectedDuration: {type: Number, default: 1800000},
+          formattedExpectedDuration: {type: String, default: '30 mins'}
+        }
+      }]
     }
   }
 }, {timestamps: true});
@@ -95,5 +92,31 @@ data: {
       }
     ]
 
+
+    customTemplates: [
+      {
+        templateId: {type: Array, required: true}
+        participants: {type: Array, default: [{fullName: '', email: '', guest: false}]},
+        title: {type: String, default: 'Quick Meeting'},
+        location: {type: String, default: 'HQ'},
+        timeElapsed: {
+                        expectedDuration: {type: Number, default: 900000},
+                        formattedExpectedDuration: {type: String, default: '15 mins'}
+                      }
+      }
+    ]
+
+
+    customTemplates: {type: Array, default: [{
+        _id: {type: Schema.ObjectId},
+        participants: {type: Array, default: [{fullName: '', email: '', guest: false}]},
+        title: {type: String, default: 'Quick Meeting'},
+        location: {type: String, default: 'HQ'},
+        timeElapsed: {
+            expectedDuration: {type: Number, default: 900000},
+            formattedExpectedDuration: {type: String, default: '15 mins'}
+          }
+        }]
+    }
 
 */

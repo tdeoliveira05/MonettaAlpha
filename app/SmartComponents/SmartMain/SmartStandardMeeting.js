@@ -79,7 +79,6 @@ class SmartStandardMeeting extends React.Component {
 
 
     //---------------------------CONDITIONS-------------------------------------
-
     switch (this.state.meetingIndex) {
 
       case 0:
