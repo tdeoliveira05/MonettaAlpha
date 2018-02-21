@@ -7,11 +7,18 @@ import DumbDashboard from '../../DumbComponents/Main/DumbDashboard.js'
 class SmartDashboard extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      userDoc: this.props.userDoc
+    }
 
     this.getAllSavedMeetings = this.getAllSavedMeetings.bind(this)
     this.getAllMeetingTemplates = this.getAllMeetingTemplates.bind(this)
 
+  }
+
+  componentDidMount () {
+    // this will activate the response socket routes placed in the code
+    socket.emit('/secure/userDocument/getUserDoc')
   }
 
   getAllSavedMeetings () {
@@ -23,11 +30,36 @@ class SmartDashboard extends React.Component {
   }
 
   render () {
+    console.log(this.state)
     //---------------------------CONDITIONS-------------------------------------
 
-    var templateList = [{name: 'Quick Meeting'}]
+    var templateList = [{
+      name: 'Quick Meeting',
+      customId: 'quick'
+    },{
+      name: 'Standup Meeting',
+      customId: 'standup'
+    },{
+      name: 'Finance Review Meeting',
+      customId: 'finance-review'
+    },{
+      name: '1-on-1 Meeting',
+      customId: '1-on-1'
+    }]
 
-    var scheduledList = [{name: 'Financial Review'}]
+    var scheduledList = [{
+      name: 'Financial Review',
+      date: '09/08/2018'
+    },{
+      name: 'Financial Review',
+      date: '09/08/2018'
+    },{
+      name: 'Financial Review',
+      date: '09/08/2018'
+    },{
+      name: 'Financial Review',
+      date: '09/08/2018'
+    }]
 
     var dataList = [
       {header: '17', label: 'meetings held'},

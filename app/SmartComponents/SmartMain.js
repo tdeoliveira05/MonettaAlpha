@@ -60,7 +60,8 @@ class SmartMain extends React.Component {
       userSettings: this.props.userSettings,
       quickMeeting: false,
       transcript: '',
-      timeInApp: 0
+      timeInApp: 0,
+      userDoc: {}
     }
 
     this.updateUserDocument       = this.updateUserDocument.bind(this)
@@ -84,9 +85,14 @@ class SmartMain extends React.Component {
     this.interval = setInterval(function () {
       if (self.props.appLocation !== 'home') {
         socket.emit('userLoginProtocols')
+        socket.emit('secure/userDocument/getUserDoc')
       }
 
     }, 1000)
+
+    socket.on('response/secure/userDocument/getUserDoc', function (data) {
+      self.setState({userDoc: data})
+    })
   }
 
   componentWillUnmount () {
@@ -131,6 +137,7 @@ class SmartMain extends React.Component {
         localStorage.username = successObj.username
         localStorage.fullName = successObj.fullName
         self.setState({mainLocation: 'internal'})
+
       } else {
         console.log(successObj.errorText)
       }
@@ -281,6 +288,7 @@ class SmartMain extends React.Component {
           <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
             <Route exact path = "/" render = {() =>
                 <SmartDashboard
+                  userDoc = {this.state.userDoc}
                 />
             }/>
             <Route exact path = "/meeting" render = {() =>

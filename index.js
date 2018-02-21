@@ -35,41 +35,34 @@ const requireDir    = require('require-dir')
 const serverLogic   = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
 const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
 
+// SSL Secure Certification redirect
+app.enable('trust proxy'); // enables X-Forwarded-Proto to be trusted
+app.use(function(req, res, next) {
+  if(process.env.NODE_ENV === 'production' && (req.get('X-Forwarded-Proto') !== 'https')) {
+    // if node is deployed in production mode and the forwarded request is not https, redirect to https
+    res.redirect('https://' + req.get('Host') + req.url);
+  }
+  else
+    next();
+});
+
+// Cross-origin Resource Sharing (CORS) allows the server to receive requested for
+// restricted resources (ex: fonts) from another domain outside the server domain
+// Think embedding images and youtube videos into your website
+app.use(cors())
+
+// Parses request into a readable format, JSON
+app.use(bodyParser.json())
 
 // Initialize speech client and pass service_account.json to it for authentication
 const speech = new googleCloudSpeechAPI.SpeechClient({
   keyFilename: path.join(__dirname, './config/service_account.json')
 })
 
-//Establishing middleware
-app.use(cors())
-app.use(bodyParser.json())
-
-// SSL Secure Certification redirect
-app.use((req, res, next) => {
-	if (process.env.NODE_ENV === 'production' && req.header('X-Forwarded-Proto') !== 'https') {
-		// If the request coming in is http (req.header('X-Forwarded-Proto')), redirect it to https
-		res.redirect('https://' + req.host + req.url)
-
-	} else {
-		// If we are NOT in production mode, it doesnt matter what the type of request coming in is
-		next()
-	}
-})
 
 //Serving files
 const indexPath = path.join(__dirname, './dist/index.html');
 const publicPath = express.static(path.join(__dirname, './dist'));
-
-//const sslPath = path.join(__dirname, './dist/well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8');
-//const sslPath1 = path.join(__dirname, './dist/well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E');
-
-app.use('/', publicPath);
-
-app.get('/', function(_,res){ res.sendFile(indexPath) });
-
-//app.get('/.well-known/acme-challenge/RFPs8WP09KT0cJbTNCJgs2V42_7lKd_2UfJLdK3RBc8', function(_,res){ res.sendFile(sslPath) });
-//app.get('/.well-known/acme-challenge/Z0pKihI7Gm3awBh08SD7ayfBToWPnLEjukRzWbHuW-E', function(_,res){ res.sendFile(sslPath1) });
 
 //Constants from config
 const dbConfig = config.get('Customer.dbConfig');
@@ -91,6 +84,10 @@ mongoose.connection.once('open',function(){
 }).on('error',function(error){
 	console.log('Connection error',error);
 });
+
+app.use('/', publicPath);
+
+app.get('/', function(_,res){ res.sendFile(indexPath) });
 
 //----------------------------------------------------------------------------//
 //-------------------------SERVER DEPLOYMENT PROCEDURES-----------------------//
@@ -327,8 +324,8 @@ io.sockets.on('connection', async function (socket) {
       usersOnline.push(socket)
       console.log('User connected:')
       console.log(usersOnline.length + ' users online')
+      socket.emit('response/secure/userDocument/getUserDoc', {userDoc: socket.userDoc})
     }
-
     // process the stats pertaining to length of log in for the user
     await serverLogic.serverTools.stats.processLoginTimer({username: socket.userDoc.username})
   }))

@@ -126,8 +126,6 @@ class SmartCustomMeeting extends React.Component {
 
   render () {
     //---------------------------VARIABLE CREATION------------------------------
-    console.log('Smart custom meeting state')
-    console.log(this.state)
 
 
     //---------------------------CONDITIONS-------------------------------------

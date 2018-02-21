@@ -2,6 +2,7 @@ import React from 'react'
 import {withRouter} from 'react-router-dom'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
+import date from 'date-and-time'
 
 
 const DumbDashboard = ({
@@ -14,7 +15,7 @@ const DumbDashboard = ({
     <div className = 'DashboardContent'>
       <div className = 'DashboardContentLeft'>
         <h1> Monetta Dashboard </h1>
-        <p> date here </p>
+        <p> {date.format(new Date(), 'ddd, MMM DD YYYY')} </p>
         <div className = 'DashboardProductivityData'>
           {dataList.map((item, index) => {
             return (
@@ -33,7 +34,14 @@ const DumbDashboard = ({
           {scheduledList.map((item, index) => {
             return (
               <div className = 'DashboardScheduledMeetingCards' key = {index}>
-                {item.name}
+                <div className = 'ScheduledMeetingCardInfo'>
+                  <h3> {item.date} </h3>
+                  <h3> - </h3>
+                  <h3> {item.name}</h3>
+                </div>
+                <div className = 'ScheduledMeetingCardButton'>
+                  <button> START </button>
+                </div>
               </div>
             )
           })}
@@ -42,14 +50,14 @@ const DumbDashboard = ({
 
       <div className = 'DashboardContentRight'>
         <div className = 'DashboardHostButtonDiv'>
-          <button> host a meeting </button>
+          <button> Host a meeting </button>
         </div>
         <div className = 'DashboardCustomTemplates'>
           <h3> Custom Meeting Templates </h3>
           {templateList.map((item, index) => {
             return (
               <div className = 'DashboardTemplateCard' key = {index}>
-                <button>
+                <button onClick = {() => history.push('/meeting/custom-' + item.customId)}>
                   {item.name}
                 </button>
               </div>

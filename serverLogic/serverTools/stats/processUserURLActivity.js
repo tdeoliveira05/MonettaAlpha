@@ -9,7 +9,7 @@ module.exports = function (data, userDoc) {
 
     var endIndex = userDoc.data.userHistory.loginHistory.length - 1
 
-    console.log(userDoc.data.userHistory.loginHistory[endIndex])
+    //console.log(userDoc.data.userHistory.loginHistory[endIndex])
 
     var browserHistoryItem = {
       location: data.props.location.pathname,
