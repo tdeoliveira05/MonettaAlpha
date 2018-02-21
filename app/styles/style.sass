@@ -10,6 +10,7 @@
 @import /Main/UserSettings.sass
 @import /Main/YourMonetta.sass
 @import /Main/Dashboard.sass
+@import /Main/MeetingTabChoice.sass
 @import /Admin/AdminPanel.sass
 @import /Admin/AdminUsers.sass
 @import /Admin/AdminFeatures.sass
@@ -39,6 +40,11 @@ html, body, iframe
     cursor: pointer
     outline: none
     overflow: hidden
+    border: 1px solid $gray
+    transition: all 0.3s ease 0s
+    &:hover
+      box-shadow: 0px 2px 15px rgba(0,0,0,0.2)
+      border: none
   .Divider
     border-bottom: 1px solid rgb(230,230,230)
     width: 100%

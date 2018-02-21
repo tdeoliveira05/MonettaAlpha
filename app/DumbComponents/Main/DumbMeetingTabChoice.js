@@ -4,8 +4,13 @@ import {withRouter} from 'react-router-dom'
 const DumbMeetingTabChoice = ({
   history
 }) => (
-  <div>
-
+  <div className = 'MeetingTabChoiceWrapper'>
+    <h1> What would you like to do? </h1>
+    <div className = 'MeetingTabChoiceContent'>
+      <button onClick = {() => history.push('/meeting/templates')}> Create or edit a meeting template </button>
+      <button onClick = {() => history.push('/meeting/schedule')}> Schedule a meeting </button>
+      <button onClick = {() => history.push('/meeting/standard')}> Host a standard meeting </button>
+    </div>
   </div>
 );
 
