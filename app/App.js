@@ -15,8 +15,8 @@ class App extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
-      admin: false,
-      appLocation: 'home',
+      admin: true,
+      appLocation: 'app',
       userTokenObj: {
         username: localStorage.username,
         fullName: localStorage.fullName
