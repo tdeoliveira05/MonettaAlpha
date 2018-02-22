@@ -87,11 +87,7 @@ class SmartMain extends React.Component {
     const self = this
     this.updateMainLocation()
     // Start timer to track total time spent in app and update the state every second
-<<<<<<< Updated upstream
     this.interval = setInterval(function () {
-=======
-    var timerInterval = setInterval(() => {
->>>>>>> Stashed changes
       if (self.props.appLocation !== 'home') {
         socket.emit('userLoginProtocols')
         socket.emit('secure/userDocument/getUserDoc')

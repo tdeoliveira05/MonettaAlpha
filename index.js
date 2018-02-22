@@ -36,7 +36,6 @@ const requireDir    = require('require-dir')
 const serverLogic   = requireDir('./serverLogic', {recurse: true}) // special node module to import entire directory and their sub directories
 const serverUtility = requireDir('./serverUtility', {recurse: true}) // special node module to import entire directory and their sub directories
 
-<<<<<<< Updated upstream
 // SSL Secure Certification redirect
 app.enable('trust proxy'); // enables X-Forwarded-Proto to be trusted
 app.use(function(req, res, next) {
@@ -56,8 +55,6 @@ app.use(cors())
 // Parses request into a readable format, JSON
 app.use(bodyParser.json())
 
-=======
->>>>>>> Stashed changes
 // Initialize speech client and pass service_account.json to it for authentication
 const speech = new googleCloudSpeechAPI.SpeechClient({
   keyFilename: path.join(__dirname, './config/service_account.json')
