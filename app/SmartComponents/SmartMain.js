@@ -24,7 +24,6 @@ import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 import getUserMedia from 'get-user-media-promise'
 import MicrophoneStream from 'microphone-stream'
 let resampler = require('audio-resampler')
-var toWav = require('audiobuffer-to-wav')
 var fileSaver = require('file-saver')
 const WavEncoder = require("wav-encoder");
 var fs = require("fs");
