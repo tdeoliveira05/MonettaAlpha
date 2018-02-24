@@ -23,7 +23,12 @@ import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
 
 import getUserMedia from 'get-user-media-promise'
 import MicrophoneStream from 'microphone-stream'
+let resampler = require('audio-resampler')
+var fileSaver = require('file-saver')
+const WavEncoder = require("wav-encoder");
+var fs = require("fs");
 var context, processor, input
+var bufferInterval
 var AudioContext = window.AudioContext || window.webkitAudioContext
 
 //-----------------------------------------------------------------------------
@@ -95,7 +100,7 @@ class SmartMain extends React.Component {
 
     socket.emit('/secure/userDocument/updateInfo', {updateObj: updateObjVal})
 
-    socket.on('response/secure/userDocument/updateInfo', function (successObj) {
+    socket.on('response/secure/userDocument/updateInfo', (successObj) => {
       console.log(successObj)
 
       if (successObj.success) {
@@ -136,17 +141,19 @@ class SmartMain extends React.Component {
     console.log('Starting voice recognition...')
 
     //initialize speech api and broaden global scope
-    socket.emit('startGoogleCloudSpeech')
+    socket.emit('startHotWordInference')
+    // socket.emit('startGoogleCloudSpeech')
 
     const self = this
 
     // code used from https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
     // AudioContext already defined, grabs the audio of the window
     // initiates an instance
+    // Can't specify sampleRate here
     context = new AudioContext()
 
     //buffer Process
-    processor = context.createScriptProcessor(2048, 1, 1)
+    processor = context.createScriptProcessor(16384, 1, 1)
     processor.connect(context.destination)
     context.resume()
 
@@ -156,51 +163,103 @@ class SmartMain extends React.Component {
       input = context.createMediaStreamSource(stream)
       input.connect(processor)
 
+      var buffer,
+          recBuffers = [],
+          recLength = 0;
+
+      // Merging the audio buffers
+      var mergeBuffers = (recBuffers, recLength) => {
+        var result = new Float32Array(recLength);
+        var offset = 0;
+        for (var i = 0; i < recBuffers.length; i++){
+          result.set(recBuffers[i], offset);
+          offset += recBuffers[i].length;
+        }
+        return result
+      }
+
+      var encodeEmitAndResetBuffer = () => {
+        let mergedBuffer = mergeBuffers(recBuffers, recLength)
+
+        // Encoding audiobuffer to wav
+        const dataToEncode = {
+          sampleRate: 16000,
+          channelData: [mergedBuffer]
+        };
+        WavEncoder.encode(dataToEncode).then((encodedWav) => {
+          // Uncomment to save audio locally (for debugging)
+          // var wavBlob = new Blob([encodedWav], {type: "audio/wav"})
+          // fileSaver.saveAs(wavBlob, 'sampleaudio.wav')
+          //Prepare buffer for transmission to hotWordAPI
+          var wavBuffer = new Buffer.from(encodedWav).toString('base64')
+          socket.emit('checkForHotWord', wavBuffer)
+        });
+
+        // Emptying the buffer and resetting buffer length
+        recBuffers = []
+        recLength -= recLength
+      }
+
+      // Encodes buffer to .wav and sends to API at specified interval
+      bufferInterval = setInterval(encodeEmitAndResetBuffer, 900)
+
       processor.onaudioprocess = (audio) => {
-        var buffer = audio.inputBuffer.getChannelData(0)
+        // Resampling audio(44.1kHz --> 16kHz)
+        resampler(audio.inputBuffer, 16000, (event) => {
+          let resampledBuffer = event.getAudioBuffer()
+          recBuffers.push(resampledBuffer.getChannelData(0))
+          recLength += resampledBuffer.getChannelData(0).length
+          buffer = resampledBuffer.getChannelData(0)
+        })
+
+        socket.on('hotWordAPIResponse', (response) => {
+          self.setState({transcript: response.split(' ')[0]})
+        })
         //--------------------------------------------
         // Transforming a Float32 buffer into an int16 buffer for processing
-        let l = buffer.length
-        let buf = new Int16Array(l/3)
 
-        while (l--) {
-          if (l % 3 === 0) {
-            buf[l/3] = buffer[l] * 0xFFFF
-          }
-        }
-
-        var audioStream = buf.buffer
+        // let l = buffer.length
+        // let buf = new Int16Array(l/3)
+        //
+        // while (l--) {
+        //   if (l % 3 === 0) {
+        //     buf[l/3] = buffer[l] * 0xFFFF
+        //   }
+        // }
+        //
+        // var audioStream = buf.buffer
         //--------------------------------------------
-        socket.emit('audioStream', audioStream)
-
-        socket.on('speechData', function (speechData) {
-
-          if (speechData.error) {
-            // If there is an error, console.log() it
-            console.log('Error detected: ')
-            console.log(speechData.error.message)
-
-          } else if (!speechData.results[0].isFinal) {
-            // try setting the state as the phrase is built
-            self.setState({transcript: speechData.results[0].alternatives[0].transcript})
-
-          } else if (speechData.results[0].isFinal) {
-            // if google says it is final, update this.state.transcript to store the transcript
-            console.log('isFinal === true')
-            console.log(speechData.results[0].alternatives[0])
-            var transcriptVal = speechData.results[0].alternatives[0].transcript
-
-            // only update the state when the current transcript is different than the one being received
-            if (self.state.transcript !== transcriptVal) {
-              self.setState({transcript: transcriptVal})
-            }
-
-          } else {
-            // If this triggers, investigate it - not supposed to end up in this else block
-            console.log('Nothing happened - ')
-            console.log(speechData)
-          }
-        })
+        // this.props.socket.emit('audioStream', audioStream)
+        //
+        // this.props.socket.on('speechData', function (speechData) {
+        //
+        //   if (speechData.error) {
+        //     // If there is an error, console.log() it
+        //     console.log('Error detected: ')
+        //     console.log(speechData.error.message)
+        //
+        //   } else if (!speechData.results[0].isFinal) {
+        //     // try setting the state as the phrase is built
+        //     self.setState({transcript: speechData.results[0].alternatives[0].transcript})
+        //
+        //   } else if (speechData.results[0].isFinal) {
+        //     // if google says it is final, update this.state.transcript to store the transcript
+        //     console.log('isFinal === true')
+        //     console.log(speechData.results[0].alternatives[0])
+        //     var transcriptVal = speechData.results[0].alternatives[0].transcript
+        //
+        //     // only update the state when the current transcript is different than the one being received
+        //     if (self.state.transcript !== transcriptVal) {
+        //       self.setState({transcript: transcriptVal})
+        //     }
+        //
+        //   } else {
+        //     // If this triggers, investigate it - not supposed to end up in this else block
+        //     console.log('Nothing happened - ')
+        //     console.log(speechData)
+        //   }
+        // })
+        //--------------------------------------------
       }
 
     })
@@ -214,7 +273,8 @@ class SmartMain extends React.Component {
 
   stopSpeechStream () {
     console.log('Stopping voice recognition...')
-    socket.emit('stopGoogleCloudSpeech')
+    socket.emit('stopHotWordInference')
+    // this.props.socket.emit('stopGoogleCloudSpeech')
     context.close()
     processor.disconnect(context.destination)
     input.disconnect(processor)
@@ -222,6 +282,7 @@ class SmartMain extends React.Component {
     processor    = null
     context      = null
     console.log('--')
+    clearInterval(bufferInterval)
   }
 
   //--------------------------------------------------------------------------//
@@ -236,8 +297,6 @@ class SmartMain extends React.Component {
       />
     )
 
-
-
     //----------------------------RETURN----------------------------------------
     if (this.state.mainLocation === 'welcome') {
       return (
@@ -251,6 +310,17 @@ class SmartMain extends React.Component {
         <div style = {{display: 'flex', minHeight: '100vh', height: '100%', flexDirection: 'column', justifyContent: 'space-between', width: '100%'}}>
           <DumbNavigationBar/>
           <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
+            <FlatButton
+              label = 'record'
+              onClick = {() => this.startSpeechStream()}
+              style = {{backgroundColor: 'rgb(150, 150, 150)'}}
+            />
+            <h1 style = {{textAlign: 'center'}}> {this.state.transcript} </h1>
+            <FlatButton
+              label = 'stop'
+              onClick = {() => this.stopSpeechStream()}
+              style = {{backgroundColor: 'rgb(150, 150, 150)'}}
+            />
             <Route exact path = "/" render = {() =>
                 <SmartDashboard
                   userDoc = {this.state.userDoc}

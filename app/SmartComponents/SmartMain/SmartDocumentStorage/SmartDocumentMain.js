@@ -385,7 +385,7 @@ export default class SmartDocumentMain extends React.Component {
 
     socket.emit('/secure/meetingDocument/findByUser', {sortObj: sortObjVal})
 
-    socket.on('response/secure/meetingDocument/findByUser', function (data) {
+    socket.on('response/secure/meetingDocument/findByUser', (data) => {
       self.initializeStateVariables(data)
       self.setState({docArray: data})
     })
@@ -396,7 +396,7 @@ export default class SmartDocumentMain extends React.Component {
     console.log('deleting..')
     socket.emit('/secure/meetingDocument/deleteById', {targetDocumentId: targetDocumentIdVal})
 
-    socket.on('response/secure/meetingDocument/deleteById', function (data) {
+    socket.on('response/secure/meetingDocument/deleteById', (data) => {
       console.log('hey there')
       console.log(data)
       if (data.success) {
@@ -413,7 +413,7 @@ export default class SmartDocumentMain extends React.Component {
 
     socket.emit('/secure/meetingDocument/overwriteThisDocument', {targetDocument: targetDocumentVal})
 
-    socket.on('response/secure/meetingDocument/overwriteThisDocument', function (data) {
+    socket.on('response/secure/meetingDocument/overwriteThisDocument', (data) => {
       if (!data.success) {
         console.log('error')
         console.log(data.errorText)

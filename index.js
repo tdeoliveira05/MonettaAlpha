@@ -7,8 +7,9 @@ const express = require('express')
 const path    = require('path')
 const fs      = require('fs')
 const app     = express()                      // APP
-const server  = require('http').Server(app)    // SERVER
-const io      = require('socket.io')(server)   // WEBSOCKET
+const socket  = require('socket.io')
+const server  = require('http').createServer(app)    // SERVER
+const io      = socket.listen(server)   // WEBSOCKET
 //------------------------------------------------------------------------------
 const cors                 = require('cors')
 const axios                = require('axios')
@@ -807,7 +808,7 @@ io.sockets.on('connection', async function (socket) {
   //--------------------------------------------------------------------------//
   var recognizeStream = null
 
-  socket.on('startGoogleCloudSpeech', function () {
+  socket.on('startGoogleCloudSpeech', () => {
     console.log('Google Cloud speech API initializing...')
 
     const request = {
@@ -821,13 +822,14 @@ io.sockets.on('connection', async function (socket) {
 
     recognizeStream = speech.streamingRecognize(request)
     .on('error', console.error)
-    .on('data', function (data) {
+    .on('data', (data) => {
       console.log('data received')
       console.log(data.results[0])
       io.sockets.emit('speechData', data)
     })
   })
-  socket.on('audioStream', function (bufferChunk) {
+
+  socket.on('audioStream', (bufferChunk) => {
     // If statement is to avoid index.js trigerring an error because reconizeStream is not yet defined and might not have a write() function
     //console.log(recognizeStream)
     if (recognizeStream !== null) {
@@ -838,7 +840,7 @@ io.sockets.on('connection', async function (socket) {
     }
   })
 
-  socket.on('stopGoogleCloudSpeech', function () {
+  socket.on('stopGoogleCloudSpeech', () => {
     console.log('Google Cloud speech API shutting down...')
     // If statement is for same reason as above in socket.on('audioStream', funct...)
     if (recognizeStream !== null) {
@@ -846,6 +848,31 @@ io.sockets.on('connection', async function (socket) {
       recognizeStream = null
     }
   })
+
+  socket.on('startHotWordInference', () => {
+    console.log('Starting hot word inference')
+  })
+
+  socket.on('checkForHotWord', (bufferChunk) => {
+    // TODO: move bufferChunk prep from client to server
+
+    axios.post('http://flask-env.pjcvfng8mg.us-east-2.elasticbeanstalk.com/', {
+    // axios.post('http://127.0.0.1:5000', {
+      payload: bufferChunk
+    })
+    .then((response) => {
+      console.log(response.data);
+      io.sockets.emit('hotWordAPIResponse', response.data)
+    })
+    .catch((error) => {
+      console.log(error.response)
+    });
+  })
+
+  socket.on('stopHotWordInference', () => {
+    console.log('----------------stopped hot word inference-----------')
+  })
+
   //--------------------------------------------------------------------------//
 
   socket.on('disconnect', function (data) {
