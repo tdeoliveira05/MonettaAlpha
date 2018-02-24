@@ -8,7 +8,7 @@ class SmartUserSettings extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      userSettings: this.props.userSettings,
+      userPreferences: this.props.userPreferences,
       automaticEmails: true,
       snackbarOpen: false,
       errorText: {}
@@ -32,26 +32,19 @@ class SmartUserSettings extends React.Component {
 
   componentWillMount () {
     this.getUserSettings()
+
+    socket.on('response/secure/userDocument/getSettings', function (data) {
+      self.setState({userPreferences: data})
+    })
   }
 
   getUserSettings () {
-      const self = this
-
       socket.emit('/secure/userDocument/getSettings')
-
-      socket.on('response/secure/userDocument/getSettings', function (data) {
-        if (data.settings) {
-          console.log(data.settings)
-          self.setState({userSettings: data.settings})
-          self.props.passUserSettings(data.settings)
-        } else {
-          console.log('no user settings were found')
-          self.setState({})
-        }
-      })
   }
 
   submitQuickMeetingSettings () {
+    console.log('submitQuickMeetingSettings')
+    /*
     // get user settings and locally update them
     var newSettings = this.props.userSettings
     newSettings.quickMeeting = this.state.userSettings.quickMeeting
@@ -72,10 +65,12 @@ class SmartUserSettings extends React.Component {
         console.log(error)
       }
     })
-
+    */
   }
 
   checkForQuickMeetingErrors () {
+      console.log('checkForQuickMeetingErrors')
+      /*
       var errorTextVal = this.state.errorText
       var isThereAnError = false
 
@@ -111,37 +106,51 @@ class SmartUserSettings extends React.Component {
       } else {
         return false
       }
+      */
   }
 
   onSave () {
     console.log('Saving...')
+    /*
     if (!this.checkForQuickMeetingErrors()) {
       this.handleSnackbarOpen()
       this.submitQuickMeetingSettings()
       console.log('user settings saved')
     }
+    */
   }
 
   changeExpectedDuration (mins) {
+    console.log('changeExpectedDuration')
+    /*
     var newState = this.state
 
     newState.userSettings.quickMeeting.timeElapsed.expectedDuration          = mins*60000
     newState.userSettings.quickMeeting.timeElapsed.formattedExpectedDuration = mins + ' mins'
 
     this.setState(newState)
+    */
   }
 
   onQuickMeetingChange (event) {
+    console.log('onQuickMeetingChange')
+    /*
     var newState = this.state
     newState.userSettings.quickMeeting[event.target.name] = event.target.value
     this.setState(newState)
+    */
   }
 
   onCheck (event, isInputChecked) {
+    console.log('onCheck')
+    /*
     this.setState({automaticEmails: isInputChecked})
+    */
   }
 
   createParticipantList () {
+    console.log('createParticipantList')
+    /*
     var currentParticipants = this.state.userSettings.quickMeeting.participants
     var currentHost         = {username: localStorage.username, fullName: localStorage.fullName}
 
@@ -156,13 +165,20 @@ class SmartUserSettings extends React.Component {
     currentParticipants.map((item) => participantList.push(item))
 
     return participantList
+    */
+    return []
   }
 
   onReset () {
+    console.log('onReset')
+    /*
     this.getUserSettings()
+    */
   }
 
   onAdd () {
+    console.log('onAdd')
+    /*
     var newState = this.state
     var newItem = {
       fullName: '',
@@ -172,22 +188,28 @@ class SmartUserSettings extends React.Component {
     newState.userSettings.quickMeeting.participants.push(newItem)
 
     this.setState(newState)
+    */
   }
 
   onDelete (index) {
+    console.log('onDelete')
+    /*
     var participantIndex = index - 1 //host is index = 0 in the input map function and you cant delete the only participant left
     var newState = this.state
     newState.userSettings.quickMeeting.participants.splice(participantIndex, 1)
     this.setState(newState)
-
+    */
   }
 
   onParticipantChange(event, index, currentTarget) {
+    console.log('onParticipantChange')
+    /*
     //host is index = 0 in the input map function
     var newState = this.state
     var participantIndex = index - 1
     newState.userSettings.quickMeeting.participants[participantIndex][currentTarget] = event.target.value
     this.setState(newState)
+    */
   }
 
   handleSnackbarOpen () {

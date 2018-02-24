@@ -89,6 +89,7 @@ const DumbUserSettings = ({
             </div>
             <div className = 'Divider'></div>
             {participantsList.map((item, index) => {
+              
               if (index === 0) {
                 return (
                   <div key = {index} className = 'UserSettingsParticipantInfo' >

@@ -22,21 +22,7 @@ class App extends React.Component {
         fullName: localStorage.fullName
       },
       isLoggedIn: false,
-      userSettings: {
-        quickMeeting: {
-          title: 'Quick Meeting',
-          participants: [{
-            fullName: '',
-            email: '',
-            guest: true
-          }],
-          location: 'HQ',
-          timeElapsed: {
-            expectedDuration: 900000,
-            formattedExpectedDuration: '15 mins'
-          }
-        }
-      }
+      userPreferences: {}
     }
     /******************* REMOVE SEED DATA ABOVE AFTER TESTING *****************/
 
@@ -44,7 +30,7 @@ class App extends React.Component {
     this.changeAppLocation      = this.changeAppLocation.bind(this)
     this.authenticate           = this.authenticate.bind(this)
     this.signOut                = this.signOut.bind(this)
-    this.initializeUserSettings = this.initializeUserSettings.bind(this)
+    this.initializeUserPreferences = this.initializeUserPreferences.bind(this)
     this.initializeWebSocket    = this.initializeWebSocket.bind(this)
     this.checkIfAdmin           = this.checkIfAdmin.bind(this)
     this.resetLocalStorage      = this.resetLocalStorage.bind(this)
@@ -99,17 +85,17 @@ class App extends React.Component {
     return this.state.isLoggedIn
   }
 
-  initializeUserSettings () {
+  initializeUserPreferences () {
       const self = this
 
-      socket.emit('/secure/userDocument/getSettings')
+      socket.emit('/secure/userDocument/getPreferences')
 
-      socket.on('response/secure/userDocument/getSettings', function (data) {
-        if (data.settings) {
+      socket.on('response/secure/userDocument/getPreferences', function (data) {
+        if (data.userPreferences) {
           console.log('User settings successfully loaded')
-          self.setState({userSettings: data.settings})
+          self.setState({userPreferences: data.userPreferences})
         } else {
-          console.log('no user settings were found')
+          console.log('no user preferences were found')
         }
       })
   }
@@ -120,7 +106,7 @@ class App extends React.Component {
     socket.on('errorCustom', function (error) {
       console.log(error || 'no error message sent but error event triggered in client')
     })
-    this.initializeUserSettings()
+    this.initializeUserPreferences()
   }
 
   submitUserTokenObj (userTokenObjVal) {
@@ -198,7 +184,7 @@ class App extends React.Component {
             submitUserTokenObj = {this.submitUserTokenObj}
             changeAppLocation  = {this.changeAppLocation}
             signOut            = {this.signOut}
-            userSettings       = {this.state.userSettings}
+            userPreferences    = {this.state.userPreferences}
             admin              = {this.state.admin}
             appLocation        = {this.state.appLocation}
           />
@@ -214,7 +200,6 @@ class App extends React.Component {
               submitUserTokenObj = {this.submitUserTokenObj}
               changeAppLocation  = {this.changeAppLocation}
               signOut            = {this.signOut}
-              userSettings       = {this.state.userSettings}
               admin              = {this.state.admin}
             />
           </div>

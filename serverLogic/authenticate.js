@@ -24,7 +24,7 @@ module.exports = function (req, res, next) {
   jwt.verify(token, config.get('Presets.secret'), function processAuthData(error, authData) {
     // if any error present, throw the connection back to client with an unsuccessful object
     if (error) res.send({success: false, errorText: error})
-    if (authData === undefined) res.send({success: false, errorText: 'No user found'})
+    if (!authData) res.send({success: false, errorText: 'No user found'})
 
     // find the user document associated with the authentication data
     User.findOne({_id: authData.id})

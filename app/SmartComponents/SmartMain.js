@@ -33,30 +33,8 @@ class SmartMain extends React.Component {
     this.state={
       mainLocation: 'internal',
       path: 'teamMeeting',
-      defaultMeetingData: {
-        title: '',
-        host: {
-          fullName: localStorage.fullName,
-          username: localStorage.username
-        },
-        participants: [],
-        date: new Date,
-        location: '',
-        goals: [],
-        notes: [],
-        metaData: {},
-        meetingStats: {
-          timeElapsed: {
-            actualDuration: 0,
-            formattedActualDuration: '00:00',
-            expectedDuration: 0,
-            formattedExpectedDuration: '00 mins'
-          }
-        }
-      },
       openFeedback: false,
       snackbarOpen: false,
-      userPreferences: this.props.userPreferences,
       quickMeeting: false,
       transcript: '',
       timeInApp: 0,
@@ -69,7 +47,6 @@ class SmartMain extends React.Component {
     this.feedbackSuccessFunction  = this.feedbackSuccessFunction.bind(this)
     this.openSnackbar             = this.openSnackbar.bind(this)
     this.activatePath             = this.activatePath.bind(this)
-    this.passUserSettings         = this.passUserSettings.bind(this)
 
     this.startSpeechStream        = this.startSpeechStream.bind(this)
     this.stopSpeechStream         = this.stopSpeechStream.bind(this)
@@ -99,22 +76,11 @@ class SmartMain extends React.Component {
     clearInterval(this.interval)
   }
 
-  componentWillReceiveProps (nextProps) {
-    // App.js needs more time to initialize user settings due to the asynchronous nature of the code
-    // this line of code will ensure that once App.js re-sets its own state with the initial version of the user's settings, the
-    // change will pass down through a new userPreferences prop and smartMain.js will update its own state accordingly to propagate the user settings
-    if (nextProps.userPreferences !== this.props.userPreferences) this.setState({userPreferences: nextProps.userPreferences})
-  }
-
   componentDidUpdate () {
 
     const self = this
 
     socket.emit('userURLActivityProtocols', {props: self.props})
-  }
-
-  passUserSettings (userPreferencesVal) {
-    this.setState({userPreferences: userPreferencesVal})
   }
 
   updateMainLocation () {
@@ -293,7 +259,7 @@ class SmartMain extends React.Component {
             <Route path = "/meeting" render = {() =>
               <SmartMeetingTab
                 defaultMeetingData = {this.state.defaultMeetingData}
-                userPreferences    = {this.state.userPreferences}
+                userDoc            = {this.state.userDoc}
               />
             }/>
             <Route exact path = "/storage" render = {() =>
@@ -314,9 +280,8 @@ class SmartMain extends React.Component {
             }/>
             <Route  exact path = "/settings" render = {() =>
               <SmartUserSettings
-                userPreferences  = {this.state.userPreferences}
-                passUserSettings = {this.passUserSettings}
-                signOut          = {this.props.signOut}
+                userDoc             = {this.state.userDoc}
+                signOut             = {this.props.signOut}
               />
             }/>
           </div>

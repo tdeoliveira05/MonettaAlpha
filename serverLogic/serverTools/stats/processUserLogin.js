@@ -7,7 +7,7 @@ module.exports = function (usernameVal) {
 
     var loginHistoryItem = {
       loginDate: new Date,
-      browserHistory: [
+      browserActivity: [
         {
           location: '/',
           timeOfAccess: new Date

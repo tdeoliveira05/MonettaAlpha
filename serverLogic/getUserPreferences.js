@@ -1,4 +1,4 @@
-// This function will get the settings object from a specific user account
+// This function will get the user preferences object from a specific user account
 const requireDir = require('require-dir')
 const serverTools = requireDir('./serverTools', {recurse: true}) // special node module to import entire directory and their sub directories
 const User = require('../models/userModel.js')
@@ -18,7 +18,7 @@ module.exports = function (data, userDoc) {
         outputObj.errorText = 'no settings ever set'
         outputObj.success = false
       } else {
-        outputObj.settings = userDoc.settings
+        outputObj.userPreferences = userDoc.userPreferences
       }
 
       resolve(outputObj)

@@ -1,0 +1,130 @@
+.MeetingTemplatesWrapper
+  display: flex
+  justify-content: center
+  width: 100%
+  height: 100%
+  min-height: calc(100vh - 100px)
+  .MeetingTemplatesContent
+    display: flex
+    @include mobileMedia {flex-direction: column}
+    justify-content: center
+    height: 100%
+    width: 80%
+    padding-top: 60px
+    .MeetingTemplatesContentLeft
+      display: flex
+      @include mobileMedia {order: 2}
+      flex-direction: column
+      text-align: center
+      width: 30%
+      @include mobileMedia {width: 100%}
+      .MeetingTemplatesContentCardList
+        display: flex
+        flex-direction: column
+        justify-content: center
+        max-height: 70vh
+        overflow-y: auto
+        padding-bottom: 20px
+        .MeetingTemplateContentCards
+          display: flex
+          width: 100%
+          margin-bottom: 5px
+          button
+            width: 100%
+            height: 100%
+            min-height: 60px
+            border-radius: 4px
+            color: $blueMain
+            font-weight: bold
+            &:hover
+              background-color: $blueMain
+              color: white
+    .MeetingTemplatesContentRight
+      display: flex
+      @include mobileMedia {order: 1}
+      flex-direction: column
+      padding: 40px
+      @include mobileMedia {padding: 0}
+      min-height: 440px
+      width: 70%
+      @include mobileMedia {width: 100%}
+      color: $grayLetters
+      .MeetingTemplatesViewBox
+        display: flex
+        width: 100%
+        height: 100%
+        flex-direction: column
+        justify-content: space-between
+        padding: 10px 10px 10px 10px
+        box-shadow: 0px 1px 20px rgba(0,0,0,0.2)
+        border-radius: 5px
+        .MeetingTemplatesHeaderInfo
+          display: flex
+          @include mobileMedia {flex-direction: column}
+          align-items: flex-start
+          width: 100%
+          height: 25px
+          margin-bottom: 10px
+          h3
+            margin: 0px
+            margin-right: 5px
+          input
+            border-left: none
+            border-top: none
+            border-right: none
+            border-bottom: 1px solid gray
+            @include mobileMedia {width: 80%}
+          .MeetingTemplatesHeaderButtons
+            display: flex
+            height: 100%
+            width: 100%
+            width: 300px
+            justify-content: space-around
+            margin-left: 10px
+            button
+              width: 75px
+              height: 30px
+              padding: 1px 0px 1px 0px
+        .MeetingTemplatesBody
+          display: flex
+          flex-direction: column
+          width: 100%
+          height: 100%
+          .MeetingTemplatesViewParticipants
+            display: flex
+            width: 100%
+            margin-bottom: 10px
+            h3
+              margin: 0
+              padding: 0
+            .MeetingTemplatesParticipantsField
+              display: flex
+              width: 150px
+              @include mobileMedia {width: 90px}
+              button
+                margin-left: 4px
+                margin: 2px
+              input
+                border-left: none
+                border-top: none
+                border-right: none
+                border-bottom: 1px solid gray
+                width: 150px
+                @include mobileMedia {width: 70px}
+        .MeetingTemplatesFooter
+          display: flex
+          align-items: center
+          justify-content: space-between
+          height: 40px
+          margin-bottom: 10px
+          button
+            height: 100%
+            border-radius: 5px
+            padding: 5px 10px 5px 10px
+            margin: 0px 10px 0px 10px
+            color: white
+            font-size: 1.2em
+            font-weight: bold
+            height: 40px
+            &:hover
+              box-shadow: 0px 2px 20px rgba(0,0,0,0.2)

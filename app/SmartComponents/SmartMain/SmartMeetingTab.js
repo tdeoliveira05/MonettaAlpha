@@ -3,17 +3,47 @@ import {Route, indexRoute, withRouter} from 'react-router-dom'
 // import PropTypes    from 'prop-types';
 import SmartStandardMeeting from './SmartMeetingTab/SmartStandardMeeting.js'
 import SmartCustomMeeting from './SmartMeetingTab/SmartCustomMeeting.js'
+import SmartMeetingTemplate from './SmartMeetingTab/SmartMeetingTemplate.js'
 import DumbMeetingTab from '../../DumbComponents/Main/DumbMeetingTab.js'
 
 class SmartMeetingTab extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      userDoc: this.props.userDoc,
+      defaultMeetingData: {
+        title: '',
+        host: {
+          fullName: localStorage.fullName,
+          username: localStorage.username
+        },
+        participants: [],
+        date: new Date,
+        location: '',
+        goals: [],
+        notes: [],
+        metaData: {},
+        meetingStats: {
+          timeElapsed: {
+            actualDuration: 0,
+            formattedActualDuration: '00:00',
+            expectedDuration: 0,
+            formattedExpectedDuration: '00 mins'
+          }
+        }
+      }
+    }
+  }
+
+  componentDidMount () {
+    const self = this
+    socket.on('response/secure/userDocument/getUserDoc', function (data) {
+      self.setState({userDoc: data})
+    })
   }
 
   render () {
     //---------------------------CONDITIONS-------------------------------------
-
 
     //---------------------------RETURN-----------------------------------------
     // because {indexRoute} from 'react-router-dom' apparently cant easily take
@@ -27,24 +57,28 @@ class SmartMeetingTab extends React.Component {
         </div>
       )
     } else {
+      // react router's "/:templateId?" means that the templateId parameter is optional
       return (
-        <div>
-          <Route exact path = "/meeting/templates" render = {() =>
-            <h1> create, view and edit templates here </h1>
-          }/>
-          <Route exact path = "/meeting/custom-:templateId" render = {() =>
-            <SmartCustomMeeting
-              defaultMeetingData = {this.props.defaultMeetingData}
-              userPreferences    = {this.props.userPreferences}
+        <div style = {{width: '100%', height: '100%'}}>
+          <Route exact path = "/meeting/templates/:templateId?" render = {() =>
+            <SmartMeetingTemplate
+              userDoc = {this.props.userDoc}
             />
           }/>
+
           <Route exact path = "/meeting/standard" render = {() =>
             <SmartStandardMeeting
-              defaultMeetingData = {this.props.defaultMeetingData}
+              defaultMeetingData = {this.state.defaultMeetingData}
             />
           }/>
           <Route exact path = "/meeting/schedule" render = {() =>
             <h1> Schedule your meetings here </h1>
+          }/>
+          <Route exact path = "/meeting/custom/:templateId" render = {() =>
+            <SmartCustomMeeting
+              defaultMeetingData = {this.state.defaultMeetingData}
+              userPreferences    = {this.props.userPreferences}
+            />
           }/>
         </div>
       )

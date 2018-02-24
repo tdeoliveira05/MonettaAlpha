@@ -37,18 +37,21 @@ const UserSchema = new mongoose.Schema({
     }
   },
   userPreferences: {
-    settings: {type: Object, default: {}},
-    customTemplates: {type: Array, default: [{
-      _id: {type: mongoose.Schema.ObjectId},
-      participants: {type: Array, default: []},
-      title: {type: String, default: '30 min - Quick Meeting'},
-      location: {type: String, default: 'HQ'},
-      timeElapsed: {
-          expectedDuration: {type: Number, default: 1800000},
-          formattedExpectedDuration: {type: String, default: '30 mins'}
+    settings : {
+      voiceEnabled: {type: Boolean, default: false}
+    },
+    customTemplates: {type: Array, default: [
+      {
+        templateId: new mongoose.Types.ObjectId,
+        title: '30 min - Quick Meeting',
+        participants: [],
+        location: 'HQ',
+        timeElapsed: {
+            expectedDuration: 1800000,
+            formattedExpectedDuration: '30 mins'
         }
-      }]
-    }
+      }
+    ]}
   }
 }, {timestamps: true});
 

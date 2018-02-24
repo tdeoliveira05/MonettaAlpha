@@ -9,14 +9,13 @@ module.exports = function (data, userDoc) {
 
     var endIndex = userDoc.data.userHistory.loginHistory.length - 1
 
-    //console.log(userDoc.data.userHistory.loginHistory[endIndex])
 
-    var browserHistoryItem = {
+    var browserActivityItem = {
       location: data.props.location.pathname,
       timeOfAccess: new Date
     }
-
-    userDoc.data.userHistory.loginHistory[endIndex].browserHistory.push(browserHistoryItem)
+    
+    userDoc.data.userHistory.loginHistory[endIndex].browserActivity.push(browserActivityItem)
 
     serverTools.overwrite.thisUserDoc(userDoc)
     .then(() => resolve())

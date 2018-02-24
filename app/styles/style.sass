@@ -11,6 +11,8 @@
 @import /Main/YourMonetta.sass
 @import /Main/Dashboard.sass
 @import /Main/MeetingTabChoice.sass
+@import /Main/MeetingTemplates.sass
+
 @import /Admin/AdminPanel.sass
 @import /Admin/AdminUsers.sass
 @import /Admin/AdminFeatures.sass
@@ -42,12 +44,31 @@ html, body, iframe
     overflow: hidden
     border: 1px solid $gray
     transition: all 0.3s ease 0s
-    &:hover
-      box-shadow: 0px 2px 15px rgba(0,0,0,0.2)
-      border: none
   .Divider
     border-bottom: 1px solid rgb(230,230,230)
     width: 100%
     margin: 10px 0px 10px 0px
+  .Central
+    height: 100%
+    width: 100%
+    display: flex
+    justify-content: center
+    align-items: center
+  .ErrorText
+    color: red
+    font-weight: bold
+    padding: 2px
+    margin: 0px
+    width: 100%
+    display: flex
+    align-items: center
+    justify-content: center
+    text-align: center
   textarea
     resize: none
+  input
+    margin: 0
+    padding: 0
+    box-sizing: border-box
+    &:focus
+      outline: none

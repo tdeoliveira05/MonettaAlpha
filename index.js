@@ -172,7 +172,7 @@ app.post('/request/signup', function(req, res) {
 		// remove the secret so it is not stored in the database and
 		var newReq = req
 
-		newReq.body.codeUsed = newReq.body.codeUsed.replace('GordonPatrick', '')
+		newReq.body.codeUsed = newReq.body.codeUsed.split('_')[0]
 
 		serverLogic.requestSignupAdmin(newReq, res)
 	} else {
@@ -281,6 +281,7 @@ io.sockets.on('connection', async function (socket) {
       socket.userDoc = currentUserDoc
       next()
     } catch (error) {
+      console.log('error in socket.use')
       console.log(error)
     }
   })
@@ -309,6 +310,23 @@ io.sockets.on('connection', async function (socket) {
       })
     }
 
+  /*------------------------------OTHER FUNCTIONS-----------------------------*/
+
+  function getAndEmitUserDoc () {
+    User.findOne({_id: socket.userDoc._id})
+    .then((userDoc) => {
+      console.log('emitting updated user doc')
+      console.log(userDoc)
+      socket.emit('response/secure/userDocument/getUserDoc', userDoc)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+
+
+
   /* ---------------------------------------------------------------------------
   ** _____________ PROTOCOLS _____________ **
   This socket route will go through certain protocol functions like:
@@ -324,7 +342,7 @@ io.sockets.on('connection', async function (socket) {
       usersOnline.push(socket)
       console.log('User connected:')
       console.log(usersOnline.length + ' users online')
-      socket.emit('response/secure/userDocument/getUserDoc', {userDoc: socket.userDoc})
+      socket.emit('response/secure/userDocument/getUserDoc', socket.userDoc)
     }
     // process the stats pertaining to length of log in for the user
     await serverLogic.serverTools.stats.processLoginTimer({username: socket.userDoc.username})
@@ -386,6 +404,7 @@ io.sockets.on('connection', async function (socket) {
   }*/
 
   socket.on('/secure/userDocument/updateSettings', asyncMiddleware (async function (data) {
+    console.log('updateSettings')
     var successObj = await serverLogic.updateUserSettings(data, socket.userDoc)
     socket.emit('response/secure/userDocument/updateSettings', successObj)
   }))
@@ -403,9 +422,8 @@ io.sockets.on('connection', async function (socket) {
 
   }*/
 
-  socket.on('/secure/userDocument/getSettings', asyncMiddleware (async function (data) {
-    var outputObj = await serverLogic.getUserSettings(data, socket.userDoc)
-    socket.emit('response/secure/userDocument/getSettings', outputObj)
+  socket.on('/secure/userDocument/getPreferences', asyncMiddleware (async function (data) {
+    console.log('trying to get preferences')
   }))
 
   /* -----------------------------------------------------------------------------
@@ -423,8 +441,31 @@ io.sockets.on('connection', async function (socket) {
   }*/
 
   socket.on('/secure/userDocument/getUserDoc', function(data) {
-  	socket.emit('response/secure/userDocument/getUserDoc', {userDoc: socket.userDoc})
+  	socket.emit('response/secure/userDocument/getUserDoc', socket.userDoc)
   })
+
+  /* -----------------------------------------------------------------------------
+  PURPOSE:
+  This route updates the user's custom templates
+
+  -------------------
+
+  inputObject = data = {
+  userPreferences: {...} //  the ENTIRE userPreferences root object of the user document model
+}
+
+  outputObject = succesObj = {
+    success: Boolean,
+    errorText: String
+  }
+
+  }*/
+
+  socket.on('secure/userDocument/updateUserPreferences', asyncMiddleware(async function(data) {
+    console.log('-----------socket route')
+    //await serverLogic.updateUserPreferences(data, socket.userDoc)
+    getAndEmitUserDoc()
+  }))
 
   /* -----------------------------------------------------------------------------
   PURPOSE:
@@ -859,13 +900,13 @@ if (false) {
   serverUtility.utilityFunction.dropDatabaseCollections()
   serverUtility.utilityFunction.enterDatabaseCodes(codes)
 }
-
+*/
 
 //serverUtility.utilityFunction.enterDatabaseTestUser('thiago1@gmail.com', '1111', 'qwerty')
 
 // serverUtility.utilityFunction.enterDatabaseTestUser('sunny.p.panchal@gmail.com', '1111', 'qwerty')
 
-*/
+
 
 var featuresList = [
   {
