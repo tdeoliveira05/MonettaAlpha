@@ -30,7 +30,7 @@ class SmartDashboard extends React.Component {
   }
 
   render () {
-    console.log(this.state)
+    // console.log(this.state)
     //---------------------------CONDITIONS-------------------------------------
 
     var templateList = [{

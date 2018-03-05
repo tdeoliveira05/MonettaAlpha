@@ -53,6 +53,34 @@ class SmartConductStandard extends React.Component {
   componentDidMount () {
     this.interval = setInterval(this.getAndUpdateDuration, 1000)
     if (this.props.meetingData.notes.length > 0) this.setState({hasNotes: true})
+
+    // Starts hot word inference mode as soon as component mounts
+    this.props.startHotWordStream()
+
+    socket.on('speechData', (speechData) => {
+
+      if (speechData.results[0].isFinal) {
+        var transcriptVal = speechData.results[0].alternatives[0].transcript
+        let category
+
+        if (transcriptVal.toLowerCase().includes('action item')) {
+          category = 'action'
+          transcriptVal = transcriptVal.replace('action item ', '')
+          console.log(transcriptVal)
+        } else if (transcriptVal.toLowerCase().includes('auction item')) {
+          category = 'action'
+          transcriptVal = transcriptVal.replace('auction item ', '')
+        } else if (transcriptVal.toLowerCase().includes('decision')) {
+          category = 'decision'
+          transcriptVal = transcriptVal.replace('decision ', '')
+        } else {
+          category = 'general'
+        }
+
+        this.setState({tempItemText: transcriptVal, tempItemCategory: category})
+        this.submitTempItem()
+      }
+    })
   }
 
   componentWillUnmount () {

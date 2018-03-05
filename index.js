@@ -823,8 +823,8 @@ io.sockets.on('connection', async function (socket) {
     recognizeStream = speech.streamingRecognize(request)
     .on('error', console.error)
     .on('data', (data) => {
-      console.log('data received')
-      console.log(data.results[0])
+      console.log('data received from google API')
+      // console.log(data.results[0])
       io.sockets.emit('speechData', data)
     })
   })

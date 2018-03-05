@@ -1,6 +1,6 @@
 import React from 'react'
 import {Route, indexRoute, withRouter} from 'react-router-dom'
-// import PropTypes    from 'prop-types';
+import PropTypes    from 'prop-types';
 import SmartStandardMeeting from './SmartMeetingTab/SmartStandardMeeting.js'
 import SmartCustomMeeting from './SmartMeetingTab/SmartCustomMeeting.js'
 import SmartMeetingTemplate from './SmartMeetingTab/SmartMeetingTemplate.js'
@@ -69,6 +69,7 @@ class SmartMeetingTab extends React.Component {
           <Route exact path = "/meeting/standard" render = {() =>
             <SmartStandardMeeting
               defaultMeetingData = {this.state.defaultMeetingData}
+              startHotWordStream = {this.props.startHotWordStream}
             />
           }/>
           <Route exact path = "/meeting/schedule" render = {() =>
@@ -88,7 +89,8 @@ class SmartMeetingTab extends React.Component {
 
 export default withRouter(SmartMeetingTab)
 //-------------------------------EXPECTED PROP TYPES----------------------------
-// SmartMeetingTab.propTypes = {
+SmartMeetingTab.propTypes = {
+  startHotWordStream: PropTypes.func.isRequired
 //   propName: PropTypes.type,
   //Example: currentFolder: PropTypes.string.isRequired,
-// };
+};

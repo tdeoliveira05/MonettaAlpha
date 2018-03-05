@@ -43,6 +43,13 @@ const DumbConductStandard = ({
   tempItemCategory
 }) => (
   <div className = 'ConductMeetingWrapper'>
+    <h2> Testing the STT:</h2>
+    <ol>
+      <li> Say Monetta</li>
+      <li> Pause and verify that is says {'starting voice recognition'} in console </li>
+      <li> Say {'action item'} for an action item or {'decision'} for a decision item followed by the command. If you don't say either it will default to general</li>
+      <li> The STT should automatically switch back to hot word inference </li>
+    </ol>
     <div className = 'ConductMeetingContent'>
       {meetingInfoHeading}
       <div className = 'ConductMeetingStopwatch'>

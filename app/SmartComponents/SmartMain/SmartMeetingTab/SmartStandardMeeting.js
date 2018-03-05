@@ -100,6 +100,7 @@ class SmartStandardMeeting extends React.Component {
             getMeetingData          = {this.getMeetingData}
             submitMeetingData       = {this.submitMeetingData}
             categoryList            = {this.state.categoryList}
+            startHotWordStream      = {this.props.startHotWordStream}
             />
         )
         break

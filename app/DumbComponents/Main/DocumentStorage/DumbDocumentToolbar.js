@@ -49,7 +49,7 @@ const DumbDocumentToolbar = (props) => {
       <ToolbarGroup className="DSToolbarRightGroup">
         <FlatButton
           label="Create New Meeting"
-          onClick = {() => redirectToPath('')}
+          onClick = {() => redirectToPath('meeting')}
           primary={true}
         />
       </ToolbarGroup>

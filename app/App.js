@@ -16,7 +16,7 @@ class App extends React.Component {
 		super(props);
 		this.state = {
       admin: true,
-      appLocation: 'app',
+      appLocation: 'home',
       userTokenObj: {
         username: localStorage.username,
         fullName: localStorage.fullName
@@ -110,7 +110,7 @@ class App extends React.Component {
   }
 
   submitUserTokenObj (userTokenObjVal) {
-    console.log(userTokenObjVal)
+    // console.log(userTokenObjVal)
     Cookies.set('access_token', 'bearer ' + userTokenObjVal.token)
 
     localStorage.username = userTokenObjVal.username

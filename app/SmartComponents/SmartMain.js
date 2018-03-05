@@ -1,35 +1,36 @@
 /************************** SERVER CALLS PRESENT*****************************/
-import React from 'react'
-import FlatButton from 'material-ui/FlatButton'
-import axios from 'axios'
-import Snackbar from 'material-ui/Snackbar'
-import { Route, withRouter} from 'react-router-dom'
+import React                  from 'react'
+import FlatButton             from 'material-ui/FlatButton'
+import axios                  from 'axios'
+import Snackbar               from 'material-ui/Snackbar'
+import { Route, withRouter }  from 'react-router-dom'
+import { Howl, Howler }       from 'howler'
 
-import SmartDocumentStorage from './SmartMain/SmartDocumentStorage.js'
-import SmartProductivityData from './SmartMain/SmartProductivityData.js'
-import SmartUserSettings from './SmartMain/SmartUserSettings.js'
-import SmartWelcomePage from './SmartMain/SmartWelcomePage.js'
-import DumbNavigationBar from '../DumbComponents/Main/DumbNavigationBar'
-import SmartDashboard from './SmartMain/SmartDashboard.js'
-import SmartHelp from './SmartMain/SmartHelp.js'
-import SmartYourVoice from './SmartMain/SmartYourVoice.js'
-import SmartMeetingTab from './SmartMain/SmartMeetingTab.js'
+import SmartDocumentStorage   from './SmartMain/SmartDocumentStorage.js'
+import SmartProductivityData  from './SmartMain/SmartProductivityData.js'
+import SmartUserSettings      from './SmartMain/SmartUserSettings.js'
+import SmartWelcomePage       from './SmartMain/SmartWelcomePage.js'
+import DumbNavigationBar      from '../DumbComponents/Main/DumbNavigationBar'
+import SmartDashboard         from './SmartMain/SmartDashboard.js'
+import SmartHelp              from './SmartMain/SmartHelp.js'
+import SmartYourVoice         from './SmartMain/SmartYourVoice.js'
+import SmartMeetingTab        from './SmartMain/SmartMeetingTab.js'
 
-import ReusableSmartFeedback from '../Reusable/Smart/ReusableSmartFeedback.js'
-import ReusableDumbDialog from '../Reusable/Dumb/ReusableDumbDialog.js'
+import ReusableSmartFeedback  from '../Reusable/Smart/ReusableSmartFeedback.js'
+import ReusableDumbDialog     from '../Reusable/Dumb/ReusableDumbDialog.js'
 
 //for activating mic + STT----------------------------------------------------
 // TESTING PUSH
 
-import getUserMedia from 'get-user-media-promise'
-import MicrophoneStream from 'microphone-stream'
-let resampler = require('audio-resampler')
-var fileSaver = require('file-saver')
-const WavEncoder = require("wav-encoder");
-var fs = require("fs");
-var context, processor, input
-var bufferInterval
-var AudioContext = window.AudioContext || window.webkitAudioContext
+import getUserMedia           from 'get-user-media-promise'
+import MicrophoneStream       from 'microphone-stream'
+let    resampler              = require('audio-resampler')
+var    fileSaver              = require('file-saver')
+const  WavEncoder             = require("wav-encoder");
+var    fs                     = require("fs");
+var    context, processor, input
+var    bufferInterval
+var    AudioContext           = window.AudioContext || window.webkitAudioContext
 
 //-----------------------------------------------------------------------------
 class SmartMain extends React.Component {
@@ -43,7 +44,8 @@ class SmartMain extends React.Component {
       quickMeeting: false,
       transcript: '',
       timeInApp: 0,
-      userDoc: {}
+      userDoc: {},
+      hotWordDetected: false,
     }
 
     this.updateUserDocument       = this.updateUserDocument.bind(this)
@@ -53,6 +55,8 @@ class SmartMain extends React.Component {
     this.openSnackbar             = this.openSnackbar.bind(this)
     this.activatePath             = this.activatePath.bind(this)
 
+    this.startHotWordStream       = this.startHotWordStream.bind(this)
+    this.stopHotWordStream        = this.stopHotWordStream.bind(this)
     this.startSpeechStream        = this.startSpeechStream.bind(this)
     this.stopSpeechStream         = this.stopSpeechStream.bind(this)
 
@@ -61,6 +65,7 @@ class SmartMain extends React.Component {
 
   componentDidMount () {
     const self = this
+
     this.updateMainLocation()
     // Start timer to track total time spent in app and update the state every second
     this.interval = setInterval(function () {
@@ -73,6 +78,49 @@ class SmartMain extends React.Component {
 
     socket.on('response/secure/userDocument/getUserDoc', function (data) {
       self.setState({userDoc: data})
+    })
+
+    socket.on('hotWordAPIResponse', (response) => {
+      if(response.search('monetta') > -1 && !self.state.hotWordDetected) {
+        // console.log('SUCCESSSSSSSSS')
+        self.setState({hotWordDetected: true})
+        this.stopHotWordStream()
+        this.startSpeechStream()
+      }
+      self.setState({transcript: response})
+    })
+
+    socket.on('speechData', (speechData) => {
+
+      if (speechData.error) {
+        // If there is an error, console.log() it
+        console.log('Error detected: ')
+        console.log(speechData.error.message)
+
+      } else if (!speechData.results[0].isFinal) {
+        // try setting the state as the phrase is built
+        self.setState({transcript: speechData.results[0].alternatives[0].transcript})
+
+      } else if (speechData.results[0].isFinal) {
+        // if google says it is final, update this.state.transcript to store the transcript
+        // console.log('isFinal === true')
+        // console.log(speechData.results[0].alternatives[0])
+        var transcriptVal = speechData.results[0].alternatives[0].transcript
+        // if it is final, end the google stream and reactivate hot word inference mode
+        this.stopSpeechStream()
+        this.setState({hotWordDetected: false})
+        this.startHotWordStream()
+
+        // only update the state when the current transcript is different than the one being received
+        if (self.state.transcript !== transcriptVal) {
+          self.setState({transcript: transcriptVal})
+        }
+
+      } else {
+        // If this triggers, investigate it - not supposed to end up in this else block
+        console.log('Nothing happened - ')
+        console.log(speechData)
+      }
     })
   }
 
@@ -135,10 +183,10 @@ class SmartMain extends React.Component {
   //--------------------------------------------------------------------------//
   //---------------VOICE RECOGNITION PROTOCOLS AND FUNCTIONS------------------//
 
-  startSpeechStream () {
+  startHotWordStream () {
     // Check this with Safari (https://www.npmjs.com/package/microphone-stream)
     // create a read stream that will read the .raw audio file being created by the audio input and send it up to the server
-    console.log('Starting voice recognition...')
+    console.log('Starting hot word inference...')
 
     //initialize speech api and broaden global scope
     socket.emit('startHotWordInference')
@@ -163,9 +211,11 @@ class SmartMain extends React.Component {
       input = context.createMediaStreamSource(stream)
       input.connect(processor)
 
-      var buffer,
-          recBuffers = [],
-          recLength = 0;
+      var recBuffers = [],
+          recBuffersOffset = [],
+          recLength = 0,
+          recLengthOffset = 0,
+          resetInterval = 1000;
 
       // Merging the audio buffers
       var mergeBuffers = (recBuffers, recLength) => {
@@ -176,6 +226,28 @@ class SmartMain extends React.Component {
           offset += recBuffers[i].length;
         }
         return result
+      }
+
+      var encodeEmitAndResetSecond = () => {
+        let mergedOffsetBuffer = mergeBuffers(recBuffersOffset, recLengthOffset)
+
+        // Encoding audiobuffer to wav
+        const dataToEncode = {
+          sampleRate: 16000,
+          channelData: [mergedOffsetBuffer]
+        };
+        WavEncoder.encode(dataToEncode).then((encodedWavOffset) => {
+          // Uncomment to save audio locally (for debugging)
+          // var wavBlobOffset = new Blob([encodedWavOffset], {type: "audio/wav"})
+          // fileSaver.saveAs(wavBlobOffset, 'sampleaudio2.wav')
+          //Prepare buffer for transmission to hotWordAPI
+          var wavBufferOffset = new Buffer.from(encodedWavOffset).toString('base64')
+          socket.emit('checkForHotWord', wavBufferOffset)
+        });
+
+        // Emptying the buffer and resetting buffer length
+        recBuffersOffset = []
+        recLengthOffset -= recLengthOffset
       }
 
       var encodeEmitAndResetBuffer = () => {
@@ -198,10 +270,12 @@ class SmartMain extends React.Component {
         // Emptying the buffer and resetting buffer length
         recBuffers = []
         recLength -= recLength
+
+        setTimeout(encodeEmitAndResetSecond, resetInterval/2)
       }
 
       // Encodes buffer to .wav and sends to API at specified interval
-      bufferInterval = setInterval(encodeEmitAndResetBuffer, 900)
+      bufferInterval = setInterval(encodeEmitAndResetBuffer, resetInterval)
 
       processor.onaudioprocess = (audio) => {
         // Resampling audio(44.1kHz --> 16kHz)
@@ -209,56 +283,83 @@ class SmartMain extends React.Component {
           let resampledBuffer = event.getAudioBuffer()
           recBuffers.push(resampledBuffer.getChannelData(0))
           recLength += resampledBuffer.getChannelData(0).length
-          buffer = resampledBuffer.getChannelData(0)
+          recBuffersOffset.push(resampledBuffer.getChannelData(0))
+          recLengthOffset += resampledBuffer.getChannelData(0).length
         })
 
-        socket.on('hotWordAPIResponse', (response) => {
-          self.setState({transcript: response.split(' ')[0]})
-        })
+        // socket.on('hotWordAPIResponse', (response) => {
+        //   if(response.search('monetta') > -1) {
+        //     console.log('SUCCESSSSSSSSS')
+        //     // this.stopHotWordStream()
+        //     // this.startSpeechStream()
+        //   }
+        //   self.setState({transcript: response})
+        // })
+      }
+    })
+    .catch((error) => {
+      console.log('navigatior catch block')
+      console.log(error)
+    })
+  }
+
+  stopHotWordStream () {
+    console.log('Stopping hot word inference...')
+    socket.emit('stopHotWordInference')
+    context.close()
+    processor.disconnect(context.destination)
+    input.disconnect(processor)
+    input        = null
+    processor    = null
+    context      = null
+    console.log('--')
+    clearInterval(bufferInterval)
+  }
+
+  startSpeechStream () {
+    // Check this with Safari (https://www.npmjs.com/package/microphone-stream)
+    // create a read stream that will read the .raw audio file being created by the audio input and send it up to the server
+    console.log('Starting Google API...')
+
+    //initialize speech api and broaden global scope
+    socket.emit('startGoogleCloudSpeech')
+
+    const self = this
+
+    // code used from https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
+    // AudioContext already defined, grabs the audio of the window
+    // initiates an instance
+    // Can't specify sampleRate here
+    context = new AudioContext()
+
+    //buffer Process
+    processor = context.createScriptProcessor(2048, 1, 1)
+    processor.connect(context.destination)
+    context.resume()
+
+
+    navigator.mediaDevices.getUserMedia({video: false, audio: true})
+    .then((stream) => {
+      input = context.createMediaStreamSource(stream)
+      input.connect(processor)
+
+      processor.onaudioprocess = (audio) => {
+         var buffer = audio.inputBuffer.getChannelData(0)
         //--------------------------------------------
         // Transforming a Float32 buffer into an int16 buffer for processing
+        let l = buffer.length
+        let buf = new Int16Array(l/3)
 
-        // let l = buffer.length
-        // let buf = new Int16Array(l/3)
-        //
-        // while (l--) {
-        //   if (l % 3 === 0) {
-        //     buf[l/3] = buffer[l] * 0xFFFF
-        //   }
-        // }
-        //
-        // var audioStream = buf.buffer
+        while (l--) {
+          if (l % 3 === 0) {
+            buf[l/3] = buffer[l] * 0xFFFF
+          }
+        }
+
+        var audioStream = buf.buffer
         //--------------------------------------------
-        // this.props.socket.emit('audioStream', audioStream)
-        //
-        // this.props.socket.on('speechData', function (speechData) {
-        //
-        //   if (speechData.error) {
-        //     // If there is an error, console.log() it
-        //     console.log('Error detected: ')
-        //     console.log(speechData.error.message)
-        //
-        //   } else if (!speechData.results[0].isFinal) {
-        //     // try setting the state as the phrase is built
-        //     self.setState({transcript: speechData.results[0].alternatives[0].transcript})
-        //
-        //   } else if (speechData.results[0].isFinal) {
-        //     // if google says it is final, update this.state.transcript to store the transcript
-        //     console.log('isFinal === true')
-        //     console.log(speechData.results[0].alternatives[0])
-        //     var transcriptVal = speechData.results[0].alternatives[0].transcript
-        //
-        //     // only update the state when the current transcript is different than the one being received
-        //     if (self.state.transcript !== transcriptVal) {
-        //       self.setState({transcript: transcriptVal})
-        //     }
-        //
-        //   } else {
-        //     // If this triggers, investigate it - not supposed to end up in this else block
-        //     console.log('Nothing happened - ')
-        //     console.log(speechData)
-        //   }
-        // })
+        socket.emit('audioStream', audioStream)
+
         //--------------------------------------------
       }
 
@@ -269,12 +370,9 @@ class SmartMain extends React.Component {
     })
   }
 
-
-
   stopSpeechStream () {
-    console.log('Stopping voice recognition...')
-    socket.emit('stopHotWordInference')
-    // this.props.socket.emit('stopGoogleCloudSpeech')
+    console.log('Stopping Google API...')
+    socket.emit('stopGoogleCloudSpeech')
     context.close()
     processor.disconnect(context.destination)
     input.disconnect(processor)
@@ -312,13 +410,13 @@ class SmartMain extends React.Component {
           <div style = {{minHeight: 'calc(100vh - 100px)', height: '100%'}}>
             <FlatButton
               label = 'record'
-              onClick = {() => this.startSpeechStream()}
+              onClick = {() => this.startHotWordStream()}
               style = {{backgroundColor: 'rgb(150, 150, 150)'}}
             />
             <h1 style = {{textAlign: 'center'}}> {this.state.transcript} </h1>
             <FlatButton
               label = 'stop'
-              onClick = {() => this.stopSpeechStream()}
+              onClick = {() => this.stopHotWordStream()}
               style = {{backgroundColor: 'rgb(150, 150, 150)'}}
             />
             <Route exact path = "/" render = {() =>
@@ -329,6 +427,8 @@ class SmartMain extends React.Component {
             <Route path = "/meeting" render = {() =>
               <SmartMeetingTab
                 defaultMeetingData = {this.state.defaultMeetingData}
+                userPreferences    = {this.state.userPreferences}
+                startHotWordStream = {this.startHotWordStream}
                 userDoc            = {this.state.userDoc}
               />
             }/>
