@@ -81,8 +81,10 @@ class SmartMain extends React.Component {
     })
 
     socket.on('hotWordAPIResponse', (response) => {
-      if(response.search('monetta') > -1 && !self.state.hotWordDetected) {
-        // console.log('SUCCESSSSSSSSS')
+      // If 'monetta' is detected, it'll be the first argument returned (highest confidence)
+      // Because of the second offset audio stream, the state is updated on the first instance the
+      // api responds with a success so that the offset stream doesn't result in a breakage
+      if(response.search('monetta') === 0 && !self.state.hotWordDetected) {
         self.setState({hotWordDetected: true})
         this.stopHotWordStream()
         this.startSpeechStream()
@@ -91,7 +93,7 @@ class SmartMain extends React.Component {
     })
 
     socket.on('speechData', (speechData) => {
-
+      //refer to SmartConductStandardMeeting to see how notes are added to meeting
       if (speechData.error) {
         // If there is an error, console.log() it
         console.log('Error detected: ')
@@ -190,14 +192,12 @@ class SmartMain extends React.Component {
 
     //initialize speech api and broaden global scope
     socket.emit('startHotWordInference')
-    // socket.emit('startGoogleCloudSpeech')
 
     const self = this
 
     // code used from https://github.com/vin-ni/Google-Cloud-Speech-Node-Socket-Playground
     // AudioContext already defined, grabs the audio of the window
     // initiates an instance
-    // Can't specify sampleRate here
     context = new AudioContext()
 
     //buffer Process
@@ -228,6 +228,7 @@ class SmartMain extends React.Component {
         return result
       }
 
+      // Offset buffer has its own callback function so the original function can call this after with a setTimeout
       var encodeEmitAndResetSecond = () => {
         let mergedOffsetBuffer = mergeBuffers(recBuffersOffset, recLengthOffset)
 
@@ -250,6 +251,7 @@ class SmartMain extends React.Component {
         recLengthOffset -= recLengthOffset
       }
 
+      // Callback function to merge, encode, emit and reset original buffer
       var encodeEmitAndResetBuffer = () => {
         let mergedBuffer = mergeBuffers(recBuffers, recLength)
 
@@ -286,15 +288,6 @@ class SmartMain extends React.Component {
           recBuffersOffset.push(resampledBuffer.getChannelData(0))
           recLengthOffset += resampledBuffer.getChannelData(0).length
         })
-
-        // socket.on('hotWordAPIResponse', (response) => {
-        //   if(response.search('monetta') > -1) {
-        //     console.log('SUCCESSSSSSSSS')
-        //     // this.stopHotWordStream()
-        //     // this.startSpeechStream()
-        //   }
-        //   self.setState({transcript: response})
-        // })
       }
     })
     .catch((error) => {

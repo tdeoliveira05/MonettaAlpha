@@ -59,14 +59,18 @@ class SmartConductStandard extends React.Component {
 
     socket.on('speechData', (speechData) => {
 
-      if (speechData.results[0].isFinal) {
+      if (!speechData.results[0].isFinal) {
+        // Updates the text field as google api starts transcribing
+        this.setState({tempItemText: speechData.results[0].alternatives[0].transcript})
+
+      } else if (speechData.results[0].isFinal) {
         var transcriptVal = speechData.results[0].alternatives[0].transcript
         let category
 
+        // Removes the action word and categorizes notes
         if (transcriptVal.toLowerCase().includes('action item')) {
           category = 'action'
           transcriptVal = transcriptVal.replace('action item ', '')
-          console.log(transcriptVal)
         } else if (transcriptVal.toLowerCase().includes('auction item')) {
           category = 'action'
           transcriptVal = transcriptVal.replace('auction item ', '')
@@ -78,6 +82,7 @@ class SmartConductStandard extends React.Component {
         }
 
         this.setState({tempItemText: transcriptVal, tempItemCategory: category})
+        // Adds note to meeting and empties text field
         this.submitTempItem()
       }
     })

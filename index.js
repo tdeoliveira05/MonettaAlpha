@@ -815,7 +815,13 @@ io.sockets.on('connection', async function (socket) {
       config : {
         encoding: 'LINEAR16',
         sampleRateHertz: '16000',
-        languageCode: 'en-US'
+        languageCode: 'en-US',
+        profanityFilter: true,
+        speechContexts: [
+          {
+          "phrases":["action item", "decision"]
+          }
+        ]
       },
       interimResults: true
     }
