@@ -1,12 +1,5 @@
 # MonetaMVP
-CHECK BELOW
 
-Pre-Deployment Checklist :
+FOR TEACHING MATERIAL ONLY
 
-* SmartPrepareMeeting.js - uncomment checkErrors() to enable error tracking
-
-
-* All server calls -
-http://localhost:8080 -> https://monettatech.com
-
-* `npm run build`
+-not maintained or updated-
