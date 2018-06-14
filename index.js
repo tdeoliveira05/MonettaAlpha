@@ -61,7 +61,7 @@ app.use(bodyParser.json())
 
 // Setting up snedgrid connection to send out email
 const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey('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')
+sgMail.setApiKey('XXXXXX')
 
 
 
@@ -75,7 +75,7 @@ app.get('/', function(_,res){ res.sendFile(indexPath) });
 
 //OAuth
 const slack = SlackOAuthClient.connect(
-	'xoxb-248587322181-WkedBxz2LYOblHzscrV8tNj0'
+	'XXXXXXXXXXX'
 );
 
 //Constants
@@ -470,8 +470,8 @@ app.get('/usercount', function(req,res){
 app.get('/token', function(req,res){
 	var auth = new watson.AuthorizationV1({
   	"url": "https://stream.watsonplatform.net/speech-to-text/api",
-  	"username": "fbc390cc-ae44-4968-b839-4cd9c34bc201",
-  	"password": "dZAVMXe7gWKn"
+  	"username": "XXXXX",
+  	"password": "XXXXX"
 	});
 	auth.getToken(function(err,token){
 		if(!token){
